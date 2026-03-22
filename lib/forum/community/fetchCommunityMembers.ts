@@ -24,6 +24,7 @@ export const fetchCommunityMembers = async (
         return null;
       }
 
+      const data = snippetDoc.data() as {
         email?: string;
         displayName?: string | null;
         photoURL?: string | null;
