@@ -61,6 +61,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           {/* @ts-expect-error - Chakra UI v3 DialogContent type doesn't properly reflect children prop */}
           <DialogContent borderRadius={"xl"}>
             <DialogHeader>
+              {/* @ts-expect-error - Chakra UI v3 DialogTitle type doesn't properly reflect children prop */}
               <DialogTitle>{title}</DialogTitle>
             </DialogHeader>
             <DialogBody>{body}</DialogBody>
