@@ -1,11 +1,11 @@
 "use client";
 
-import CreatePostLink from "@/components/forum/community/CreatePostLink";
-import PersonalHome from "@/components/forum/community/PersonalHome";
-import Recommendations from "@/components/forum/community/recommendations/Recommendations";
-import PageContent from "@/components/forum/layout/PageContent";
-import PostLoader from "@/components/forum/loaders/post-loader/PostLoader";
-import PostItem from "@/components/forum/posts/post-item/PostItem";
+import CreatePostLink from "@/components/community/CreatePostLink";
+import PersonalHome from "@/components/community/PersonalHome";
+import Recommendations from "@/components/community/recommendations/Recommendations";
+import PageContent from "@/components/layout/PageContent";
+import PostLoader from "@/components/loaders/post-loader/PostLoader";
+import PostItem from "@/components/posts/post-item/PostItem";
 import { auth } from "@/firebase/forum/clientApp";
 import useCommunityState from "@/hooks/community/useCommunityState";
 import usePostDeletion from "@/hooks/posts/usePostDeletion";

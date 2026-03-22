@@ -1,5 +1,5 @@
-import ProfileModal from "@/components/forum/modal/profile/ProfileModal";
-import AuthButtons from "@/components/forum/navbar/right-content/AuthButtons";
+import ProfileModal from "@/components/modal/profile/ProfileModal";
+import AuthButtons from "@/components/navbar/right-content/AuthButtons";
 import { Flex, Textarea, Button, Text, Stack, Icon } from "@chakra-ui/react";
 import { LuSend, LuTrash } from "react-icons/lu";
 import { User } from "firebase/auth";

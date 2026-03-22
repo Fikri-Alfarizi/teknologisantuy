@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { savedPostStateAtom } from "@/atoms/savedPostsAtom";
-import { useColorMode } from "@/components/forum/ui/color-mode";
+import { useColorMode } from "@/components/ui/color-mode";
 import useCommunityState from "@/hooks/community/useCommunityState";
 import useCommunityPermissions from "@/hooks/community/useCommunityPermissions";
 import useCallCreatePost from "@/hooks/posts/useCallCreatePost";

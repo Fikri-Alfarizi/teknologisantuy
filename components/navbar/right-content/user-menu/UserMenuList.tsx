@@ -1,6 +1,6 @@
 import React from "react";
 import { MenuContent, Flex, Stack, Image } from "@chakra-ui/react";
-import CustomMenuButton from "@/components/forum/ui/CustomMenuButton";
+import CustomMenuButton from "@/components/ui/CustomMenuButton";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLogin } from "react-icons/md";
 import {

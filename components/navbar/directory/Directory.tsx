@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import Communities from "./Communities";
-import CreateCommunityModal from "@/components/forum/modal/create-community/CreateCommunityModal";
+import CreateCommunityModal from "@/components/modal/create-community/CreateCommunityModal";
 
 /**
  * Component for displaying the directory menu.

@@ -1,6 +1,6 @@
 import { Button, Stack, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
-import ConfirmationDialog from "@/components/forum/modal/ConfirmationDialog";
+import ConfirmationDialog from "@/components/modal/ConfirmationDialog";
 
 type DangerZoneProps = {
   deleteCommunity: () => Promise<void>;

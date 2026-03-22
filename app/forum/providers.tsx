@@ -1,9 +1,9 @@
 "use client";
 
 import { theme } from "@/chakra/theme";
-import Layout from "@/components/forum/layout/Layout";
-import { ColorModeProvider } from "@/components/forum/ui/color-mode";
-import { Toaster } from "@/components/forum/ui/toaster";
+import Layout from "@/components/layout/Layout";
+import { ColorModeProvider } from "@/components/ui/color-mode";
+import { Toaster } from "@/components/ui/toaster";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Provider as JotaiProvider } from "jotai";
 import { useEffect, useState } from "react";

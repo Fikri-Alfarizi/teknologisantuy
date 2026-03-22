@@ -8,7 +8,7 @@ import { authModalStateAtom } from "@/atoms/authModalAtom";
 import { auth } from "@/firebase/forum/clientApp";
 import { FIREBASE_ERRORS } from "@/firebase/forum/errors";
 import InputField from "./InputField";
-import { PasswordInput } from "@/components/forum/ui/password-input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { signUpSchema, SignUpInput } from "@/schema/auth";
 
 const SignUp = () => {

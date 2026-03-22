@@ -25,7 +25,7 @@ import { useAtomValue } from "jotai";
 import { communityStateAtom } from "@/atoms/communitiesAtom";
 import useCommunityPermissions from "@/hooks/community/useCommunityPermissions";
 import useRemoveCommunityMember from "@/hooks/community/useRemoveCommunityMember";
-import ConfirmationDialog from "@/components/forum/modal/ConfirmationDialog";
+import ConfirmationDialog from "@/components/modal/ConfirmationDialog";
 
 type CommunityMembersModalProps = {
   isOpen: boolean;

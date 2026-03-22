@@ -1,9 +1,9 @@
 "use client";
 
-import CommunityItem from "@/components/forum/community/community-item/CommunityItem";
-import PersonalHome from "@/components/forum/community/PersonalHome";
-import PageContent from "@/components/forum/layout/PageContent";
-import CommunityLoader from "@/components/forum/loaders/CommunityLoader";
+import CommunityItem from "@/components/community/community-item/CommunityItem";
+import PersonalHome from "@/components/community/PersonalHome";
+import PageContent from "@/components/layout/PageContent";
+import CommunityLoader from "@/components/loaders/CommunityLoader";
 import useCommunitiesFeed from "@/hooks/community/useCommunitiesFeed";
 import useCommunityState from "@/hooks/community/useCommunityState";
 import useCommunityMembershipActions from "@/hooks/community/useCommunityMembershipActions";

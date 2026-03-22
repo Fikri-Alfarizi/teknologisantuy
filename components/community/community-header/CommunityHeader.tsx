@@ -8,7 +8,7 @@ import CommunityName from "./CommunityName";
 import JoinOrLeaveButton from "./JoinOrLeaveButton";
 import CommunitySettings from "./CommunitySettings";
 import CommunityMembersButton from "./CommunityMembersButton";
-import ConfirmationDialog from "@/components/forum/modal/ConfirmationDialog";
+import ConfirmationDialog from "@/components/modal/ConfirmationDialog";
 import { auth } from "@/firebase/forum/clientApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 

@@ -10,7 +10,7 @@ import PostDetails from "./PostDetails";
 import PostTitle from "./PostTitle";
 import PostBody from "./PostBody";
 import PostActions from "./PostActions";
-import ConfirmationDialog from "@/components/forum/modal/ConfirmationDialog";
+import ConfirmationDialog from "@/components/modal/ConfirmationDialog";
 
 /**
  * Interface for the PostItem component properties.

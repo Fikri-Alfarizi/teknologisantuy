@@ -17,7 +17,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { AdminUser } from "@/types/adminUser";
-import ConfirmationDialog from "@/components/forum/modal/ConfirmationDialog";
+import ConfirmationDialog from "@/components/modal/ConfirmationDialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addAdminSchema, AddAdminInput } from "@/schema/admin";
