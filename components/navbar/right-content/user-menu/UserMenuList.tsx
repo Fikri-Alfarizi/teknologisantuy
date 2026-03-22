@@ -1,5 +1,5 @@
 import React from "react";
-import { MenuContent, Flex, Stack, Image } from "@chakra-ui/react";
+import { Flex, Stack, Image } from "@chakra-ui/react";
 import CustomMenuButton from "@/components/ui/CustomMenuButton";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLogin } from "react-icons/md";
@@ -34,7 +34,14 @@ const UserMenuList: React.FC<UserMenuListProps> = ({
   };
 
   return (
-    <MenuContent borderRadius={10} mt={2} shadow="lg" minW="180px">
+    <Flex
+      as="div"
+      borderRadius={10}
+      mt={2}
+      shadow="lg"
+      minW="180px"
+      direction="column"
+    >
       <Flex justifyContent="center">
         <Stack gap={1} width="98%">
           {user ? (
@@ -73,7 +80,7 @@ const UserMenuList: React.FC<UserMenuListProps> = ({
           )}
         </Stack>
       </Flex>
-    </MenuContent>
+    </Flex>
   );
 };
 

@@ -82,6 +82,7 @@ const UserMenu: React.FC = () => {
           </Flex>
         </MenuTrigger>
         <MenuPositioner>
+          {/* @ts-expect-error - Chakra UI v3 MenuContent type doesn't properly reflect children prop */}
           <MenuContent
             borderRadius={"xl"}
             mt={2}
