@@ -1,0 +1,49 @@
+{
+  "name": "teknologi-santuy-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/genai": "^1.46.0",
+    "@react-icons/all-files": "^4.1.0",
+    "firebase": "^12.10.0",
+    "next": "16.1.7",
+    "next-auth": "^4.24.13",
+    "next-themes": "^0.4.6",
+    "nextjs-toploader": "^3.9.17",
+    "nodemailer": "^7.0.13",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-icons": "^5.6.0",
+    "socket.io-client": "^4.8.3",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@chakra-ui/react": "^3.34.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.7",
+    "framer-motion": "^12.38.0",
+    "jotai": "^2.18.1",
+    "jotai-utils": "^0.0.0",
+    "lucide-react": "^0.577.0",
+    "moment": "^2.30.1",
+    "react-firebase-hooks": "^5.1.1",
+    "react-hook-form": "^7.71.2",
+    "safe-json-stringify": "^1.2.0",
+    "tailwindcss": "^4",
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
+  }
+}
