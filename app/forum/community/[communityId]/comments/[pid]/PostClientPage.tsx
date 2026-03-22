@@ -6,7 +6,7 @@ import PageContent from "@/components/layout/PageContent";
 import PostLoader from "@/components/loaders/post-loader/PostLoader";
 import Comments from "@/components/posts/comments/Comments";
 import PostItem from "@/components/posts/post-item/PostItem";
-import { auth } from "@/firebase/clientApp";
+import { auth } from "@/firebase/forum/clientApp";
 import useCommunityPermissions from "@/hooks/community/useCommunityPermissions";
 import usePostDeletion from "@/hooks/posts/usePostDeletion";
 import usePostState from "@/hooks/posts/usePostState";

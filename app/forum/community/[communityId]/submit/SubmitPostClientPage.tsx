@@ -6,7 +6,7 @@ import About from "@/components/community/about/About";
 import PageContent from "@/components/layout/PageContent";
 import AuthButtons from "@/components/navbar/right-content/AuthButtons";
 import NewPostForm from "@/components/posts/new-post-form/NewPostForm";
-import { auth } from "@/firebase/clientApp";
+import { auth } from "@/firebase/forum/clientApp";
 import { Community } from "@/types/community";
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { useAtom, useSetAtom } from "jotai";
