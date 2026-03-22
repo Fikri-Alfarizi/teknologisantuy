@@ -38,6 +38,7 @@ const UserMenu: React.FC = () => {
         open={directoryState.isOpen}
         onOpenChange={({ open }: { open: boolean }) => setDirectoryOpen(open)}
       >
+        {/* @ts-expect-error - Chakra UI v3 MenuTrigger doesn't accept children prop */}
         <MenuTrigger
           cursor="pointer"
           padding="0px 6px"
@@ -81,6 +82,7 @@ const UserMenu: React.FC = () => {
             {directoryState.isOpen ? <FiChevronUp /> : <FiChevronDown />}
           </Flex>
         </MenuTrigger>
+        {/* @ts-expect-error - Chakra UI v3 MenuPositioner type doesn't properly reflect children prop */}
         <MenuPositioner>
           {/* @ts-expect-error - Chakra UI v3 MenuContent type doesn't properly reflect children prop */}
           <MenuContent

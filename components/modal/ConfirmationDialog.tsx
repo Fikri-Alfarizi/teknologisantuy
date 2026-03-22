@@ -88,6 +88,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 {confirmButtonText}
               </Button>
             </DialogFooter>
+            {/* @ts-expect-error - Chakra UI v3 DialogCloseTrigger doesn't accept onClick prop */}
             <DialogCloseTrigger
               onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
