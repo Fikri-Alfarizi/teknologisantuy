@@ -264,7 +264,21 @@ export default async function GamePage({ searchParams }) {
                       <span style={{ opacity: 0.6 }}>Password:</span> <strong style={{ color: 'var(--yellow)' }}>{item.password}</strong>
                     </div>
                     <div>
-                      <span style={{ opacity: 0.6 }}>Link:</span> <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'underline' }}>{new URL(item.link).hostname}</a>
+                      <span style={{ opacity: 0.6 }}>Link:</span>{" "}
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#fff", textDecoration: "underline" }}
+                      >
+                        {(() => {
+                          try {
+                            return new URL(item.link).hostname;
+                          } catch {
+                            return "Download Link";
+                          }
+                        })()}
+                      </a>
                     </div>
                   </div>
                   
