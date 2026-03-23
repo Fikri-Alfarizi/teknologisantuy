@@ -1,5 +1,6 @@
 import useDirectory from "@/hooks/useDirectory";
-import { Flex, Image, MenuItem } from "@chakra-ui/react";
+import { Flex, Image } from "@chakra-ui/react";
+import { Menu } from "@/components/ui/menu";
 import React from "react";
 import { IconType } from "react-icons";
 
@@ -38,7 +39,7 @@ const MenuListItem: React.FC<MenuListItemProps> = ({
   const { onSelectMenuItem } = useDirectory();
 
   return (
-    <MenuItem
+    <Menu.Item
       mt={1}
       mb={1}
       fontSize="10pt"
@@ -70,7 +71,7 @@ const MenuListItem: React.FC<MenuListItemProps> = ({
         />
         {displayText}
       </Flex>
-    </MenuItem>
+    </Menu.Item>
   );
 };
 export default MenuListItem;

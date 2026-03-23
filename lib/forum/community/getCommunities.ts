@@ -41,7 +41,7 @@ export const getCommunities = async (
   const communityDocs = await getDocs(communityQuery);
   const communities = communityDocs.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data(),
+    ...(doc.data() as any),
   })) as Community[];
 
   const newLastVisible =

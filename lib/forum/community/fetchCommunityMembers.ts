@@ -14,7 +14,7 @@ export const fetchCommunityMembers = async (
 ): Promise<CommunityMember[]> => {
   const usersSnapshot = await getDocs(collection(firestore, "users"));
 
-  const members = await Promise.all(
+  const members: (CommunityMember | null)[] = await Promise.all(
     usersSnapshot.docs.map(async (userDoc) => {
       const snippetDoc = await getDoc(
         doc(firestore, "users", userDoc.id, "communitySnippets", communityId)
@@ -40,7 +40,7 @@ export const fetchCommunityMembers = async (
   );
 
   const filteredMembers = members.filter(
-    (member): member is CommunityMember => !!member
+    (member): member is CommunityMember => member !== null
   );
 
   filteredMembers.sort((a, b) => {

@@ -1,19 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Box,
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
   Flex,
   IconButton,
-  Portal,
   Spinner,
   Stack,
   Text,
@@ -130,27 +122,22 @@ const CommunityMembersModal: React.FC<CommunityMembersModalProps> = ({
   };
 
   return (
-    <DialogRoot
+    <Dialog.Root
       open={isOpen}
       onOpenChange={(details: { open: boolean }) => !details.open && onClose()}
       placement="center"
     >
-      <Portal>
-        <DialogBackdrop bg="rgba(0, 0, 0, 0.4)" backdropFilter="blur(6px)" />
-        <DialogPositioner>
-          <DialogContent maxH="70vh" borderRadius="xl">
-            <DialogHeader>
-              <DialogTitle>
-                {memberCount} Community Member{memberCount === 1 ? "" : "s"}
-              </DialogTitle>
-            </DialogHeader>
-            <DialogCloseTrigger />
-            <DialogBody pb={6} overflowY="auto">
-              {renderContent()}
-            </DialogBody>
-          </DialogContent>
-        </DialogPositioner>
-      </Portal>
+      <Dialog.Content maxH="70vh" borderRadius="xl">
+        <Dialog.Header>
+          <Dialog.Title>
+            {memberCount} Community Member{memberCount === 1 ? "" : "s"}
+          </Dialog.Title>
+        </Dialog.Header>
+        <Dialog.CloseTrigger />
+        <Dialog.Body pb={6} overflowY="auto">
+          {renderContent()}
+        </Dialog.Body>
+      </Dialog.Content>
       <ConfirmationDialog
         open={!!memberToRemove}
         onClose={() => setMemberToRemove(null)}
@@ -160,7 +147,7 @@ const CommunityMembersModal: React.FC<CommunityMembersModalProps> = ({
         confirmButtonText="Remove"
         isLoading={removeLoading}
       />
-    </DialogRoot>
+    </Dialog.Root>
   );
 };
 

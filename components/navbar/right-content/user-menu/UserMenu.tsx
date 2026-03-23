@@ -1,5 +1,5 @@
 import ProfileModal from "@/components/modal/profile/ProfileModal";
-import { MenuPositioner, MenuRoot } from "@chakra-ui/react";
+import { Menu } from "@/components/ui/menu";
 import { User } from "firebase/auth";
 import React, { useState } from "react";
 import UserMenuButton from "./UserMenuButton";
@@ -45,15 +45,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         handleClose={() => setProfileModalOpen(false)}
       />
 
-      <MenuRoot
+      <Menu.Root
         open={isMenuOpen}
         onOpenChange={({ open }: { open: boolean }) => setIsMenuOpen(open)}
       >
         <UserMenuButton user={user} isMenuOpen={isMenuOpen} />
-        <MenuPositioner>
+        <Menu.Positioner>
           <UserMenuList user={user} setProfileModalOpen={setProfileModalOpen} />
-        </MenuPositioner>
-      </MenuRoot>
+        </Menu.Positioner>
+      </Menu.Root>
     </>
   );
 };

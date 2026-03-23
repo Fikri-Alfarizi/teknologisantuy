@@ -1,4 +1,5 @@
-import { MenuItem, Flex, Icon, Text } from "@chakra-ui/react";
+import { Menu } from "@/components/ui/menu";
+import { Flex, Text } from "@chakra-ui/react";
 
 interface CustomMenuButtonProps {
   icon: React.ReactElement;
@@ -20,7 +21,7 @@ const CustomMenuButton: React.FC<CustomMenuButtonProps> = ({
   onClick,
 }) => {
   return (
-    <MenuItem
+    <Menu.Item
       fontSize="10pt"
       fontWeight={700}
       onClick={onClick}
@@ -38,7 +39,7 @@ const CustomMenuButton: React.FC<CustomMenuButtonProps> = ({
         </Flex>
         <Text fontWeight={600}>{text}</Text>
       </Flex>
-    </MenuItem>
+    </Menu.Item>
   );
 };
 

@@ -1,6 +1,8 @@
 import React, { FC } from "react";
-import { CheckboxCard, Icon, Flex, VStack } from "@chakra-ui/react";
+import { CheckboxCard as ChakraCheckboxCard, Icon, Flex, VStack } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
+
+const CheckboxCard = ChakraCheckboxCard as any;
 
 type CommunityTypeOptionProps = {
   name: string;

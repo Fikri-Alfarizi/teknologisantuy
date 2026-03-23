@@ -1,16 +1,8 @@
 import { useCreateCommunity } from "@/hooks/community/useCreateCommunity";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Box,
   Button,
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
   Separator,
   Stack,
   Text,
@@ -91,80 +83,77 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   };
 
   return (
-    <DialogRoot
+    <Dialog.Root
       open={open}
       onOpenChange={({ open }: { open: boolean }) => {
         if (!open) handleClose();
       }}
     >
-      <DialogBackdrop bg="rgba(0, 0, 0, 0.4)" backdropFilter="blur(6px)" />
-      <DialogPositioner>
-        <DialogContent borderRadius={10}>
-          <DialogHeader
+      <Dialog.Content borderRadius={10}>
+        <Dialog.Header
+          display="flex"
+          flexDirection="column"
+          padding={3}
+          textAlign="center"
+        >
+          <Dialog.Title>Create Community</Dialog.Title>
+        </Dialog.Header>
+        <Box pl={3} pr={3}>
+          <Dialog.CloseTrigger position="absolute" top={2} right={2} />
+          <Dialog.Body
             display="flex"
             flexDirection="column"
-            padding={3}
-            textAlign="center"
+            padding="10px 0px"
           >
-            <DialogTitle>Create Community</DialogTitle>
-          </DialogHeader>
-          <Box pl={3} pr={3}>
-            <DialogCloseTrigger position="absolute" top={2} right={2} />
-            <DialogBody
-              display="flex"
-              flexDirection="column"
-              padding="10px 0px"
-            >
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <CommunityNameSection
-                  charRemaining={charRemaining}
-                  error={errors.name?.message}
-                  register={register("name")}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <CommunityNameSection
+                charRemaining={charRemaining}
+                error={errors.name?.message}
+                register={register("name")}
+              />
+              <Separator mt={3} />
+              <Box mt={4} mb={4}>
+                <Text fontWeight={600} fontSize={15}>
+                  Community Type
+                </Text>
+
+                <CommunityTypeOptions
+                  options={COMMUNITY_TYPE_OPTIONS}
+                  communityType={communityType}
+                  onCommunityTypeChange={(value) =>
+                    setValue("type", value as any)
+                  }
                 />
-                <Separator mt={3} />
-                <Box mt={4} mb={4}>
-                  <Text fontWeight={600} fontSize={15}>
-                    Community Type
-                  </Text>
+              </Box>
+            </form>
+          </Dialog.Body>
+        </Box>
 
-                  <CommunityTypeOptions
-                    options={COMMUNITY_TYPE_OPTIONS}
-                    communityType={communityType}
-                    onCommunityTypeChange={(value) =>
-                      setValue("type", value as any)
-                    }
-                  />
-                </Box>
-              </form>
-            </DialogBody>
-          </Box>
-
-          <DialogFooter
-            bg={{ base: "gray.100", _dark: "gray.700" }}
-            borderRadius="0px 0px 10px 10px"
-          >
-            <Stack direction="row" gap={3} width="100%">
-              <Button
-                variant="outline"
-                height="30px"
-                flex={1}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                height="30px"
-                flex={1}
-                onClick={handleSubmit(onSubmit)}
-                loading={loading}
-              >
-                Create Community
-              </Button>
-            </Stack>
-          </DialogFooter>
-        </DialogContent>
-      </DialogPositioner>
-    </DialogRoot>
+        <Dialog.Footer
+          bg={{ base: "gray.100", _dark: "gray.700" }}
+          borderRadius="0px 0px 10px 10px"
+        >
+          <Stack direction="row" gap={3} width="100%">
+            <Button
+              variant="outline"
+              height="30px"
+              flex={1}
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              height="30px"
+              flex={1}
+              onClick={handleSubmit(onSubmit)}
+              loading={loading}
+            >
+              Create Community
+            </Button>
+          </Stack>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

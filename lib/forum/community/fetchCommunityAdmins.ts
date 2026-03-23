@@ -1,7 +1,7 @@
 import { firestore } from "@/firebase/forum/clientApp";
 import { doc, getDoc } from "firebase/firestore";
 
-import { AdminUser } from "../../types/adminUser";
+import { AdminUser } from "@/types/adminUser";
 
 /**
  * Retrieves the profile information for all administrators of a community.

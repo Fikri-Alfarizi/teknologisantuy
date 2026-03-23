@@ -1,7 +1,8 @@
 import { Community } from "@/types/community";
 import useCreatePost from "@/hooks/posts/useCreatePost";
 import useSelectFile from "@/hooks/useSelectFile";
-import { Flex, Icon, Tabs, Text } from "@chakra-ui/react";
+import { Tabs } from "@/components/ui/tabs";
+import { Flex, Icon, Text } from "@chakra-ui/react";
 import { User } from "firebase/auth";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";

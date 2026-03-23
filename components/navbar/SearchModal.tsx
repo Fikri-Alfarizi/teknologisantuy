@@ -1,25 +1,36 @@
+"use client";
+
 import {
   Box,
   Flex,
   Icon,
   Input,
-  InputGroup,
-  DialogRoot,
-  DialogBody,
-  DialogContent,
-  DialogBackdrop,
-  DialogPositioner,
   Stack,
   Text,
   Image,
   Spinner,
 } from "@chakra-ui/react";
+import { Dialog } from "@/components/ui/dialog";
 import React, { useRef, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import useSearch from "@/hooks/useSearch";
 import { useRouter } from "next/navigation";
 import { Post } from "@/types/post";
 import moment from "moment";
+
+// Simple InputGroup mock since the snippet might be missing
+const InputGroup = ({ children, startElement }: any) => (
+  <Flex align="center" position="relative" width="100%">
+    {startElement && (
+      <Box position="absolute" left="12px" zIndex={1}>
+        {startElement}
+      </Box>
+    )}
+    <Box width="100%" pl={startElement ? "35px" : "0"}>
+      {children}
+    </Box>
+  </Flex>
+);
 
 type SearchModalProps = {
   isOpen: boolean;
@@ -55,171 +66,166 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <DialogRoot
+    <Dialog.Root
       open={isOpen}
       onOpenChange={(e: { open: boolean }) => !e.open && handleClose()}
       size="xl"
       initialFocusEl={() => initialRef.current}
       placement="top"
     >
-      <DialogBackdrop />
-      <DialogPositioner>
-        <Box
-          as={DialogContent}
-          bg="white"
-          _dark={{ bg: "gray.800" }}
-          mt="10vh"
-          borderRadius="12px"
-        >
-          <DialogBody p={4}>
-            <InputGroup
-              startElement={
-                <Icon as={AiOutlineSearch} color="gray.400" fontSize={20} />
-              }
-              width="100%"
-            >
-              <Input
-                ref={initialRef}
-                placeholder="Search communities and posts..."
-                fontSize="12pt"
-                _placeholder={{ color: "gray.500" }}
-                _hover={{
-                  bg: "white",
+      <Dialog.Content
+        bg="white"
+        _dark={{ bg: "gray.800" }}
+        mt="10vh"
+        borderRadius="12px"
+      >
+        <Dialog.Body p={4}>
+          <InputGroup
+            startElement={
+              <Icon as={AiOutlineSearch} color="gray.400" fontSize={20} />
+            }
+          >
+            <Input
+              ref={initialRef}
+              placeholder="Search communities and posts..."
+              fontSize="12pt"
+              _placeholder={{ color: "gray.500" }}
+              _hover={{
+                bg: "white",
+                border: "1px solid",
+                borderColor: "blue.500",
+              }}
+              _focus={{
+                outline: "none",
+                border: "1px solid",
+                borderColor: "blue.500",
+              }}
+              height="50px"
+              bg="gray.50"
+              _dark={{
+                bg: "gray.700",
+                borderColor: "gray.600",
+                _hover: {
+                  bg: "gray.600",
                   border: "1px solid",
-                  borderColor: "blue.500",
-                }}
-                _focus={{
-                  outline: "none",
-                  border: "1px solid",
-                  borderColor: "blue.500",
-                }}
-                height="50px"
-                bg="gray.50"
-                _dark={{
-                  bg: "gray.700",
-                  borderColor: "gray.600",
-                  _hover: {
-                    bg: "gray.600",
-                    border: "1px solid",
-                    borderColor: "blue.400",
-                  },
-                }}
-                borderRadius="xl"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </InputGroup>
+                  borderColor: "blue.400",
+                },
+              }}
+              borderRadius="xl"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </InputGroup>
 
-            {searchTerm && (
-              <Box mt={4} maxHeight="60vh" overflowY="auto">
-                {loading ? (
-                  <Flex justify="center" p={4}>
-                    <Spinner />
-                  </Flex>
-                ) : (
-                  <Stack gap={4}>
-                    {results.communities.length > 0 && (
-                      <Box>
-                        <Text
-                          fontWeight={700}
-                          color="gray.500"
-                          fontSize="sm"
-                          mb={2}
-                          textTransform="uppercase"
-                        >
-                          Communities
-                        </Text>
-                        <Stack gap={2}>
-                          {results.communities.map((item) => (
-                            <Flex
-                              key={item.id}
-                              align="center"
-                              p={2}
-                              _hover={{ bg: "gray.100" }}
-                              _dark={{ _hover: { bg: "gray.700" } }}
-                              cursor="pointer"
-                              borderRadius="xl"
-                              onClick={() => onSelectCommunity(item.id)}
-                            >
-                              {item.imageURL ? (
-                                <Image
-                                  src={item.imageURL}
-                                  borderRadius="full"
-                                  boxSize="30px"
-                                  mr={3}
-                                  alt={item.id}
-                                />
-                              ) : (
-                                <Icon
-                                  as={AiOutlineSearch}
-                                  fontSize={30}
-                                  mr={3}
-                                  color="blue.500"
-                                />
-                              )}
-                              <Flex direction="column">
-                                <Text fontWeight={600}>{item.id}</Text>
-                                <Text fontSize="xs" color="gray.500">
-                                  {item.numberOfMembers} members
-                                </Text>
-                              </Flex>
-                            </Flex>
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-
-                    {results.posts.length > 0 && (
-                      <Box>
-                        <Text
-                          fontWeight={700}
-                          color="gray.500"
-                          fontSize="sm"
-                          mb={2}
-                          textTransform="uppercase"
-                        >
-                          Posts
-                        </Text>
-                        <Stack gap={2}>
-                          {results.posts.map((item) => (
-                            <Flex
-                              key={item.id}
-                              direction="column"
-                              p={2}
-                              _hover={{ bg: "gray.100" }}
-                              _dark={{ _hover: { bg: "gray.700" } }}
-                              cursor="pointer"
-                              borderRadius="xl"
-                              onClick={() => onSelectPost(item)}
-                            >
-                              <Text fontWeight={600}>{item.title}</Text>
+          {searchTerm && (
+            <Box mt={4} maxHeight="60vh" overflowY="auto">
+              {loading ? (
+                <Flex justify="center" p={4}>
+                  <Spinner />
+                </Flex>
+              ) : (
+                <Stack gap={4}>
+                  {results.communities.length > 0 && (
+                    <Box>
+                      <Text
+                        fontWeight={700}
+                        color="gray.500"
+                        fontSize="sm"
+                        mb={2}
+                        textTransform="uppercase"
+                      >
+                        Communities
+                      </Text>
+                      <Stack gap={2}>
+                        {results.communities.map((item) => (
+                          <Flex
+                            key={item.id}
+                            align="center"
+                            p={2}
+                            _hover={{ bg: "gray.100" }}
+                            _dark={{ _hover: { bg: "gray.700" } }}
+                            cursor="pointer"
+                            borderRadius="xl"
+                            onClick={() => onSelectCommunity(item.id)}
+                          >
+                            {item.imageURL ? (
+                              <Image
+                                src={item.imageURL}
+                                borderRadius="full"
+                                boxSize="30px"
+                                mr={3}
+                                alt={item.id}
+                              />
+                            ) : (
+                              <Icon
+                                as={AiOutlineSearch}
+                                fontSize={30}
+                                mr={3}
+                                color="blue.500"
+                              />
+                            )}
+                            <Flex direction="column">
+                              <Text fontWeight={600}>{item.id}</Text>
                               <Text fontSize="xs" color="gray.500">
-                                {item.communityId} • Posted by u/
-                                {item.creatorUsername}{" "}
-                                {moment(
-                                  new Date(item.createTime?.seconds * 1000)
-                                ).fromNow()}
+                                {item.numberOfMembers} members
                               </Text>
                             </Flex>
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
+                          </Flex>
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
 
-                    {results.communities.length === 0 &&
-                      results.posts.length === 0 && (
-                        <Flex justify="center" p={4}>
-                          <Text color="gray.500">No results found</Text>
-                        </Flex>
-                      )}
-                  </Stack>
-                )}
-              </Box>
-            )}
-          </DialogBody>
-        </Box>
-      </DialogPositioner>
-    </DialogRoot>
+                  {results.posts.length > 0 && (
+                    <Box>
+                      <Text
+                        fontWeight={700}
+                        color="gray.500"
+                        fontSize="sm"
+                        mb={2}
+                        textTransform="uppercase"
+                      >
+                        Posts
+                      </Text>
+                      <Stack gap={2}>
+                        {results.posts.map((item) => (
+                          <Flex
+                            key={item.id}
+                            direction="column"
+                            p={2}
+                            _hover={{ bg: "gray.100" }}
+                            _dark={{ _hover: { bg: "gray.700" } }}
+                            cursor="pointer"
+                            borderRadius="xl"
+                            onClick={() => onSelectPost(item)}
+                          >
+                            <Text fontWeight={600}>{item.title}</Text>
+                            <Text fontSize="xs" color="gray.500">
+                              {item.communityId} • Posted by u/
+                              {item.creatorUsername}{" "}
+                              {moment(
+                                new Date(item.createTime?.seconds * 1000)
+                              ).fromNow()}
+                            </Text>
+                          </Flex>
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+
+                  {results.communities.length === 0 &&
+                    results.posts.length === 0 && (
+                      <Flex justify="center" p={4}>
+                        <Text color="gray.500">No results found</Text>
+                      </Flex>
+                    )}
+                </Stack>
+              )}
+            </Box>
+          )}
+        </Dialog.Body>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

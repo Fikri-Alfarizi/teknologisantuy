@@ -1,5 +1,6 @@
 import React from "react";
-import { MenuTrigger, Flex, Icon, Image, Text } from "@chakra-ui/react";
+import { Menu } from "@/components/ui/menu";
+import { Flex, Icon, Image, Text } from "@chakra-ui/react";
 import { User } from "firebase/auth";
 import { MdAccountCircle } from "react-icons/md";
 import { VscAccount } from "react-icons/vsc";
@@ -20,7 +21,7 @@ const UserMenuButton: React.FC<UserMenuButtonProps> = ({
   user,
   isMenuOpen,
 }) => (
-  <MenuTrigger
+  <Menu.Trigger
     cursor="pointer"
     height="100%"
     padding="0px 6px"
@@ -63,7 +64,7 @@ const UserMenuButton: React.FC<UserMenuButtonProps> = ({
       )}
       {isMenuOpen ? <FiChevronUp /> : <FiChevronDown />}
     </Flex>
-  </MenuTrigger>
+  </Menu.Trigger>
 );
 
 export default UserMenuButton;

@@ -1,7 +1,7 @@
 import { firestore } from "@/firebase/forum/clientApp";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 
-import { AdminUser } from "../../types/adminUser";
+import { AdminUser } from "@/types/adminUser";
 
 /**
  * Performs a prefix search for users by their email address.

@@ -4,18 +4,10 @@ import useCommunityPrivacy from "@/hooks/community/useCommunityPrivacy";
 import useDeleteCommunity from "@/hooks/community/useDeleteCommunity";
 import useCustomToast from "@/hooks/useCustomToast";
 import useSelectFile from "@/hooks/useSelectFile";
+import { Dialog } from "@/components/ui/dialog";
+import { Tabs } from "@/components/ui/tabs";
 import {
   Box,
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
-  Portal,
-  Tabs,
 } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import React, { useRef, useState } from "react";
@@ -88,80 +80,75 @@ const CommunitySettingsModal: React.FC<CommunitySettingsModalProps> = ({
   };
 
   return (
-    <DialogRoot
+    <Dialog.Root
       open={open}
       onOpenChange={({ open }: { open: boolean }) => {
         if (!open) handleClose();
       }}
     >
-      <Portal>
-        <DialogBackdrop bg="rgba(0, 0, 0, 0.4)" backdropFilter="blur(6px)" />
-        <DialogPositioner>
-          <DialogContent borderRadius={10}>
-            <DialogHeader
-              display="flex"
-              flexDirection="column"
-              padding={3}
-              textAlign="center"
-            >
-              <DialogTitle>Community Settings</DialogTitle>
-            </DialogHeader>
-            <Box>
-              <DialogCloseTrigger position="absolute" top={2} right={2} />
-              <DialogBody
-                display="flex"
-                flexDirection="column"
-                padding="10px 0px"
-              >
-                <Tabs.Root defaultValue="profile" variant="line" fitted>
-                  <Tabs.List mb={4}>
-                    <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
-                    <Tabs.Trigger value="privacy">Privacy</Tabs.Trigger>
-                    <Tabs.Trigger value="admins">Admins</Tabs.Trigger>
-                    <Tabs.Trigger value="danger">Danger Zone</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="profile" p={5}>
-                    <ImageSettings
-                      selectedFile={selectedFile || ""}
-                      onSelectFile={onSelectFile}
-                      selectFileRef={selectFileRef}
-                      currentCommunity={
-                        communityStateValue.currentCommunity || null
-                      }
-                      deleteImage={deleteImage}
-                      setDeleteImage={setDeleteImage}
-                    />
-                  </Tabs.Content>
-                  <Tabs.Content value="privacy" p={5}>
-                    <PrivacySettings
-                      currentCommunity={
-                        communityStateValue.currentCommunity || null
-                      }
-                      selectedPrivacyType={selectedPrivacyType}
-                      handlePrivacyTypeChange={handlePrivacyTypeChange}
-                    />
-                  </Tabs.Content>
-                  <Tabs.Content value="admins" p={5}>
-                    <AdminManager
-                      communityData={
-                        communityStateValue.currentCommunity || communityData
-                      }
-                    />
-                  </Tabs.Content>
-                  <Tabs.Content value="danger" p={5}>
-                    <DangerZone
-                      deleteCommunity={deleteCommunity}
-                      loading={loading}
-                    />
-                  </Tabs.Content>
-                </Tabs.Root>
-              </DialogBody>
-            </Box>
-            <ModalFooter onCancel={closeModal} onSave={handleSaveButtonClick} />
-          </DialogContent>
-        </DialogPositioner>
-      </Portal>
-    </DialogRoot>
+      <Dialog.Content borderRadius={10}>
+        <Dialog.Header
+          display="flex"
+          flexDirection="column"
+          padding={3}
+          textAlign="center"
+        >
+          <Dialog.Title>Community Settings</Dialog.Title>
+        </Dialog.Header>
+        <Box>
+          <Dialog.CloseTrigger position="absolute" top={2} right={2} />
+          <Dialog.Body
+            display="flex"
+            flexDirection="column"
+            padding="10px 0px"
+          >
+            <Tabs.Root defaultValue="profile" variant="line">
+              <Tabs.List mb={4}>
+                <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
+                <Tabs.Trigger value="privacy">Privacy</Tabs.Trigger>
+                <Tabs.Trigger value="admins">Admins</Tabs.Trigger>
+                <Tabs.Trigger value="danger">Danger Zone</Tabs.Trigger>
+              </Tabs.List>
+              <Tabs.Content value="profile" p={5}>
+                <ImageSettings
+                  selectedFile={selectedFile || ""}
+                  onSelectFile={onSelectFile}
+                  selectFileRef={selectFileRef}
+                  currentCommunity={
+                    communityStateValue.currentCommunity || null
+                  }
+                  deleteImage={deleteImage}
+                  setDeleteImage={setDeleteImage}
+                />
+              </Tabs.Content>
+              <Tabs.Content value="privacy" p={5}>
+                <PrivacySettings
+                  currentCommunity={
+                    communityStateValue.currentCommunity || null
+                  }
+                  selectedPrivacyType={selectedPrivacyType}
+                  handlePrivacyTypeChange={handlePrivacyTypeChange}
+                />
+              </Tabs.Content>
+              <Tabs.Content value="admins" p={5}>
+                <AdminManager
+                  communityData={
+                    communityStateValue.currentCommunity || communityData
+                  }
+                />
+              </Tabs.Content>
+              <Tabs.Content value="danger" p={5}>
+                <DangerZone
+                  deleteCommunity={deleteCommunity}
+                  loading={loading}
+                />
+              </Tabs.Content>
+            </Tabs.Root>
+          </Dialog.Body>
+        </Box>
+        <ModalFooter onCancel={closeModal} onSave={handleSaveButtonClick} />
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

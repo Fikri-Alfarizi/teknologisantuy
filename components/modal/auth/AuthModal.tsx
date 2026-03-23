@@ -1,20 +1,9 @@
 "use client";
 
-/* eslint-disable react-hooks/exhaustive-deps */
+import { Dialog } from "@/components/ui/dialog";
 import { authModalStateAtom } from "@/atoms/authModalAtom";
 import { auth } from "@/firebase/forum/clientApp";
-import {
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
-  Flex,
-  Separator,
-} from "@chakra-ui/react";
+import { Flex, Separator } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -30,84 +19,67 @@ import OAuthButtons from "./oauth-buttons/OAuthButtons";
  */
 const AuthModal: React.FC = () => {
   const [modalState, setModalState] = useAtom(authModalStateAtom);
-  /**
-   * Keeps track of whether a user is authenticated via Firebase.
-   * It returns the `user` details, if it fails then `null` is stored.
-   * While communicating with Firebase, `loading` (boolean) is set to `true` and
-   * once the communication is complete it is set to `false`.
-   * `error` is null until an error takes place while communicating with Firebase.
-   */
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
-  /**
-   * If a user is authenticated, the modal will automatically close.
-   * This is used after signing up or logging in as once the user is authenticated,
-   * the modal does not need to be open.
-   */
   useEffect(() => {
     if (user) handleClose();
   }, [user]);
 
-  /**
-   * Closes the authentication modal by setting its state to `open` state to false.
-   */
   const handleClose = () => {
     setModalState((prev) => ({
       ...prev,
       open: false,
     }));
   };
+
   return (
-    <DialogRoot
+    <Dialog.Root
       open={modalState.open}
       onOpenChange={({ open }: { open: boolean }) => {
         if (!open) handleClose();
       }}
     >
-      <DialogBackdrop bg="rgba(0, 0, 0, 0.4)" backdropFilter="blur(6px)" />
-      <DialogPositioner>
-        <DialogContent borderRadius={10} maxW="400px">
-          <DialogHeader textAlign="center" display="flex" justifyContent="center">
-            <DialogTitle textAlign="center" width="100%">
-              {modalState.view === "login" && "Login"}
-              {modalState.view === "signup" && "Sign Up"}
-              {modalState.view === "resetPassword" && "Reset Password"}
-            </DialogTitle>
-          </DialogHeader>
+      <Dialog.Content maxW="400px">
+        <Dialog.Header textAlign="center" display="flex" justifyContent="center">
+          <Dialog.Title textAlign="center" width="100%">
+            {modalState.view === "login" && "Login"}
+            {modalState.view === "signup" && "Sign Up"}
+            {modalState.view === "resetPassword" && "Reset Password"}
+          </Dialog.Title>
+        </Dialog.Header>
 
-          <DialogCloseTrigger position="absolute" top={2} right={2} />
+        <Dialog.CloseTrigger />
 
-          <DialogBody
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            pb={6}
+        <Dialog.Body
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          pb={6}
+        >
+          <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            width="100%"
+            maxW="340px"
           >
-            <Flex
-              direction="column"
-              align="center"
-              justify="center"
-              width="100%"
-              maxW="340px"
-            >
-              {/* If user is trying to authenticate (log in or sign up) */}
-              {modalState.view === "login" || modalState.view === "signup" ? (
-                <>
-                  <OAuthButtons />
-                  {/* <Text color='gray.500' fontWeight={700}>OR</Text> */}
-                  <Separator />
-                  <AuthInputs />
-                </>
-              ) : (
-                // If user is trying to reset password
-                <ResetPassword />
-              )}
-            </Flex>
-          </DialogBody>
-        </DialogContent>
-      </DialogPositioner>
-    </DialogRoot>
+            {/* If user is trying to authenticate (log in or sign up) */}
+            {modalState.view === "login" || modalState.view === "signup" ? (
+              <>
+                <OAuthButtons />
+                {/* <Text color='gray.500' fontWeight={700}>OR</Text> */}
+                <Separator />
+                <AuthInputs />
+              </>
+            ) : (
+              // If user is trying to reset password
+              <ResetPassword />
+            )}
+          </Flex>
+        </Dialog.Body>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 export default AuthModal;

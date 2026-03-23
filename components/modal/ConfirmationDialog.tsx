@@ -1,17 +1,5 @@
-import {
-  Button,
-  DialogActionTrigger,
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
-  Portal,
-} from "@chakra-ui/react";
+import { Dialog } from "@/components/ui/dialog";
+import { Button } from "@chakra-ui/react";
 import React from "react";
 
 interface ConfirmationDialogProps {
@@ -49,57 +37,43 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   isLoading = false,
 }) => {
   return (
-    <DialogRoot
+    <Dialog.Root
       open={open}
       onOpenChange={(details: { open: boolean }) => !details.open && onClose()}
       placement="center"
     >
-      <Portal>
-        <DialogBackdrop />
-        {/* @ts-expect-error - Chakra UI v3 DialogPositioner type doesn't properly reflect children prop */}
-        <DialogPositioner>
-          {/* @ts-expect-error - Chakra UI v3 DialogContent type doesn't properly reflect children prop */}
-          <DialogContent borderRadius={"xl"}>
-            <DialogHeader>
-              {/* @ts-expect-error - Chakra UI v3 DialogTitle type doesn't properly reflect children prop */}
-              <DialogTitle>{title}</DialogTitle>
-            </DialogHeader>
-            <DialogBody>{body}</DialogBody>
-            <DialogFooter>
-              <DialogActionTrigger asChild>
-                <Button
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClose();
-                  }}
-                  disabled={isLoading}
-                >
-                  {cancelButtonText}
-                </Button>
-              </DialogActionTrigger>
-              <Button
-                colorPalette="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onConfirm();
-                }}
-                loading={isLoading}
-              >
-                {confirmButtonText}
-              </Button>
-            </DialogFooter>
-            {/* @ts-expect-error - Chakra UI v3 DialogCloseTrigger doesn't accept onClick prop */}
-            <DialogCloseTrigger
+      <Dialog.Content borderRadius={"xl"}>
+        <Dialog.Header>
+          <Dialog.Title>{title}</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body>{body}</Dialog.Body>
+        <Dialog.Footer>
+          <Dialog.ActionTrigger asChild>
+            <Button
+              variant="outline"
               onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 onClose();
               }}
-            />
-          </DialogContent>
-        </DialogPositioner>
-      </Portal>
-    </DialogRoot>
+              disabled={isLoading}
+            >
+              {cancelButtonText}
+            </Button>
+          </Dialog.ActionTrigger>
+          <Button
+            colorPalette="red"
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              onConfirm();
+            }}
+            loading={isLoading}
+          >
+            {confirmButtonText}
+          </Button>
+        </Dialog.Footer>
+        <Dialog.CloseTrigger />
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 

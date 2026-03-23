@@ -1,17 +1,9 @@
 import { auth } from "@/firebase/forum/clientApp";
 import useSelectFile from "@/hooks/useSelectFile";
 import useUserProfile from "@/hooks/useUserProfile";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Button,
-  DialogBackdrop,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogPositioner,
-  DialogRoot,
-  DialogTitle,
   Stack,
 } from "@chakra-ui/react";
 import React, { useRef, useState, useEffect } from "react";
@@ -84,81 +76,78 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ open, handleClose }) => {
   };
 
   return (
-    <DialogRoot
+    <Dialog.Root
       open={open}
       onOpenChange={({ open }: { open: boolean }) => {
         if (!open) handleClose();
       }}
     >
-      <DialogBackdrop bg="rgba(0, 0, 0, 0.4)" backdropFilter="blur(6px)" />
-      <DialogPositioner>
-        <DialogContent borderRadius={10}>
-          <DialogHeader
-            display="flex"
-            flexDirection="column"
-            padding={3}
-            textAlign="center"
-          >
-            <DialogTitle>Profile</DialogTitle>
-          </DialogHeader>
-          <DialogCloseTrigger position="absolute" top={2} right={2} />
-          <DialogBody display="flex" flexDirection="column" padding="10px 0px">
-            <Stack p={5} gap={5}>
-              <UserImageSection
-                user={user}
-                selectedFile={selectedFile}
-                isEditing={isEditing}
-                selectFileRef={selectFileRef}
-                onSelectFile={onSelectFile}
-                setDeleteImage={setDeleteImage}
-                deleteImage={deleteImage}
-              />
-              <UserInfoSection
-                user={user}
-                isEditing={isEditing}
-                register={register}
-                errors={errors}
-              />
-            </Stack>
-          </DialogBody>
-          <DialogFooter
-            bg={{ base: "gray.100", _dark: "gray.700" }}
-            borderRadius="0px 0px 10px 10px"
-          >
-            <Stack direction="row" width="100%" gap={2}>
+      <Dialog.Content borderRadius={10}>
+        <Dialog.Header
+          display="flex"
+          flexDirection="column"
+          padding={3}
+          textAlign="center"
+        >
+          <Dialog.Title>Profile</Dialog.Title>
+        </Dialog.Header>
+        <Dialog.CloseTrigger position="absolute" top={2} right={2} />
+        <Dialog.Body display="flex" flexDirection="column" padding="10px 0px">
+          <Stack p={5} gap={5}>
+            <UserImageSection
+              user={user}
+              selectedFile={selectedFile}
+              isEditing={isEditing}
+              selectFileRef={selectFileRef}
+              onSelectFile={onSelectFile}
+              setDeleteImage={setDeleteImage}
+              deleteImage={deleteImage}
+            />
+            <UserInfoSection
+              user={user}
+              isEditing={isEditing}
+              register={register}
+              errors={errors}
+            />
+          </Stack>
+        </Dialog.Body>
+        <Dialog.Footer
+          bg={{ base: "gray.100", _dark: "gray.700" }}
+          borderRadius="0px 0px 10px 10px"
+        >
+          <Stack direction="row" width="100%" gap={2}>
+            <Button
+              variant="outline"
+              height="30px"
+              flex={1}
+              onClick={closeModal}
+            >
+              Cancel
+            </Button>
+            {isEditing ? (
               <Button
-                variant="outline"
                 height="30px"
                 flex={1}
-                onClick={closeModal}
+                onClick={handleSubmit(onUpdateProfile)}
+                loading={loading}
               >
-                Cancel
+                Save
               </Button>
-              {isEditing ? (
-                <Button
-                  height="30px"
-                  flex={1}
-                  onClick={handleSubmit(onUpdateProfile)}
-                  loading={loading}
-                >
-                  Save
-                </Button>
-              ) : (
-                <Button
-                  height="30px"
-                  flex={1}
-                  onClick={() => {
-                    setIsEditing(true);
-                  }}
-                >
-                  Edit
-                </Button>
-              )}
-            </Stack>
-          </DialogFooter>
-        </DialogContent>
-      </DialogPositioner>
-    </DialogRoot>
+            ) : (
+              <Button
+                height="30px"
+                flex={1}
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+          </Stack>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 export default ProfileModal;
