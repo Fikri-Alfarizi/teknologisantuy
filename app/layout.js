@@ -22,7 +22,7 @@ export const metadata = {
     template: "%s | Teknologi Santuy",
   },
   verification: {
-    google: "RatMErj_Lie9QEYdMlJ1JIxsIhjZ8wB8DEI1avqVDbI",
+    google: "I3zt-MSPUmdjSsmJ-p0XwobSX-Jf0vefeOnF-_Hk3-c",
   },
   description:
     "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari. Santuy, jelas, anti ribet.",
