@@ -2,6 +2,8 @@ import { getCommunityData } from "@/lib/forum/community/getCommunityData";
 import { notFound } from "next/navigation";
 import SubmitPostClientPage from "./SubmitPostClientPage";
 
+export const dynamic = "force-dynamic";
+
 /**
  * A server-side page component for the post submission route.
  * Fetches the target community's data to ensure it exists and to provide context for the submission form.

@@ -2,6 +2,8 @@ import { getCommunityData } from "@/lib/forum/community/getCommunityData";
 import { notFound } from "next/navigation";
 import CommunityClientPage from "./comments/CommunityClientPage";
 
+export const dynamic = "force-dynamic";
+
 /**
  * A server-side page component that fetches data for a specific community.
  * Validates the community ID and handles error states or non-existent communities by showing a 404 page.

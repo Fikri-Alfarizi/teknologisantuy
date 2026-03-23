@@ -3,6 +3,8 @@ import { getPost } from "@/lib/forum/post/getPost";
 import { notFound } from "next/navigation";
 import PostClientPage from "./PostClientPage";
 
+export const dynamic = "force-dynamic";
+
 /**
  * A server-side page component for viewing a single post and its comments.
  * Fetches both the community and post data to provide full context for the client page.
