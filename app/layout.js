@@ -21,6 +21,9 @@ export const metadata = {
     default: "Teknologi Santuy - Game Gratis & Tutorial IT",
     template: "%s | Teknologi Santuy",
   },
+  verification: {
+    google: "RatMErj_Lie9QEYdMlJ1JIxsIhjZ8wB8DEI1avqVDbI",
+  },
   description:
     "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari. Santuy, jelas, anti ribet.",
   keywords: [
