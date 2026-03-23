@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://teknologisantuy.vercel.app/sitemap.xml

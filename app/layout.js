@@ -16,8 +16,57 @@ const archivoBlack = Archivo_Black({
 });
 
 export const metadata = {
-  title: "Teknologi Santuy - Game Gratis & Tutorial IT",
-  description: "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari. Santuy, jelas, anti ribet.",
+  metadataBase: new URL("https://teknologisantuy.vercel.app"),
+  title: {
+    default: "Teknologi Santuy - Game Gratis & Tutorial IT",
+    template: "%s | Teknologi Santuy",
+  },
+  description:
+    "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari. Santuy, jelas, anti ribet.",
+  keywords: [
+    "Teknologi Santuy",
+    "Download Game Gratis",
+    "Tutorial IT",
+    "Tips Gadget",
+    "Forum Game Indonesia",
+  ],
+  authors: [{ name: "Fikri Alfarizi" }],
+  creator: "Fikri Alfarizi",
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "https://teknologisantuy.vercel.app",
+    title: "Teknologi Santuy - Game Gratis & Tutorial IT",
+    description:
+      "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari.",
+    siteName: "Teknologi Santuy",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Teknologi Santuy Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Teknologi Santuy - Game Gratis & Tutorial IT",
+    description:
+      "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari.",
+    images: ["/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
