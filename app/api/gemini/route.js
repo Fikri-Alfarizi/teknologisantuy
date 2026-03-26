@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { fetchBloggerPosts } from '@/lib/blogger';
 
-const ai = new GoogleGenAI({ apiKey: 'AIzaSyB-P-grxQGiEu2azHNi17UYqtBtkJEONW8' });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Cache site data for 5 minutes
 let cachedSiteData = null;
