@@ -1,12 +1,5 @@
 import Link from 'next/link';
-import crypto from 'crypto';
 import GameSearchBar from '@/app/components/GameSearchBar';
-
-// Encode game ID into a random-looking token for article URL
-function encodeGameId(gameId) {
-  const salt = crypto.randomBytes(6).toString('hex');
-  return Buffer.from(`${salt}::${gameId}::${Date.now()}`).toString('base64url');
-}
 
 async function getDiscordGames(beforeCursor) {
   const token = process.env.DISCORD_BOT_TOKEN;
@@ -289,7 +282,7 @@ export default async function GamePage({ searchParams }) {
                     </div>
                   </div>
                   
-                  <Link href={`/artikel/${encodeGameId(item.id)}`} style={{
+                  <a href={item.link} target="_blank" rel="noopener noreferrer" style={{
                     marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '12px 16px', background: 'var(--yellow)',
                     border: '2px solid #000', borderRadius: '8px',
@@ -298,7 +291,7 @@ export default async function GamePage({ searchParams }) {
                     boxShadow: '3px 3px 0px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
                   }} className="game-download-btn">
                     <i className="fa-solid fa-download" style={{ marginRight: '8px' }}></i> Download Sekarang
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}
