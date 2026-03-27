@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { FaTachometerAlt, FaUsers, FaCommentAlt, FaSignOutAlt, FaRocket, FaGlobe, FaNewspaper, FaGamepad } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaCommentAlt, FaSignOutAlt, FaRocket, FaGlobe, FaNewspaper, FaGamepad, FaChartBar, FaEnvelope } from 'react-icons/fa';
 
 export default function AdminLayout({ children, activeTab = 'dashboard' }) {
   const { userProfile, signOut } = useAuth();
@@ -17,6 +17,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
     { id: 'feedback', label: 'Feedback & Suara', icon: <FaCommentAlt />, href: `/${adminPath}/feedback` },
     { id: 'news', label: 'Manajemen Berita', icon: <FaNewspaper />, href: `/${adminPath}/news` },
     { id: 'game-manager', label: 'Kelola Game', icon: <FaGamepad />, href: `/${adminPath}/game-manager` },
+    { id: 'analytics-detail', label: 'Analitik Lanjut', icon: <FaChartBar />, href: `/${adminPath}/analytics-detail` },
+    { id: 'contact-inbox', label: 'Kontak Masuk', icon: <FaEnvelope />, href: `/${adminPath}/contact-inbox` },
   ];
 
   return (

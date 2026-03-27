@@ -1,37 +1,52 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getDashboardStats, getAnalyticsStats } from '@/app/actions/adminActions';
-import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink } from 'react-icons/fa';
+import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/actions/adminActions';
+import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
   const [analytics, setAnalytics] = useState(null);
+  const [popularity, setPopularity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const [statsRes, analyticsRes] = await Promise.all([
-        getDashboardStats(),
-        getAnalyticsStats()
-      ]);
+      try {
+        const [statsRes, analyticsRes, popularityRes] = await Promise.all([
+          getDashboardStats(),
+          getAnalyticsStats(),
+          getGamePopularity()
+        ]);
 
-      if (statsRes.success) setData(statsRes.data);
-      if (analyticsRes.success) setAnalytics(analyticsRes.data);
-      
-      setLoading(false);
+        if (statsRes.success) setData(statsRes.data);
+        if (analyticsRes.success) setAnalytics(analyticsRes.data);
+        if (popularityRes.success) setPopularity(popularityRes.data);
+      } catch (err) {
+        console.error("Dashboard Load Error:", err);
+      } finally {
+        setLoading(false);
+      }
     }
     loadData();
   }, []);
 
-  if (loading) return <div style={{ fontWeight: 800, textTransform: 'uppercase', color: '#666' }}>Syncing Data...</div>;
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
+      <div style={{ fontWeight: 800, textTransform: 'uppercase', color: '#000', fontSize: '20px', letterSpacing: '2px' }}>
+        <div style={{ width: '40px', height: '40px', border: '6px solid #000', borderTopColor: '#ffe600', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }}></div>
+        Syncing Engine...
+      </div>
+      <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
-  const { stats, latestFeedback, totalUsers } = data;
+  const { stats, latestFeedback, totalUsers } = data || { stats: { totalVotes: 0, yesVotes: 0, noVotes: 0, feedbackCount: 0 }, latestFeedback: [], totalUsers: 0 };
   const yesPercent = stats.totalVotes > 0 ? Math.round((stats.yesVotes / stats.totalVotes) * 100) : 0;
   const noPercent = stats.totalVotes > 0 ? Math.round((stats.noVotes / stats.totalVotes) * 100) : 0;
 
   return (
-    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '30px', color: '#000' }}>
       {/* Stats Cards - Unified Yellow/White Palette */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
          <StatBox 
@@ -52,7 +67,6 @@ export default function AdminDashboard() {
          />
       </div>
 
-      {/* Analytics Rows */}
       {/* Analytics Rows */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '30px' }}>
           {/* World Traffic Tracking */}
@@ -76,9 +90,9 @@ export default function AdminDashboard() {
               🔗 Sumber Traffic
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-               <SourceBox icon={<FaFacebook color="#1877F2" />} label="Facebook" count={analytics?.sources.Facebook || 0} total={analytics?.totalViews || 1} color="#1877F2" />
-               <SourceBox icon={<FaInstagram color="#E4405F" />} label="Instagram" count={analytics?.sources.Instagram || 0} total={analytics?.totalViews || 1} color="#E4405F" />
-               <SourceBox icon={<FaLink color="#333" />} label="Direct / Other" count={(analytics?.sources.Direct || 0) + (analytics?.sources.Other || 0)} total={analytics?.totalViews || 1} color="#333" />
+               <SourceBox icon={<FaFacebook color="#1877F2" />} label="Facebook" count={analytics?.sources?.Facebook || 0} total={analytics?.totalViews || 1} color="#1877F2" />
+               <SourceBox icon={<FaInstagram color="#E4405F" />} label="Instagram" count={analytics?.sources?.Instagram || 0} total={analytics?.totalViews || 1} color="#E4405F" />
+               <SourceBox icon={<FaLink color="#333" />} label="Direct / Other" count={(analytics?.sources?.Direct || 0) + (analytics?.sources?.Other || 0)} total={analytics?.totalViews || 1} color="#333" />
             </div>
           </div>
 
@@ -97,6 +111,26 @@ export default function AdminDashboard() {
             </div>
           </div>
       </div>
+
+      {/* Game Popularity Section */}
+      <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', padding: '30px' }}>
+          <h3 style={{ margin: '0 0 25px', fontSize: '16px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '12px', color: '#000', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaGamepad /> Game Paling Populer (Klik)
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+             {popularity.slice(0, 10).map((game, i) => (
+                <div key={i} style={{ 
+                  background: i === 0 ? '#ffe600' : '#f9f9f9', 
+                  border: '2px solid #000', padding: '15px', position: 'relative'
+                }}>
+                   <div style={{ fontSize: '24px', fontWeight: 950, marginBottom: '5px' }}>{game.clicks}</div>
+                   <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', color: '#444' }}>{game.title || 'Unknown Game'}</div>
+                   <div style={{ position: 'absolute', right: '10px', bottom: '10px', opacity: 0.1, fontSize: '30px' }}><FaChartLine /></div>
+                </div>
+             ))}
+             {popularity.length === 0 && <p style={{ fontWeight: 800 }}>Belum ada data klik.</p>}
+          </div>
+       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
          {/* Vote Breakdown */}
@@ -192,7 +226,7 @@ function ProgressBar({ label, percent, color, fontColor = '#000' }) {
 }
 
 function SourceBox({ icon, label, count, total, color }) {
-  const percent = Math.round((count / total) * 100);
+  const percent = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
     <div style={{ border: '2px solid #000', padding: '10px', display: 'flex', alignItems: 'center', gap: '15px', color: '#000' }}>
       <div style={{ fontSize: '24px' }}>{icon}</div>

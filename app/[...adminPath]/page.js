@@ -9,6 +9,8 @@ import UserManagement from '@/components/admin/UserManagement';
 import FeedbackHistory from '@/components/admin/FeedbackHistory';
 import NewsManagement from '@/components/admin/NewsManagement';
 import GameManagement from '@/components/admin/GameManagement';
+import AnalyticsDetail from '@/components/admin/AnalyticsDetail';
+import ContactInbox from '@/components/admin/ContactInbox';
 
 export default function AdminSecretPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -70,6 +72,8 @@ export default function AdminSecretPage({ params: paramsPromise }) {
       case 'feedback': return <FeedbackHistory />;
       case 'news': return <NewsManagement />;
       case 'game-manager': return <GameManagement />;
+      case 'analytics-detail': return <AnalyticsDetail />;
+      case 'contact-inbox': return <ContactInbox />;
       default: return <AdminDashboard />;
     }
   };

@@ -171,10 +171,59 @@ export async function getAnalyticsStats() {
 
     return { 
       success: true, 
-      data: { totalViews, countryData, sources, pageData } 
+      data: { totalViews, countryData, sources, pageData, allLogs: allLogs.sort((a, b) => b.timestamp?.toMillis() - a.timestamp?.toMillis()) } 
     };
   } catch (error) {
     console.error("Analytics Fetch Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Fetch game popularity based on click stats.
+ */
+export async function getGamePopularity() {
+  try {
+    const snap = await getDocs(collection(db, 'game_stats'));
+    const stats = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })).sort((a, b) => b.clicks - a.clicks);
+    return { success: true, data: stats };
+  } catch (error) {
+    console.error("Game Popularity Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Fetch all contact messages.
+ */
+export async function getContactMessages() {
+  try {
+    const q = query(collection(db, 'contact_messages'), orderBy('timestamp', 'desc'));
+    const snap = await getDocs(q);
+    const messages = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: doc.data().timestamp?.toDate().toISOString() || new Date().toISOString()
+    }));
+    return { success: true, data: messages };
+  } catch (error) {
+    console.error("Fetch Messages Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Delete a contact message.
+ */
+export async function deleteContactMessage(id) {
+  try {
+    await deleteDoc(doc(db, 'contact_messages', id));
+    return { success: true };
+  } catch (error) {
+    console.error("Delete Message Error:", error);
     return { success: false, error: error.message };
   }
 }
