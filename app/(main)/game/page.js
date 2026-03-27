@@ -282,7 +282,7 @@ export default async function GamePage({ searchParams }) {
                     </div>
                   </div>
                   
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" style={{
+                  <Link href={`/game/download/${item.id}`} style={{
                     marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '12px 16px', background: 'var(--yellow)',
                     border: '2px solid #000', borderRadius: '8px',
@@ -291,7 +291,7 @@ export default async function GamePage({ searchParams }) {
                     boxShadow: '3px 3px 0px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
                   }} className="game-download-btn">
                     <i className="fa-solid fa-download" style={{ marginRight: '8px' }}></i> Download Sekarang
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
