@@ -1,0 +1,332 @@
+/* ══════════════════════════════════════════
+   Artikel Page — News-Style / AdSense Safe
+   ══════════════════════════════════════════ */
+
+.artikel-page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 100px 20px 80px;
+  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+/* ── Breadcrumb ── */
+.artikel-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+}
+.artikel-breadcrumb a {
+  color: var(--yellow);
+  text-decoration: none;
+}
+
+/* ── Category Badge ── */
+.artikel-category {
+  display: inline-block;
+  padding: 5px 14px;
+  background: var(--yellow);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* ── Title ── */
+.artikel-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+/* ── Meta ── */
+.artikel-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.artikel-meta i { margin-right: 5px; }
+
+/* ── Featured Image ── */
+.artikel-featured-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.artikel-featured-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Body ── */
+.artikel-body h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 36px 0 16px;
+  padding-left: 14px;
+  border-left: 3px solid var(--yellow);
+}
+.artikel-body p {
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.75);
+}
+.artikel-body blockquote {
+  margin: 24px 0;
+  padding: 18px 24px;
+  background: rgba(255,255,255,0.03);
+  border-left: 4px solid var(--yellow);
+  border-radius: 0 10px 10px 0;
+  font-style: italic;
+  color: rgba(255,255,255,0.6);
+}
+.artikel-body ul, .artikel-body ol {
+  padding-left: 24px;
+  margin-bottom: 18px;
+}
+.artikel-body li {
+  margin-bottom: 8px;
+}
+.artikel-body li::marker {
+  color: var(--yellow);
+}
+
+/* ── Ad Slot ── */
+.artikel-ad-slot {
+  width: 100%;
+  min-height: 120px;
+  margin: 36px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.015);
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.08);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Countdown / Download Gate ── */
+.artikel-gate {
+  margin: 48px 0;
+  text-align: center;
+  padding: 48px 32px;
+  background: linear-gradient(145deg, rgba(255,230,0,0.04), rgba(0,100,255,0.04));
+  border: 2px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.artikel-gate h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.artikel-gate p {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Countdown Circle */
+.countdown-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+}
+.countdown-circle .cd-number {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--yellow);
+}
+.countdown-circle svg {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  transform: rotate(-90deg);
+}
+.countdown-circle svg circle {
+  fill: none;
+  stroke: var(--yellow);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* Download Button */
+.artikel-dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 48px;
+  background: var(--yellow);
+  color: var(--bg);
+  font-weight: 800;
+  font-size: 17px;
+  border: 3px solid #000;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  transition: all 0.2s;
+  cursor: pointer;
+  animation: dlPulse 2s ease-in-out infinite;
+}
+.artikel-dl-btn:hover {
+  transform: translate(-2px,-2px);
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+}
+@keyframes dlPulse {
+  0%, 100% { box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
+  50% { box-shadow: 4px 4px 20px rgba(255,230,0,0.3); }
+}
+
+/* Scroll Progress */
+.scroll-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+.scroll-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.scroll-progress-fill {
+  height: 100%;
+  background: var(--yellow);
+  border-radius: 10px;
+  transition: width 0.3s;
+  width: 0%;
+}
+
+/* ── Adblock Overlay ── */
+.adblock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+}
+.adblock-box {
+  background: var(--deep-blue, #0c1422);
+  border: 2px solid rgba(255,100,100,0.3);
+  border-radius: 20px;
+  padding: 48px 40px;
+  text-align: center;
+  max-width: 440px;
+  width: 90%;
+}
+.adblock-box i.shield {
+  font-size: 56px;
+  color: #ff6b6b;
+  margin-bottom: 20px;
+  display: block;
+}
+.adblock-box h2 {
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.adblock-box p {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.adblock-box .steps {
+  text-align: left;
+  background: rgba(0,0,0,0.3);
+  padding: 16px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.8;
+}
+.adblock-box .steps strong {
+  color: var(--yellow);
+}
+.adblock-box .reload-btn {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--yellow);
+  color: var(--bg);
+  font-weight: 700;
+  border: 2px solid #000;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* ── Loading ── */
+.artikel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: rgba(255,255,255,0.5);
+}
+.artikel-loading .spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.1);
+  border-top-color: var(--yellow);
+  border-radius: 50%;
+  animation: artSpin 0.8s linear infinite;
+}
+@keyframes artSpin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .artikel-page { padding-top: 88px; }
+  .artikel-title { font-size: 1.5rem; }
+  .artikel-dl-btn { width: 100%; justify-content: center; padding: 14px 24px; font-size: 15px; }
+  .adblock-box { padding: 32px 24px; }
+  .countdown-circle { width: 72px; height: 72px; }
+  .countdown-circle .cd-number { font-size: 26px; }
+}
