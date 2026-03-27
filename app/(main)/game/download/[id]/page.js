@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import './download-article.css';
+import '../download-article.css';
 
 export default function DownloadArticlePage() {
   const { id } = useParams();
