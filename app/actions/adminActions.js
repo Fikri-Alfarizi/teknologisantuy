@@ -169,9 +169,20 @@ export async function getAnalyticsStats() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    const serializedLogs = allLogs.map(log => ({
+      ...log,
+      timestamp: log.timestamp?.toMillis() || Date.now()
+    })).sort((a, b) => b.timestamp - a.timestamp);
+
     return { 
       success: true, 
-      data: { totalViews, countryData, sources, pageData, allLogs: allLogs.sort((a, b) => b.timestamp?.toMillis() - a.timestamp?.toMillis()) } 
+      data: { 
+        totalViews, 
+        countryData, 
+        sources, 
+        pageData, 
+        allLogs: serializedLogs 
+      } 
     };
   } catch (error) {
     console.error("Analytics Fetch Error:", error);
@@ -185,10 +196,15 @@ export async function getAnalyticsStats() {
 export async function getGamePopularity() {
   try {
     const snap = await getDocs(collection(db, 'game_stats'));
-    const stats = snap.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })).sort((a, b) => b.clicks - a.clicks);
+    const stats = snap.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title || 'Unknown Game',
+        clicks: data.clicks || 0,
+        lastClick: data.lastClick?.toMillis() || null
+      };
+    }).sort((a, b) => b.clicks - a.clicks);
     return { success: true, data: stats };
   } catch (error) {
     console.error("Game Popularity Error:", error);

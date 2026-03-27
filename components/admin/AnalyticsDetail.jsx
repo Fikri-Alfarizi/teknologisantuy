@@ -69,7 +69,7 @@ export default function AnalyticsDetail() {
                 <tr key={i} style={{ borderBottom: '2px solid #000', background: i % 2 === 0 ? '#fff' : '#f9f9f9', fontSize: '13px' }}>
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
-                      <FaClock size={12} /> {new Date(log.timestamp?.toMillis() || Date.now()).toLocaleString('id-ID')}
+                      <FaClock size={12} /> {new Date(log.timestamp || Date.now()).toLocaleString('id-ID')}
                     </div>
                   </td>
                   <td style={tdStyle}>
