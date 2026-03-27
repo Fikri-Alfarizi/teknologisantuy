@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import GameSearchBar from '@/app/components/GameSearchBar';
+import GameDownloadButton from './GameDownloadButton';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 async function getDiscordGames(beforeCursor) {
   const token = process.env.DISCORD_BOT_TOKEN;
@@ -27,13 +30,20 @@ async function getDiscordGames(beforeCursor) {
     const messages = await res.json();
     if (!messages || messages.length === 0) return { games: [], nextCursor: null };
     
+    // Fetch overrides from Firestore
+    const overridesSnap = await getDocs(collection(db, 'game_overrides'));
+    const overrides = {};
+    overridesSnap.forEach(doc => {
+      overrides[doc.id] = doc.data();
+    });
+
     // Parse messages
     const games = messages.map(msg => {
       const content = msg.content;
       const gameMatch = content.match(/GAME\s*:\s*(.+)/i);
       const sizeMatch = content.match(/SIZE\s*:\s*(.+)/i);
       const passMatch = content.match(/PASSWORD\s*:\s*(.+)/i);
-      const linkMatch = content.match(/https?:\/\/[^\s]+/i); // Matches gofile or any http link
+      const linkMatch = content.match(/https?:\/\/[^\s]+/i);
       
       const imageAttachment = msg.attachments.find(att => att.url && (att.content_type?.startsWith('image/') || att.url.match(/\.(jpeg|jpg|gif|png)$/i)));
       const embedImage = msg.embeds ? msg.embeds.find(e => e.type === 'image' || e.image || e.thumbnail) : null;
@@ -41,13 +51,12 @@ async function getDiscordGames(beforeCursor) {
       if (imageAttachment) imgUrl = imageAttachment.url;
       else if (embedImage) imgUrl = embedImage.image?.url || embedImage.thumbnail?.url || embedImage.url || '/logo.png';
       
-      // Also check if there's a standalone raw image link in the content
       if (imgUrl === '/logo.png') {
         const rawImgMatch = content.match(/https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)/i);
         if (rawImgMatch) imgUrl = rawImgMatch[0];
       }
 
-      return {
+      const baseData = {
         id: msg.id,
         title: gameMatch ? gameMatch[1].trim() : 'Unknown Game',
         size: sizeMatch ? sizeMatch[1].trim() : 'N/A',
@@ -56,7 +65,13 @@ async function getDiscordGames(beforeCursor) {
         image: imgUrl,
         timestamp: new Date(msg.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
       };
-    }).filter(g => g.title !== 'Unknown Game'); // Only keep valid game posts
+
+      // Merge with overrides
+      if (overrides[msg.id]) {
+        return { ...baseData, ...overrides[msg.id] };
+      }
+      return baseData;
+    }).filter(g => g.title !== 'Unknown Game');
     
     const nextCursor = messages.length === limit ? messages[messages.length - 1].id : null;
     
@@ -125,10 +140,26 @@ async function searchDiscordGames(query) {
       if (messages.length < 100) hasMore = false;
     }
     
+    // Fetch overrides from Firestore
+    const overridesSnap = await getDocs(collection(db, 'game_overrides'));
+    const overrides = {};
+    overridesSnap.forEach(doc => {
+      overrides[doc.id] = doc.data();
+    });
+
     // Perform local JSON text search
     const lowerQuery = query.toLowerCase();
     const searched = allGames.filter(g => g.title.toLowerCase().includes(lowerQuery) || g.size.toLowerCase().includes(lowerQuery));
-    return searched;
+
+    // Apply overrides to search results
+    const mergedResults = searched.map(g => {
+      if (overrides[g.id]) {
+        return { ...g, ...overrides[g.id] };
+      }
+      return g;
+    });
+
+    return mergedResults;
   } catch (e) {
     console.error("Error deep searching discord:", e);
     return [];
@@ -282,7 +313,7 @@ export default async function GamePage({ searchParams }) {
                     </div>
                   </div>
                   
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" style={{
+                   <GameDownloadButton game={item} style={{
                     marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '12px 16px', background: 'var(--yellow)',
                     border: '2px solid #000', borderRadius: '8px',
@@ -291,7 +322,7 @@ export default async function GamePage({ searchParams }) {
                     boxShadow: '3px 3px 0px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
                   }} className="game-download-btn">
                     <i className="fa-solid fa-download" style={{ marginRight: '8px' }}></i> Download Sekarang
-                  </a>
+                  </GameDownloadButton>
                 </div>
               </div>
             ))}
