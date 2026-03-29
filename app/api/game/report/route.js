@@ -18,9 +18,9 @@ export async function POST(req) {
     }
 
     const payload = {
-      username: "TechSantuy Monitor",
+      username: "Laporan Link Error",
       avatar_url: "https://teknologisantuy.vercel.app/logo.png",
-      content: "<@&1391262973166682121> 🚨 **Ada Laporan Error Baru!**", // Optional ping role, can be empty
+      content: "<@&1397971337099874354> 🚨 **Ada Laporan Error Baru!**", // Optional ping role, can be empty
       embeds: [
         {
           title: "🚨 LAPORAN LINK GAME MATI/ERROR",
