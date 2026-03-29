@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import GameSearchBar from '@/app/components/GameSearchBar';
 import GameDownloadButton from './GameDownloadButton';
+import ErrorReportClient from './ErrorReportClient';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
@@ -369,6 +370,9 @@ export default async function GamePage({ searchParams }) {
 
         </div>
       </section>
+
+      {/* ERROR REPORT MODAL LISTENER */}
+      <ErrorReportClient />
     </>
   );
 }

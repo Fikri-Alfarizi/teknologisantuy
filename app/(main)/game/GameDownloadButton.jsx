@@ -3,6 +3,9 @@
 export default function GameDownloadButton({ game, className, style, children }) {
   const handleClick = async (e) => {
     // We don't prevent default because we want the link to open in new tab
+    // Set sessionStorage to track for error reporting when user returns to this tab
+    sessionStorage.setItem('lastDownloadedGame', JSON.stringify(game));
+    
     // However, we trigger the tracking API asynchronously
     try {
       fetch('/api/game/click', {
