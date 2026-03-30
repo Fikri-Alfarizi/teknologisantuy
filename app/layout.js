@@ -1,6 +1,7 @@
 import { Space_Grotesk, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import GlobalEffects from './components/GlobalEffects';
+import ConsoleWatermark from './components/ConsoleWatermark';
 import Providers from './providers';
 import NextTopLoader from 'nextjs-toploader';
 
