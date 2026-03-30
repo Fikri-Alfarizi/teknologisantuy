@@ -11,7 +11,12 @@ export default function RequestGameDiscordUI() {
   const { user, userProfile } = useAuth();
   const [inputMessage, setInputMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  
   const messagesEndRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
   // Poll Discord messages every 3 seconds
   const { data: messages, mutate, isValidating } = useSWR('/api/discord/messages', fetcher, {
@@ -23,6 +28,41 @@ export default function RequestGameDiscordUI() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Handle Game Search
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setInputMessage(val);
+
+    if (val.length >= 3) {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      
+      searchTimeoutRef.current = setTimeout(async () => {
+        setIsSearching(true);
+        try {
+          const res = await fetch(`/api/game-search?q=${encodeURIComponent(val)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSearchResults(data.items || []);
+            setShowDropdown(true);
+          }
+        } catch (err) {
+          console.error('Failed to search games', err);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 500); // Debounce 500ms
+    } else {
+      setShowDropdown(false);
+      setSearchResults([]);
+    }
+  };
+
+  const selectGame = (gameName) => {
+    setInputMessage(`Tolong tambahkan game: ${gameName}`);
+    setShowDropdown(false);
+    setSearchResults([]);
+  };
 
   const handleSendMessage = async (e) => {
     e?.preventDefault();
@@ -167,13 +207,33 @@ export default function RequestGameDiscordUI() {
         </div>
 
         {/* Input Area */}
-        <div className="discord-input-area">
+        <div className="discord-input-area" style={{ position: 'relative' }}>
+          
+          {/* STEAM AUTOCOMPLETE DROPDOWN */}
+          {showDropdown && (
+            <div className="steam-autocomplete">
+              <div className="sa-header">Rekomendasi Pencarian Game (Steam)</div>
+              {isSearching ? (
+                <div className="sa-loading">Mencari...</div>
+              ) : searchResults.length > 0 ? (
+                searchResults.map(game => (
+                  <div key={game.id} className="sa-item" onClick={() => selectGame(game.name)}>
+                    <img src={game.tiny_image} alt={game.name} />
+                    <span>{game.name}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="sa-empty">Game tidak ditemukan di Steam. Teruskan mengetik jika ingin request manual.</div>
+              )}
+            </div>
+          )}
+
           <div className="discord-input-wrapper">
             <div className="discord-input-attach"><i className="fa-solid fa-circle-plus"></i></div>
             <textarea 
-              placeholder={`Message #request-game ${!user ? '(sebagai Anonymous)' : ''}`}
+              placeholder={`Ketik judul game atau request (Mulai ketik untuk mencari game di Steam)`}
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               rows={1}
             />
@@ -366,6 +426,46 @@ export default function RequestGameDiscordUI() {
         .discord-input-send:hover { opacity: 1; }
         .discord-input-send:disabled { color: #5c5e66; cursor: not-allowed; opacity: 1; }
 
+        /* Steam Autocomplete UI */
+        .steam-autocomplete {
+          position: absolute;
+          bottom: calc(100% - 10px);
+          left: 16px;
+          right: 16px;
+          background: #2b2d31;
+          border-radius: 8px;
+          border: 1px solid #1e1f22;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+          max-height: 250px;
+          overflow-y: auto;
+          z-index: 100;
+          margin-bottom: 8px;
+        }
+        .sa-header { padding: 8px 12px; font-size: 12px; font-weight: 700; color: #b5bac1; text-transform: uppercase; border-bottom: 1px solid #1e1f22; }
+        .sa-loading, .sa-empty { padding: 12px; color: #b5bac1; font-size: 14px; text-align: center; }
+        .sa-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; cursor: pointer; color: #dbdee1; transition: background 0.1s; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .sa-item:hover { background: #35373c; }
+        .sa-item:last-child { border-bottom: none; }
+        .sa-item img { width: 70px; height: 32px; object-fit: cover; border-radius: 4px; }
+        .sa-item span { font-weight: 600; font-size: 14px; }
+        
+        .steam-autocomplete::-webkit-scrollbar { width: 8px; }
+        .steam-autocomplete::-webkit-scrollbar-track { background: #2b2d31; border-radius: 4px; border: 2px solid #313338; }
+        .steam-autocomplete::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; }
+
+        /* Discord Tag Formatting */
+        .discord-tag {
+          background: rgba(88, 101, 242, 0.3);
+          color: #c9cdfb;
+          padding: 0 4px;
+          border-radius: 3px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.1s, color 0.1s;
+        }
+        .discord-tag:hover { background: #5865F2; color: #fff; }
+        .discord-emoji { width: 22px; height: 22px; vertical-align: bottom; display: inline-block; object-fit: contain; }
+
         @media (max-width: 768px) {
           .discord-sidebar { display: none; }
           .discord-layout { height: calc(100vh - 60px); }
@@ -375,11 +475,34 @@ export default function RequestGameDiscordUI() {
   );
 }
 
-// Helper to format URLs to clickable links
+// Helper to format Discord Content (URLs, Mentions, Emojis)
 function formatDiscordLinks(text) {
   if (!text) return '';
-  // simple URL regex
+  
+  // Escape HTML first to prevent XSS and prevent raw <@ tags from disappearing
+  let formatted = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  // Format URLs
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #00a8fc; text-decoration: none;">$1</a>')
-             .replace(/<a/g, '<a onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'"');
+  formatted = formatted.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #00a8fc; text-decoration: none;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">$1</a>');
+
+  // Format Custom Emojis: &lt;:name:id&gt; or &lt;a:name:id&gt; (since < and > were escaped)
+  const emojiRegex = /&lt;a?:(\w+):(\d+)&gt;/g;
+  formatted = formatted.replace(emojiRegex, '<img src="https://cdn.discordapp.com/emojis/$2.webp?size=44" alt=":$1:" title=":$1:" class="discord-emoji" />');
+
+  // Format User/Role Mentions: &lt;@123&gt; or &lt;@&123&gt;
+  const mentionRegex = /&lt;@!?&?(\d+)&gt;/g;
+  formatted = formatted.replace(mentionRegex, '<span class="discord-tag">@User/Role</span>');
+
+  // Format Channel Mentions: &lt;#123&gt;
+  const channelRegex = /&lt;#(\d+)&gt;/g;
+  formatted = formatted.replace(channelRegex, '<span class="discord-tag">#channel</span>');
+
+  return formatted;
 }
+
