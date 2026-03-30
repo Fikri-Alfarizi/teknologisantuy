@@ -226,10 +226,6 @@ export default function GameDetailModal({ appId, onClose }) {
                    )}
                 </div>
 
-                <div className="request-legal-notice">
-                   <p>⚠️ <strong>Kebijakan Penggunaan:</strong> Penyalahgunaan sistem request atau tindakan akses ilegal terhadap infrastruktur Teknologi Santuy dapat dijerat dengan <strong>Pasal 30 & 32 UU ITE</strong>. Gunakan layanan ini dengan bijak.</p>
-                </div>
-
                 {game.pc_requirements && (game.pc_requirements.minimum || game.pc_requirements.recommended) && (
                   <div className="sm-sys-req">
                     <h3>System Requirements (PC)</h3>
