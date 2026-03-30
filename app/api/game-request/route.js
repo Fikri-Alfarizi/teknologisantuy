@@ -103,18 +103,25 @@ export async function POST(req) {
     const webhookUrl = process.env.DISCORD_REQUEST_WEBHOOK;
     if (!webhookUrl) throw new Error('Discord webhook URL not configured');
 
-    const embed = {
-      title: '🎮 NEW GAME REQUEST!',
-      description: `**Title:** ${game.name}\n**Steam Link:** https://store.steampowered.com/app/${game.id}/\n**Requested on:** Teknologi Santuy Game Store`,
-      color: 0x66c0f4, // Steam Blue color
-      thumbnail: { url: game.image },
-      timestamp: new Date().toISOString()
+    const payload = {
+      username: "TS Game Store",
+      avatar_url: game.image || "https://teknologisantuy.vercel.app/logo.png",
+      embeds: [
+        {
+          title: '🎮 NEW GAME REQUEST!',
+          description: `**Title:** ${game.name}\n**Steam Link:** https://store.steampowered.com/app/${game.id}/\n**Requested on:** Teknologi Santuy Game Store`,
+          color: 0x66c0f4, // Steam Blue color
+          image: { url: game.image },
+          footer: { text: "Teknologi Santuy - Automated Storefront" },
+          timestamp: new Date().toISOString()
+        }
+      ]
     };
 
     await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] })
+      body: JSON.stringify(payload)
     });
 
     console.log(`[SUCCESS] Game request processed for IP: ${ip}. New count: ${currentCount + 1}`);
