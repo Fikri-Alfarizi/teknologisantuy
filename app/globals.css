@@ -1340,6 +1340,32 @@ body::after{
 }
 .steam-card:hover .steam-card-action { background: linear-gradient( to bottom, #a4d007 5%, #536904 95%); color: #fff; }
 
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #3d4450;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #66c0f4;
+}
+
+/* Skeleton Loading Animation */
+@keyframes steamSkeleton {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.steam-skeleton {
+  background: linear-gradient(90deg, #16202d 25%, #1b2838 50%, #16202d 75%);
+  background-size: 200% 100%;
+  animation: steamSkeleton 1.5s infinite linear;
+}
+
 /* Detail Modal */
 .steam-modal-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .steam-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); }

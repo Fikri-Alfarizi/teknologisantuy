@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 export default function GameSearchAutocomplete({ onGameSelect }) {
   const [query, setQuery] = useState('');
@@ -44,14 +45,6 @@ export default function GameSearchAutocomplete({ onGameSelect }) {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  const formatPrice = (priceInCents) => {
-    if (!priceInCents || priceInCents === 0) return 'Free';
-    // IDR usually or USD, assuming USD * 100 for now, Steam usually returns local currency if configured
-    // Let's just format it as a generic number or currency string if it exists
-    return `Rp ${(priceInCents * 100).toLocaleString('id-ID')}`; // rough estimates if needed, but the api actually returns price in local format often or cents.
-    // For now we will rely on game detail or format properly.
-  };
-
   return (
     <div className="steam-search" ref={wrapperRef}>
       <input 
@@ -78,7 +71,15 @@ export default function GameSearchAutocomplete({ onGameSelect }) {
                 if (onGameSelect) onGameSelect(game.id);
               }}
             >
-              <img src={game.tiny_image || `https://cdn.akamai.steamstatic.com/steam/apps/${game.id}/capsule_184x69.jpg`} alt={game.name} />
+              <div style={{ position: 'relative', width: '120px', height: '45px', overflow: 'hidden', boxShadow: '0 0 5px rgba(0,0,0,0.5)' }}>
+                <Image 
+                  src={game.tiny_image || `https://cdn.akamai.steamstatic.com/steam/apps/${game.id}/capsule_184x69.jpg`} 
+                  alt={game.name} 
+                  fill
+                  sizes="120px"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
               <div className="ss-item-info">
                 <div className="ss-item-title">{game.name}</div>
                 {game.price !== undefined && (

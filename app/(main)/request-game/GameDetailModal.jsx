@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function GameDetailModal({ appId, onClose }) {
   const [game, setGame] = useState(null);
@@ -66,7 +67,7 @@ export default function GameDetailModal({ appId, onClose }) {
   return (
     <div className="steam-modal-overlay">
       <div className="steam-modal-backdrop" onClick={onClose}></div>
-      <div className="steam-modal-content">
+      <div className="steam-modal-content custom-scrollbar">
         <button className="steam-modal-close" onClick={onClose}>
           <i className="fa-solid fa-xmark"></i>
         </button>
@@ -93,8 +94,15 @@ export default function GameDetailModal({ appId, onClose }) {
                 {/* Media Gallery */}
                 {game.screenshots && game.screenshots.length > 0 && (
                   <div className="sm-gallery">
-                     <div className="sm-gallery-main">
-                        <img src={game.screenshots[activeScreenIndex].path_full} alt="Screenshot" />
+                     <div className="sm-gallery-main" style={{ position: 'relative' }}>
+                        <Image 
+                          src={game.screenshots[activeScreenIndex].path_full} 
+                          alt="Screenshot" 
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 60vw"
+                          priority
+                          style={{ objectFit: 'contain' }}
+                        />
                      </div>
                      <div className="sm-gallery-thumbs">
                         {game.screenshots.slice(0, 5).map((shot, idx) => (
@@ -102,8 +110,15 @@ export default function GameDetailModal({ appId, onClose }) {
                              key={shot.id} 
                              className={`sm-thumb ${idx === activeScreenIndex ? 'active' : ''}`}
                              onClick={() => setActiveScreenIndex(idx)}
-                             style={{backgroundImage: `url(${shot.path_thumbnail})`}}
-                           ></div>
+                             style={{ position: 'relative', overflow: 'hidden' }}
+                           >
+                              <Image 
+                                src={shot.path_thumbnail} 
+                                alt={`Thumb ${idx}`} 
+                                fill
+                                style={{ objectFit: 'cover' }}
+                              />
+                           </div>
                         ))}
                      </div>
                   </div>
@@ -153,7 +168,14 @@ export default function GameDetailModal({ appId, onClose }) {
               </div>
               
               <div className="sm-side-col">
-                 <img src={game.header_image} alt="Header" className="sm-cover" />
+                 <div style={{ position: 'relative', width: '100%', aspectRatio: '460/215', marginBottom: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.5)' }}>
+                    <Image 
+                      src={game.header_image} 
+                      alt="Header" 
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                 </div>
                  
                  <div className="sm-sidebar-card">
                    <div className="sm-detail-row">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function GameHeroCarousel({ featuredGames, onGameSelect }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,20 +36,40 @@ export default function GameHeroCarousel({ featuredGames, onGameSelect }) {
         <h2 className="steam-hero-eyebrow">FEATURED & RECOMMENDED</h2>
         
         <div className="steam-hero-main-card" onClick={() => onGameSelect && onGameSelect(currentGame.id)}>
-          <div className="steam-hero-img-col">
-            <img src={headerImage} alt={currentGame.name} />
+          <div className="steam-hero-img-col" style={{ position: 'relative' }}>
+            <Image 
+              src={headerImage} 
+              alt={currentGame.name} 
+              width={616}
+              height={353}
+              priority={true}
+              style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            />
           </div>
           
           <div className="steam-hero-info-col">
             <h3 className="steam-hero-title">{currentGame.name}</h3>
             
-            {/* The steam API doesn't always return screenshots for featured unless it's full app detail.
-                We can just show thumbnails built from appid to mimic Steam's auto-generated thumbnails. */}
             <div className="steam-hero-screenshots">
-              <div className="ss-thumb" style={{backgroundImage: `url(https://cdn.akamai.steamstatic.com/steam/apps/${currentGame.id}/ss_1.jpg)`}}></div>
-              <div className="ss-thumb" style={{backgroundImage: `url(https://cdn.akamai.steamstatic.com/steam/apps/${currentGame.id}/ss_2.jpg)`}}></div>
-              <div className="ss-thumb" style={{backgroundImage: `url(https://cdn.akamai.steamstatic.com/steam/apps/${currentGame.id}/ss_3.jpg)`}}></div>
-              <div className="ss-thumb" style={{backgroundImage: `url(https://cdn.akamai.steamstatic.com/steam/apps/${currentGame.id}/ss_4.jpg)`}}></div>
+              {[1, 2, 3, 4].map((num) => (
+                <div 
+                  key={num} 
+                  className="ss-thumb" 
+                  style={{ 
+                    position: 'relative', 
+                    overflow: 'hidden',
+                    backgroundImage: `none` // remove bg image if using Image component
+                  }}
+                >
+                   <Image 
+                     src={`https://cdn.akamai.steamstatic.com/steam/apps/${currentGame.id}/ss_${num}.jpg`}
+                     alt={`Screenshot ${num}`}
+                     fill
+                     sizes="(max-width: 768px) 100vw, 33vw"
+                     style={{ objectFit: 'cover' }}
+                   />
+                </div>
+              ))}
             </div>
 
             <h4 className="steam-hero-reason">Now Available</h4>

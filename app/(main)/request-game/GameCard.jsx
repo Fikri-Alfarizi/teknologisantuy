@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function GameCard({ game, onClick }) {
   // If no main image, fallback to capsule
   const imageUrl = game.large_capsule_image || `https://cdn.akamai.steamstatic.com/steam/apps/${game.id}/header.jpg`;
@@ -15,8 +17,16 @@ export default function GameCard({ game, onClick }) {
 
   return (
     <div className="steam-card" onClick={() => onClick && onClick(game.id)}>
-      <div className="steam-card-img-wrapper">
-        <img src={imageUrl} alt={game.name} className="steam-card-img" loading="lazy" />
+      <div className="steam-card-img-wrapper" style={{ position: 'relative', overflow: 'hidden' }}>
+        <Image 
+          src={imageUrl} 
+          alt={game.name} 
+          className="steam-card-img" 
+          width={460}
+          height={215}
+          loading="lazy"
+          style={{ objectFit: 'cover' }}
+        />
       </div>
       <div className="steam-card-content">
         <h3 className="steam-card-title">{game.name}</h3>
