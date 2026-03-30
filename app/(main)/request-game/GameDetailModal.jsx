@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';
-import Link from 'next/link';
+import SteamLoginModal from './SteamLoginModal';
 
-export default function GameDetailModal({ appId, onClose }) {
+export default function GameDetailModal({ gameData, onClose }) {
   const { user, isAuthenticated } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,6 +13,12 @@ export default function GameDetailModal({ appId, onClose }) {
   const [requestCount, setRequestCount] = useState(0);
   const [checkingLimit, setCheckingLimit] = useState(true);
   const [activeScreenIndex, setActiveScreenIndex] = useState(0);
+  
+  // New States for Flow
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const appId = gameData?.id;
 
   useEffect(() => {
     if (!appId) return;
@@ -51,8 +57,13 @@ export default function GameDetailModal({ appId, onClose }) {
   }, [appId]);
 
   const handleRequestGame = async () => {
-    if (!game || requestStatus === 'loading' || requestStatus === 'success') return;
+    if (requestStatus === 'loading' || requestStatus === 'success') return;
     
+    // Safety Check for Data
+    const finalGameName = game?.name || gameData?.name || 'Unknown Game';
+    const finalGameId = game?.steam_appid || gameData?.id;
+    const finalGameImage = game?.header_image || gameData?.image || `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+
     // Frontend Safety Check
     const maxLimit = isAuthenticated ? 2 : 1;
     if (requestCount >= maxLimit) {
@@ -61,6 +72,7 @@ export default function GameDetailModal({ appId, onClose }) {
     }
 
     setRequestStatus('loading');
+    setShowConfirm(false); // Hide confirm modal
     
     try {
       const res = await fetch('/api/game-request', {
@@ -70,9 +82,9 @@ export default function GameDetailModal({ appId, onClose }) {
         },
         body: JSON.stringify({
           game: {
-            id: game.steam_appid,
-            name: game.name,
-            image: game.header_image
+            id: finalGameId,
+            name: finalGameName,
+            image: finalGameImage
           },
           user: user ? { uid: user.uid, email: user.email, displayName: user.displayName } : null
         })
@@ -175,7 +187,7 @@ export default function GameDetailModal({ appId, onClose }) {
                    {/* LIMIT WARNING BANNER */}
                    {!checkingLimit && !isLimitReached && (
                      <div className="limit-info-badge">
-                        <i className="fa-solid fa-info-circle"></i> Sisa Limit Request: <strong>{maxLimit - requestCount}x</strong> {isAuthenticated ? '(Bonus Login Aktit)' : '(Guest)'}
+                        <i className="fa-solid fa-info-circle"></i> Sisa Limit Request: <strong>{maxLimit - requestCount}x</strong> {isAuthenticated ? '(Member)' : '(Guest)'}
                      </div>
                    )}
 
@@ -184,21 +196,21 @@ export default function GameDetailModal({ appId, onClose }) {
                         {isLimitReached ? (
                            isAuthenticated ? (
                               <div className="steam-alert-warning limit-exhausted">
-                                <i className="fa-solid fa-lock"></i> <strong>LIMIT TERCAPAI:</strong> Anda telah menghabiskan kuota request game seumur hidup (2x) untuk perangkat/IP ini. Terimakasih telah menggunakan layanan kami.
+                                <i className="fa-solid fa-lock"></i> <strong>LIMIT TERCAPAI:</strong> Anda telah menghabiskan kuota request game seumur hidup (2x).
                               </div>
                            ) : (
                               <div className="limit-cta-box">
                                  <div className="steam-alert-warning">
                                    <i className="fa-solid fa-triangle-exclamation"></i> <strong>LIMIT GUEST TERCAPAI:</strong> Anda hanya memiliki 1x kesempatan request sebagai Guest.
                                  </div>
-                                 <Link href="/auth/login" className="steam-login-reward-btn">
-                                    LOGIN UNTUK DAPAT +1 REQUEST LAGI
-                                 </Link>
+                                 <button onClick={() => setIsLoginOpen(true)} className="steam-login-link-btn">
+                                    KLIK DISINI UNTUK MASUK & DAPAT +1 REQUEST LAGI
+                                 </button>
                               </div>
                            )
                         ) : (
-                           <button className="steam-btn-request" onClick={handleRequestGame} disabled={checkingLimit}>
-                              <i className="fa-solid fa-paper-plane"></i> {checkingLimit ? 'MENGECEK LIMIT...' : 'REQUEST GAME INI'}
+                           <button className="steam-btn-request" onClick={() => setShowConfirm(true)} disabled={checkingLimit}>
+                              <i className="fa-solid fa-paper-plane"></i> {checkingLimit ? 'MENGECEK...' : 'REQUEST GAME INI'}
                            </button>
                         )}
                      </>
@@ -206,22 +218,22 @@ export default function GameDetailModal({ appId, onClose }) {
 
                    {requestStatus === 'loading' && (
                      <button className="steam-btn-request loading" disabled>
-                        <i className="fa-solid fa-circle-notch fa-spin"></i> MENGIRIM REQUEST...
+                        <i className="fa-solid fa-circle-notch fa-spin"></i> MENGIRIM...
                      </button>
                    )}
                    {requestStatus === 'success' && (
                      <div className="steam-alert-success">
-                        <i className="fa-solid fa-circle-check"></i> Request Berhasil Dikirim! Admin akan segera memproses. Silakan cek channel #request-game di Discord kami.
+                        <i className="fa-solid fa-circle-check"></i> Request Berhasil! Cek Discord kami.
                      </div>
                    )}
                    {requestStatus === 'limited' && (
                      <div className="steam-alert-error">
-                        <i className="fa-solid fa-circle-exclamation"></i> Gagal: Maaf, limit request untuk perangkat/IP Anda sudah habis.
+                        <i className="fa-solid fa-circle-exclamation"></i> Limit tercapai.
                      </div>
                    )}
                    {requestStatus === 'error' && (
                      <div className="steam-alert-error">
-                        <i className="fa-solid fa-circle-exclamation"></i> Gagal mengirim request. Silakan coba lagi nanti.
+                        <i className="fa-solid fa-circle-exclamation"></i> Gagal. Coba lagi nanti.
                      </div>
                    )}
                 </div>
@@ -242,7 +254,7 @@ export default function GameDetailModal({ appId, onClose }) {
               </div>
               
               <div className="sm-side-col">
-                 <div style={{ position: 'relative', width: '100%', aspectRatio: '460/215', marginBottom: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.5)' }}>
+                 <div style={{ position: 'relative', width: '100%', aspectRatio: '460/215', marginBottom: '20px', border: '1px solid #333' }}>
                     <Image 
                       src={game.header_image} 
                       alt="Header" 
@@ -253,8 +265,8 @@ export default function GameDetailModal({ appId, onClose }) {
                  
                  <div className="sm-sidebar-card">
                    <div className="sm-detail-row">
-                      <span>Harga Asli Steam:</span>
-                      <strong>{game.is_free ? 'Free to Play' : (game.price_overview ? `Rp ${(game.price_overview.initial/100).toLocaleString('id-ID')}` : 'TBA')}</strong>
+                      <span>Harga Steam:</span>
+                      <strong>{game.is_free ? 'Free' : (game.price_overview ? `Rp ${(game.price_overview.initial/100).toLocaleString('id-ID')}` : 'TBA')}</strong>
                    </div>
                    
                    <div className="sm-detail-row tags-row">
@@ -265,23 +277,61 @@ export default function GameDetailModal({ appId, onClose }) {
                         ))}
                       </div>
                    </div>
-
-                   <div className="sm-detail-row">
-                     <span>Platforms:</span>
-                     <div className="steam-platforms lg">
-                        {game.platforms?.windows && <i className="fa-brands fa-windows"></i>}
-                        {game.platforms?.mac && <i className="fa-brands fa-apple"></i>}
-                        {game.platforms?.linux && <i className="fa-brands fa-linux"></i>}
-                     </div>
-                   </div>
                  </div>
               </div>
             </div>
           </>
         ) : (
-          <div className="steam-modal-error">Failed to load game details.</div>
+          <div className="steam-modal-fallback">
+             <div className="fallback-header">
+                <h2>{gameData?.name || "Game Details Unavailable"}</h2>
+                <p>Maaf, detail lengkap dari Steam API gagal dimuat. Namun Anda tetap bisa melakukan request.</p>
+             </div>
+             
+             <div className="sm-request-box" style={{ margin: '40px auto', maxWidth: '500px' }}>
+                <h3>Tetap Lanjutkan Request?</h3>
+                <p>Klik tombol di bawah jika Anda ingin admin tetap mengecek game ini meskipun data visualnya tidak lengkap di sini.</p>
+                
+                {requestStatus === 'idle' && (
+                   <button className="steam-btn-request" onClick={() => setShowConfirm(true)}>
+                      <i className="fa-solid fa-paper-plane"></i> YA, TETAP REQUEST GAME INI
+                   </button>
+                )}
+                
+                {requestStatus === 'success' && (
+                  <div className="steam-alert-success">
+                     <i className="fa-solid fa-circle-check"></i> Request Berhasil! Kami mencatat request Anda.
+                  </div>
+                )}
+             </div>
+          </div>
         )}
       </div>
+
+      {/* CONFIRMATION OVERLAY */}
+      {showConfirm && (
+        <div className="confirm-overlay">
+           <div className="confirm-box">
+              <h3>KONFIRMASI REQUEST</h3>
+              <p>Apakah Anda yakin ingin merequest <strong>{game?.name || gameData?.name}</strong> ke admin Teknologi Santuy?</p>
+              <div className="confirm-btns">
+                 <button className="confirm-yes" onClick={handleRequestGame}>YA, KIRIM</button>
+                 <button className="confirm-no" onClick={() => setShowConfirm(false)}>BATAL</button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* STEAM LOGIN MODAL INTEGRATION */}
+      {isLoginOpen && (
+        <SteamLoginModal 
+          onLoginSuccess={() => {
+            setIsLoginOpen(false);
+            // Re-check limit automatically is handled by isAuthenticated in maxLimit calc
+          }} 
+          onCancel={() => setIsLoginOpen(false)}
+        />
+      )}
 
       <style jsx>{`
         .limit-info-badge {
@@ -298,35 +348,63 @@ export default function GameDetailModal({ appId, onClose }) {
         .limit-info-badge strong {
            color: #66c0f4;
         }
-        .limit-exhausted {
-           background: rgba(255, 0, 0, 0.1) !important;
-           border: 1px solid rgba(255, 0, 0, 0.3) !important;
-           color: #ff6b6b !important;
+        .steam-login-link-btn {
+           background: transparent;
+           border: none;
+           color: #66c0f4;
+           text-decoration: underline;
+           font-weight: bold;
+           cursor: pointer;
+           font-size: 14px;
+           padding: 0;
+           margin-top: 10px;
+           transition: color 0.2s;
         }
-        .limit-cta-box {
-           display: flex;
-           flex-direction: column;
-           gap: 15px;
+        .steam-login-link-btn:hover {
+           color: #fff;
         }
-        .steam-login-reward-btn {
+        .confirm-overlay {
+           position: absolute;
+           top: 0; left: 0; right: 0; bottom: 0;
+           background: rgba(0,0,0,0.8);
            display: flex;
            align-items: center;
            justify-content: center;
-           padding: 14px;
-           background: linear-gradient(90deg, #66c0f4 0%, #4b619b 100%);
-           color: white;
-           text-decoration: none;
-           font-weight: bold;
+           z-index: 1000;
+           animation: fadeIn 0.2s;
+        }
+        .confirm-box {
+           background: #1b2838;
+           padding: 30px;
+           border: 1px solid #66c0f4;
            border-radius: 4px;
-           text-transform: uppercase;
-           letter-spacing: 1px;
-           transition: 0.3s;
-           box-shadow: 0 4px 15px rgba(102, 192, 244, 0.3);
+           max-width: 400px;
+           text-align: center;
         }
-        .steam-login-reward-btn:hover {
-           background: linear-gradient(90deg, #4b619b 0%, #66c0f4 100%);
-           transform: translateY(-2px);
+        .confirm-box h3 { color: #66c0f4; margin-bottom: 15px; }
+        .confirm-btns { display: flex; gap: 15px; margin-top: 25px; justifyContent: center; }
+        .confirm-yes, .confirm-no {
+           padding: 10px 25px;
+           border: none;
+           border-radius: 2px;
+           font-weight: bold;
+           cursor: pointer;
         }
+        .confirm-yes { background: #66c0f4; color: #fff; }
+        .confirm-no { background: #3d4450; color: #fff; }
+        
+        .steam-modal-fallback {
+           padding: 40px;
+           text-align: center;
+           min-height: 400px;
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+        }
+        .fallback-header h2 { font-size: 28px; margin-bottom: 10px; }
+        .fallback-header p { color: #8391a1; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
     </div>
   );

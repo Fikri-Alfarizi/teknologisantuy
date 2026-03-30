@@ -10,7 +10,7 @@ export default function GameStoreClient() {
   const [featuredData, setFeaturedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('top_sellers');
-  const [selectedGameId, setSelectedGameId] = useState(null);
+  const [selectedGame, setSelectedGame] = useState(null);
 
   useEffect(() => {
     fetch('/api/steam/featured')
@@ -36,8 +36,8 @@ export default function GameStoreClient() {
     }
   };
 
-  const handleGameSelect = (appId) => {
-    setSelectedGameId(appId);
+  const handleGameSelect = (game) => {
+    setSelectedGame(game);
   };
 
   return (
@@ -45,12 +45,16 @@ export default function GameStoreClient() {
       <section className="steam-hero-section">
         <GameHeroCarousel 
           featuredGames={featuredData?.top_sellers?.items} 
-          onGameSelect={handleGameSelect} 
+          onGameSelect={(id) => {
+             const found = featuredData?.top_sellers?.items?.find(g => g.id === id);
+             if (found) setSelectedGame(found);
+             else setSelectedGame({ id });
+          }} 
         />
       </section>
 
       <div className="container" style={{ padding: '40px 24px', position: 'relative', zIndex: 10, marginTop: '-30px' }}>
-        <GameSearchAutocomplete onGameSelect={handleGameSelect} />
+        <GameSearchAutocomplete onGameSelect={(id) => setSelectedGame({ id })} />
       </div>
 
       <section className="steam-store-main container">
@@ -93,7 +97,7 @@ export default function GameStoreClient() {
               <GameCard 
                 key={item.id} 
                 game={item} 
-                onClick={handleGameSelect} 
+                onClick={() => handleGameSelect(item)} 
               />
             ))}
             {getTabItems().length === 0 && (
@@ -103,10 +107,10 @@ export default function GameStoreClient() {
         )}
       </section>
 
-      {selectedGameId && (
+      {selectedGame && (
         <GameDetailModal 
-          appId={selectedGameId} 
-          onClose={() => setSelectedGameId(null)} 
+          gameData={selectedGame} 
+          onClose={() => setSelectedGame(null)} 
         />
       )}
     </div>
