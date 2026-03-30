@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth-context';
+import Link from 'next/link';
 
 export default function GameDetailModal({ appId, onClose }) {
+  const { user, isAuthenticated } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [requestStatus, setRequestStatus] = useState('idle'); // idle, loading, success, error
+  const [requestStatus, setRequestStatus] = useState('idle'); // idle, loading, success, error, limited
+  const [requestCount, setRequestCount] = useState(0);
+  const [checkingLimit, setCheckingLimit] = useState(true);
   const [activeScreenIndex, setActiveScreenIndex] = useState(0);
 
   useEffect(() => {
@@ -14,7 +19,9 @@ export default function GameDetailModal({ appId, onClose }) {
     
     setLoading(true);
     setRequestStatus('idle');
+    setCheckingLimit(true);
     
+    // 1. Fetch Game Details
     fetch(`/api/steam/details?appid=${appId}`)
       .then(res => res.json())
       .then(data => {
@@ -29,33 +36,64 @@ export default function GameDetailModal({ appId, onClose }) {
         console.error(err);
         setLoading(false);
       });
+
+    // 2. Fetch Request Limit status from Server (By IP)
+    fetch('/api/game-request')
+      .then(res => res.json())
+      .then(data => {
+        if (data.count !== undefined) {
+          setRequestCount(data.count);
+        }
+        setCheckingLimit(false);
+      })
+      .catch(() => setCheckingLimit(false));
+
   }, [appId]);
 
   const handleRequestGame = async () => {
-    if (!game) return;
+    if (!game || requestStatus === 'loading' || requestStatus === 'success') return;
     
+    // Frontend Safety Check
+    const maxLimit = isAuthenticated ? 2 : 1;
+    if (requestCount >= maxLimit) {
+      setRequestStatus('limited');
+      return;
+    }
+
     setRequestStatus('loading');
     
-    const gameLink = `https://store.steampowered.com/app/${game.steam_appid}/`;
-    const messageContent = `**🎮 NEW GAME REQUEST!**\n\n**Title:** ${game.name}\n**Steam Link:** ${gameLink}\n**Requested on:** Teknologi Santuy Game Store`;
-
     try {
-      const res = await fetch('/api/discord/send', {
+      const res = await fetch('/api/game-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: messageContent,
-          username: "TS Game Store",
-          avatar_url: game.header_image || "https://teknologisantuy.vercel.app/logo.png"
+          game: {
+            id: game.steam_appid,
+            name: game.name,
+            image: game.header_image
+          },
+          user: user ? { uid: user.uid, email: user.email, displayName: user.displayName } : null
         })
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         setRequestStatus('success');
+        if (data.newCount !== undefined) {
+          setRequestCount(data.newCount);
+        }
       } else {
-        setRequestStatus('error');
+        if (res.status === 403) {
+          setRequestStatus('limited');
+          if (data.newCount !== undefined) {
+            setRequestCount(data.newCount);
+          }
+        } else {
+          setRequestStatus('error');
+        }
       }
     } catch(err) {
       setRequestStatus('error');
@@ -63,6 +101,10 @@ export default function GameDetailModal({ appId, onClose }) {
   };
 
   if (!appId) return null;
+
+  // Logic Determinator for Button
+  const maxLimit = isAuthenticated ? 2 : 1;
+  const isLimitReached = requestCount >= maxLimit;
 
   return (
     <div className="steam-modal-overlay">
@@ -130,11 +172,38 @@ export default function GameDetailModal({ appId, onClose }) {
                    <h3>Ingin Mainkan Game Ini Secara Gratis?</h3>
                    <p>Klik tombol di bawah untuk request game ini agar admin Teknologi Santuy segera mengupload link download-nya ke server Discord.</p>
                    
-                   {requestStatus === 'idle' && (
-                     <button className="steam-btn-request" onClick={handleRequestGame}>
-                        <i className="fa-solid fa-paper-plane"></i> REQUEST GAME INI
-                     </button>
+                   {/* LIMIT WARNING BANNER */}
+                   {!checkingLimit && !isLimitReached && (
+                     <div className="limit-info-badge">
+                        <i className="fa-solid fa-info-circle"></i> Sisa Limit Request: <strong>{maxLimit - requestCount}x</strong> {isAuthenticated ? '(Bonus Login Aktit)' : '(Guest)'}
+                     </div>
                    )}
+
+                   {requestStatus === 'idle' && (
+                     <>
+                        {isLimitReached ? (
+                           isAuthenticated ? (
+                              <div className="steam-alert-warning limit-exhausted">
+                                <i className="fa-solid fa-lock"></i> <strong>LIMIT TERCAPAI:</strong> Anda telah menghabiskan kuota request game seumur hidup (2x) untuk perangkat/IP ini. Terimakasih telah menggunakan layanan kami.
+                              </div>
+                           ) : (
+                              <div className="limit-cta-box">
+                                 <div className="steam-alert-warning">
+                                   <i className="fa-solid fa-triangle-exclamation"></i> <strong>LIMIT GUEST TERCAPAI:</strong> Anda hanya memiliki 1x kesempatan request sebagai Guest.
+                                 </div>
+                                 <Link href="/auth/login" className="steam-login-reward-btn">
+                                    LOGIN UNTUK DAPAT +1 REQUEST LAGI
+                                 </Link>
+                              </div>
+                           )
+                        ) : (
+                           <button className="steam-btn-request" onClick={handleRequestGame} disabled={checkingLimit}>
+                              <i className="fa-solid fa-paper-plane"></i> {checkingLimit ? 'MENGECEK LIMIT...' : 'REQUEST GAME INI'}
+                           </button>
+                        )}
+                     </>
+                   )}
+
                    {requestStatus === 'loading' && (
                      <button className="steam-btn-request loading" disabled>
                         <i className="fa-solid fa-circle-notch fa-spin"></i> MENGIRIM REQUEST...
@@ -145,11 +214,20 @@ export default function GameDetailModal({ appId, onClose }) {
                         <i className="fa-solid fa-circle-check"></i> Request Berhasil Dikirim! Admin akan segera memproses. Silakan cek channel #request-game di Discord kami.
                      </div>
                    )}
+                   {requestStatus === 'limited' && (
+                     <div className="steam-alert-error">
+                        <i className="fa-solid fa-circle-exclamation"></i> Gagal: Maaf, limit request untuk perangkat/IP Anda sudah habis.
+                     </div>
+                   )}
                    {requestStatus === 'error' && (
                      <div className="steam-alert-error">
                         <i className="fa-solid fa-circle-exclamation"></i> Gagal mengirim request. Silakan coba lagi nanti.
                      </div>
                    )}
+                </div>
+
+                <div className="request-legal-notice">
+                   <p>⚠️ <strong>Kebijakan Penggunaan:</strong> Penyalahgunaan sistem request atau tindakan akses ilegal terhadap infrastruktur Teknologi Santuy dapat dijerat dengan <strong>Pasal 30 & 32 UU ITE</strong>. Gunakan layanan ini dengan bijak.</p>
                 </div>
 
                 {game.pc_requirements && (game.pc_requirements.minimum || game.pc_requirements.recommended) && (
@@ -208,6 +286,64 @@ export default function GameDetailModal({ appId, onClose }) {
           <div className="steam-modal-error">Failed to load game details.</div>
         )}
       </div>
+
+      <style jsx>{`
+        .limit-info-badge {
+           display: inline-flex;
+           align-items: center;
+           gap: 8px;
+           background: rgba(255, 255, 255, 0.05);
+           padding: 6px 12px;
+           border-radius: 4px;
+           font-size: 13px;
+           color: #738895;
+           margin-bottom: 20px;
+        }
+        .limit-info-badge strong {
+           color: #66c0f4;
+        }
+        .limit-exhausted {
+           background: rgba(255, 0, 0, 0.1) !important;
+           border: 1px solid rgba(255, 0, 0, 0.3) !important;
+           color: #ff6b6b !important;
+        }
+        .limit-cta-box {
+           display: flex;
+           flex-direction: column;
+           gap: 15px;
+        }
+        .steam-login-reward-btn {
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           padding: 14px;
+           background: linear-gradient(90deg, #66c0f4 0%, #4b619b 100%);
+           color: white;
+           text-decoration: none;
+           font-weight: bold;
+           border-radius: 4px;
+           text-transform: uppercase;
+           letter-spacing: 1px;
+           transition: 0.3s;
+           box-shadow: 0 4px 15px rgba(102, 192, 244, 0.3);
+        }
+        .steam-login-reward-btn:hover {
+           background: linear-gradient(90deg, #4b619b 0%, #66c0f4 100%);
+           transform: translateY(-2px);
+        }
+        .request-legal-notice {
+           margin-top: 30px;
+           padding: 15px;
+           background: rgba(0,0,0,0.2);
+           border-left: 4px solid #cc0000;
+           font-size: 13px;
+           color: #888;
+           line-height: 1.6;
+        }
+        .request-legal-notice strong {
+           color: #aaa;
+        }
+      `}</style>
     </div>
   );
 }
