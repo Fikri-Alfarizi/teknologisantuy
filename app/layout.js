@@ -83,6 +83,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${spaceGrotesk.variable} ${archivoBlack.variable} antialiased`} suppressHydrationWarning>
+        {/* Global Watermark Branding */}
+        <ConsoleWatermark />
+        
         <NextTopLoader
           color="var(--yellow)"
           initialPosition={0.08}

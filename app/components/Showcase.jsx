@@ -14,22 +14,18 @@ export default function Showcase() {
     // Fetch posts on client side to avoid hydration issues
     const fetchPosts = async () => {
       try {
-        console.log('🔄 Fetching posts from /api/blogger-posts...');
         const response = await fetch('/api/blogger-posts?limit=6');
-        console.log('📡 API Response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`API response status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('✅ Posts fetched:', data);
         
         if (Array.isArray(data)) {
           setPosts(data);
         } else if (data.error) {
           setError(data.error);
-          console.error('API returned error:', data.error);
         } else {
           setError('Invalid response format');
           console.error('Invalid data format:', data);
