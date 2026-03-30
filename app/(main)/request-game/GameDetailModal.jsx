@@ -327,18 +327,6 @@ export default function GameDetailModal({ appId, onClose }) {
            background: linear-gradient(90deg, #4b619b 0%, #66c0f4 100%);
            transform: translateY(-2px);
         }
-        .request-legal-notice {
-           margin-top: 30px;
-           padding: 15px;
-           background: rgba(0,0,0,0.2);
-           border-left: 4px solid #cc0000;
-           font-size: 13px;
-           color: #888;
-           line-height: 1.6;
-        }
-        .request-legal-notice strong {
-           color: #aaa;
-        }
       `}</style>
     </div>
   );
