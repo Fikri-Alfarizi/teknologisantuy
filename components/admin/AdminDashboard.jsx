@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/actions/adminActions';
 import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine } from 'react-icons/fa';
+import RealtimeActiveUsers from './RealtimeActiveUsers';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
@@ -47,6 +48,12 @@ export default function AdminDashboard() {
 
   return (
     <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '30px', color: '#000' }}>
+      
+      {/* Real-time users banner */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <RealtimeActiveUsers />
+      </div>
+
       {/* Stats Cards - Unified Yellow/White Palette */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
          <StatBox 

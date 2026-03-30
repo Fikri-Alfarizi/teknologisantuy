@@ -243,3 +243,34 @@ export async function deleteContactMessage(id) {
     return { success: false, error: error.message };
   }
 }
+
+/**
+ * Fetch real-time active users (unique IPs in the last 5 minutes).
+ */
+export async function getActiveUsersCount() {
+  try {
+    const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const q = query(
+      collection(db, 'siteAnalytics'), 
+      where('timestamp', '>=', fiveMinsAgo)
+    );
+    const snap = await getDocs(q);
+    
+    // Count unique IPs
+    const ips = new Set();
+    snap.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.ip) ips.add(data.ip);
+    });
+    
+    // Fallback to total documents if IP is missing, else return unique visitor count
+    const activeCount = ips.size > 0 ? ips.size : snap.size;
+    
+    return { success: true, count: activeCount };
+  } catch (error) {
+    console.error("Fetch Active Users Error:", error);
+    // Don't crash dashboard if it fails
+    return { success: false, count: 0 };
+  }
+}
+
