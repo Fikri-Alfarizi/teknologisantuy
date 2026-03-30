@@ -104,15 +104,9 @@ export async function POST(req) {
     if (!webhookUrl) throw new Error('Discord webhook URL not configured');
 
     const embed = {
-      title: '🎮 NEW GAME REQUEST',
-      color: 0x00ff00,
-      fields: [
-        { name: 'Game', value: game.name, inline: true },
-        { name: 'Steam ID', value: `${game.id}`, inline: true },
-        { name: 'User', value: isLoggedIn ? `${user.displayName}` : 'Guest', inline: true },
-        { name: 'Total IP Request', value: `${currentCount + 1}`, inline: true },
-        { name: 'Detected IP', value: `\`${ip}\``, inline: true }
-      ],
+      title: '🎮 NEW GAME REQUEST!',
+      description: `**Title:** ${game.name}\n**Steam Link:** https://store.steampowered.com/app/${game.id}/\n**Requested on:** Teknologi Santuy Game Store`,
+      color: 0x66c0f4, // Steam Blue color
       thumbnail: { url: game.image },
       timestamp: new Date().toISOString()
     };
