@@ -9,7 +9,8 @@ export async function GET(req) {
   }
 
   try {
-    const fetchUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL}/api/user-stats/${discordId}`;
+    const apiUrl = process.env.NEXT_PUBLIC_BOT_API_URL || 'https://botsantuytl-production-8d3d.up.railway.app';
+    const fetchUrl = `${apiUrl}/api/user-stats/${discordId}`;
     console.log(`[BotSyncAPI] Fetching from ${fetchUrl}`);
 
     // Call Railway Bot API
