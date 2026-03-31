@@ -75,10 +75,13 @@ export default function Navbar() {
                       style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
                     />
                     <div className="avatar-dropdown">
-                      <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontSize: 12 }}>
-                        <div style={{ fontWeight: 700 }}>{displayName}</div>
+                      <Link href="/settings" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontSize: 12, display: 'block', textDecoration: 'none' }} className="hover:bg-yellow-500/10 transition-colors group">
+                        <div style={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span className="group-hover:text-yellow-400">{displayName}</span>
+                          <i className="fa-solid fa-gear text-gray-500 group-hover:text-yellow-400 group-hover:rotate-90 transition-all duration-300"></i>
+                        </div>
                         <div style={{ color: 'rgba(255,255,255,0.7)' }}>{displayEmail}</div>
-                      </div>
+                      </Link>
                       <Link href="/forum"><i className="fa-solid fa-comment-dots"></i> Forum</Link>
                       <a href="#" onClick={(e) => { e.preventDefault(); router.push('/dashboard'); }}><i className="fa-solid fa-chart-pie"></i> Dashboard</a>
                       <a href="#" onClick={handleLogout}><i className="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -130,10 +133,13 @@ export default function Navbar() {
           <Link href="/contact" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-envelope"></i> Contact</Link>
           {isLoggedIn ? (
             <>
-              <div style={{ borderTop: '2px solid var(--black)', marginTop: 16, paddingTop: 16, fontSize: 13, color: 'var(--white)' }}>
-                <div style={{ fontWeight: 800 }}>{displayName}</div>
+              <Link href="/settings" onClick={() => setMobileNavOpen(false)} className="block hover:bg-yellow-500/10 transition-colors p-2 rounded group" style={{ borderTop: '2px solid var(--black)', marginTop: 16, paddingTop: 16, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 16, textDecoration: 'none' }}>
+                <div style={{ fontSize: 13, color: 'var(--white)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontWeight: 800 }} className="group-hover:text-yellow-400">{displayName}</div>
+                  <i className="fa-solid fa-gear text-gray-400 group-hover:text-yellow-400"></i>
+                </div>
                 <div style={{ fontSize: 11, color: '#B0BEC5' }}>{displayEmail}</div>
-              </div>
+              </Link>
               <a href="#" onClick={(e) => { e.preventDefault(); setMobileNavOpen(false); router.push('/dashboard'); }} style={{ color: '#4ade80', fontWeight: 800, marginTop: 10 }}>
                 <i className="fa-solid fa-chart-pie"></i> Dashboard
               </a>
