@@ -3,13 +3,28 @@ import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { useSession, signOut as nextAuthSignOut } from 'next-auth/react';
 
 export default function Navbar() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
-  const { user, userProfile, signOut } = useAuth();
+  const { user, userProfile, signOut: firebaseSignOut } = useAuth();
+  const { data: session } = useSession();
+
+  // Unified Identity Variables
+  const isLoggedIn = user || session;
+  const displayName = session?.user?.username || userProfile?.displayName || 'Guest User';
+  const displayEmail = session?.user?.email || userProfile?.email || 'ID Discord Terverifikasi';
+  const displayPhoto = session?.user?.image || userProfile?.photoURL || `https://ui-avatars.com/api/?name=${displayName.replace(/\s/g, '+')}`;
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    if (user) await firebaseSignOut();
+    if (session) await nextAuthSignOut({ redirect: false });
+    router.push('/');
+  };
 
   return (
     <>
@@ -52,26 +67,27 @@ export default function Navbar() {
                 <i className="fa-brands fa-discord"></i> Discord
               </a>
               <div className="nav-avatar" tabIndex="0">
-                {user ? (
+                {isLoggedIn ? (
                   <>
                     <img 
-                      src={userProfile?.photoURL || `https://ui-avatars.com/api/?name=${userProfile?.displayName}`} 
+                      src={displayPhoto} 
                       alt="Avatar"
                       style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
                     />
                     <div className="avatar-dropdown">
                       <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontSize: 12 }}>
-                        <div style={{ fontWeight: 700 }}>{userProfile?.displayName}</div>
-                        <div style={{ color: 'rgba(255,255,255,0.7)' }}>{userProfile?.email || 'Guest User'}</div>
+                        <div style={{ fontWeight: 700 }}>{displayName}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.7)' }}>{displayEmail}</div>
                       </div>
                       <Link href="/forum"><i className="fa-solid fa-comment-dots"></i> Forum</Link>
                       <a href="#" onClick={(e) => { e.preventDefault(); router.push('/dashboard'); }}><i className="fa-solid fa-chart-pie"></i> Dashboard</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); signOut(); }}><i className="fa-solid fa-right-from-bracket"></i> Logout</a>
+                      <a href="#" onClick={handleLogout}><i className="fa-solid fa-right-from-bracket"></i> Logout</a>
                     </div>
                   </>
                 ) : (
                   <>
                     <i className="fa-regular fa-circle-user"></i>
+
                     <div className="avatar-dropdown">
                       <Link href="/auth/login"><i className="fa-solid fa-right-to-bracket"></i> Login</Link>
                       <Link href="/auth/signup"><i className="fa-solid fa-user-plus"></i> Register</Link>
@@ -112,18 +128,22 @@ export default function Navbar() {
           <Link href="/request-game" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-comments"></i> Request Game</Link>
           <Link href="/about" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-info-circle"></i> About</Link>
           <Link href="/contact" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-envelope"></i> Contact</Link>
-          {user ? (
+          {isLoggedIn ? (
             <>
               <div style={{ borderTop: '2px solid var(--black)', marginTop: 16, paddingTop: 16, fontSize: 13, color: 'var(--white)' }}>
-                <div style={{ fontWeight: 800 }}>{userProfile?.displayName}</div>
-                <div style={{ fontSize: 11, color: '#B0BEC5' }}>{userProfile?.email || 'User Account'}</div>
+                <div style={{ fontWeight: 800 }}>{displayName}</div>
+                <div style={{ fontSize: 11, color: '#B0BEC5' }}>{displayEmail}</div>
               </div>
-              <a href="#" onClick={(e) => { e.preventDefault(); setMobileNavOpen(false); signOut(); }} style={{ color: '#ff6b6b', fontWeight: 800, marginTop: 10 }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); setMobileNavOpen(false); router.push('/dashboard'); }} style={{ color: '#4ade80', fontWeight: 800, marginTop: 10 }}>
+                <i className="fa-solid fa-chart-pie"></i> Dashboard
+              </a>
+              <a href="#" onClick={(e) => { handleLogout(e); setMobileNavOpen(false); }} style={{ color: '#ff6b6b', fontWeight: 800, marginTop: 10 }}>
                 <i className="fa-solid fa-right-from-bracket"></i> Logout
               </a>
             </>
           ) : (
             <>
+
               <Link href="/auth/login" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--yellow)', fontWeight: 800, borderTop: '2px solid var(--black)', marginTop: 16, paddingTop: 16 }}>
                 <i className="fa-solid fa-right-to-bracket"></i> Login
               </Link>
