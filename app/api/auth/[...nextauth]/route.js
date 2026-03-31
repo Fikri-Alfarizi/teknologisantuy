@@ -11,6 +11,7 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, profile, account }) {
+      // First sign in
       if (profile) {
         token.id = profile.id;
         token.username = profile.username;
@@ -20,8 +21,9 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id;
-        session.user.username = token.username;
+        // token.sub is the native NextAuth ID (Discord ID)
+        session.user.id = token.sub || token.id;
+        session.user.username = token.username || session.user.name;
         session.user.discriminator = token.discriminator;
       }
       return session;
