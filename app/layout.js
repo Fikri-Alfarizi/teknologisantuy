@@ -46,10 +46,10 @@ export const metadata = {
     siteName: "Teknologi Santuy",
     images: [
       {
-        url: "/logo.png",
+        url: "https://i.ibb.co.com/4kbmQSZ/TEKNologi-santuy.png",
         width: 1200,
         height: 630,
-        alt: "Teknologi Santuy Logo",
+        alt: "Teknologi Santuy Banner",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const metadata = {
     title: "Teknologi Santuy - Game Gratis & Tutorial IT",
     description:
       "Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari.",
-    images: ["/logo.png"],
+    images: ["https://i.ibb.co.com/4kbmQSZ/TEKNologi-santuy.png"],
   },
   robots: {
     index: true,
@@ -86,7 +86,7 @@ export default function RootLayout({ children }) {
       <body className={`${spaceGrotesk.variable} ${archivoBlack.variable} antialiased`} suppressHydrationWarning>
         {/* Global Watermark Branding */}
         <ConsoleWatermark />
-        
+
         <NextTopLoader
           color="var(--yellow)"
           initialPosition={0.08}
