@@ -13,7 +13,7 @@ import {
   addDoc,
   Timestamp
 } from 'firebase/firestore';
-import { db } from '../firebase.js';
+import { db } from '../../lib/firebase.js';
 
 // Firebase collections
 const COLLECTIONS = {

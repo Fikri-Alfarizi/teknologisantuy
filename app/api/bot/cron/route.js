@@ -1,5 +1,15 @@
 import { NextResponse } from 'next/server';
-import { runScheduledTask } from '../../../lib/bot-functions.js';
+
+// Lazy load bot functions to avoid build-time module resolution
+async function runTask(taskName) {
+    try {
+        const { runScheduledTask } = await import('../../../lib/bot-functions.js');
+        return await runScheduledTask(taskName);
+    } catch (error) {
+        console.error('Task execution failed:', error);
+        return { success: false, error: error.message, task: taskName };
+    }
+}
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
@@ -9,14 +19,6 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Task parameter required' }, { status: 400 });
     }
 
-    try {
-        const result = await runScheduledTask(task);
-        return NextResponse.json(result);
-    } catch (error) {
-        console.error('Cron job failed:', error);
-        return NextResponse.json({
-            error: error.message,
-            task
-        }, { status: 500 });
-    }
+    const result = await runTask(task);
+    return NextResponse.json(result);
 }
