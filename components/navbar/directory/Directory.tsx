@@ -81,9 +81,7 @@ const UserMenu: React.FC = () => {
             {directoryState.isOpen ? <FiChevronUp /> : <FiChevronDown />}
           </Flex>
         </MenuTrigger>
-        {/* @ts-expect-error - Chakra UI v3 MenuPositioner type doesn't properly reflect children prop */}
         <MenuPositioner>
-          {/* @ts-expect-error - Chakra UI v3 MenuContent type doesn't properly reflect children prop */}
           <MenuContent
             borderRadius={"xl"}
             mt={2}
