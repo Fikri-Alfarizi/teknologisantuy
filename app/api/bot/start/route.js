@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 export async function GET(request) {
   try {
     // Lazy load bot functions
-    const { initializeBot } = await import('../../../../lib/bot-functions.js');
+    const { initializeBot } = await import('../../../lib/bot-functions.js');
     
     // Initialize/start the bot
     const result = await initializeBot();
