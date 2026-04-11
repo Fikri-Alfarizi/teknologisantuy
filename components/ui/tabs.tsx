@@ -8,7 +8,7 @@ export const TabsIndicator = ChakraTabs.Indicator as any
 
 export interface TabsContentProps extends ChakraTabs.ContentProps {
   children?: React.ReactNode
-  value?: string
+  value: string
 }
 
 export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
