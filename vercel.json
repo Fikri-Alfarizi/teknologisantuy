@@ -1,0 +1,41 @@
+{
+  "functions": {
+    "app/api/bot/cron/route.js": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/bot/cron?task=news",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=passive-income",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=daily-alarm",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=autochat-morning",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=autochat-noon",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=autochat-afternoon",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=autochat-evening",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=game-sync",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

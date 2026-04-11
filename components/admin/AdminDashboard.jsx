@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/actions/adminActions';
-import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine, FaRobot, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import RealtimeActiveUsers from './RealtimeActiveUsers';
 
 export default function AdminDashboard() {
@@ -10,6 +10,8 @@ export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState(null);
   const [popularity, setPopularity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [botSettings, setBotSettings] = useState(null);
+  const [botLoading, setBotLoading] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -31,6 +33,45 @@ export default function AdminDashboard() {
     }
     loadData();
   }, []);
+
+  // Load bot settings
+  useEffect(() => {
+    async function loadBotSettings() {
+      try {
+        const response = await fetch('/api/bot/settings');
+        const result = await response.json();
+        if (result.success) {
+          setBotSettings(result.settings);
+        }
+      } catch (err) {
+        console.error("Bot Settings Load Error:", err);
+      }
+    }
+    loadBotSettings();
+  }, []);
+
+  const toggleBot = async () => {
+    setBotLoading(true);
+    try {
+      const response = await fetch('/api/bot/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'toggle' })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setBotSettings(result.settings);
+        alert(result.message);
+      } else {
+        alert('Gagal mengubah status bot');
+      }
+    } catch (err) {
+      console.error("Bot Toggle Error:", err);
+      alert('Error: ' + err.message);
+    } finally {
+      setBotLoading(false);
+    }
+  };
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
@@ -119,23 +160,115 @@ export default function AdminDashboard() {
           </div>
       </div>
 
-      {/* Game Popularity Section */}
+      {/* Bot Control Section */}
       <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', padding: '30px' }}>
           <h3 style={{ margin: '0 0 25px', fontSize: '16px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '12px', color: '#000', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <FaGamepad /> Game Paling Populer (Klik)
+            <FaRobot /> Kontrol Bot Discord
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-             {popularity.slice(0, 10).map((game, i) => (
-                <div key={i} style={{ 
-                  background: i === 0 ? '#ffe600' : '#f9f9f9', 
-                  border: '2px solid #000', padding: '15px', position: 'relative'
-                }}>
-                   <div style={{ fontSize: '24px', fontWeight: 950, marginBottom: '5px' }}>{game.clicks}</div>
-                   <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', color: '#444' }}>{game.title || 'Unknown Game'}</div>
-                   <div style={{ position: 'absolute', right: '10px', bottom: '10px', opacity: 0.1, fontSize: '30px' }}><FaChartLine /></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: '#f9f9f9', border: '2px solid #000' }}>
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 900, color: '#000' }}>Status Bot</div>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                  {botSettings ? (botSettings.enabled ? '🟢 AKTIF' : '🔴 NONAKTIF') : 'Memuat...'}
                 </div>
-             ))}
-             {popularity.length === 0 && <p style={{ fontWeight: 800 }}>Belum ada data klik.</p>}
+              </div>
+              <button
+                onClick={toggleBot}
+                disabled={botLoading}
+                style={{
+                  background: botSettings?.enabled ? '#ff4757' : '#2ed573',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  fontWeight: 900,
+                  fontSize: '14px',
+                  cursor: botLoading ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  opacity: botLoading ? 0.6 : 1
+                }}
+              >
+                {botLoading ? (
+                  <>
+                    <div style={{ width: '16px', height: '16px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    {botSettings?.enabled ? <FaToggleOff /> : <FaToggleOn />}
+                    {botSettings?.enabled ? 'MATIKAN BOT' : 'AKTIFKAN BOT'}
+                  </>
+                )}
+              </button>
+            </div>
+
+            {botSettings && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div style={{ padding: '15px', background: '#ffe600', border: '2px solid #000' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#000', marginBottom: '5px' }}>MAINTENANCE MODE</div>
+                  <div style={{ fontSize: '16px', fontWeight: 950 }}>
+                    {botSettings.maintenance ? '🟠 ON' : '🟢 OFF'}
+                  </div>
+                </div>
+                <div style={{ padding: '15px', background: '#f9f9f9', border: '2px solid #000' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#000', marginBottom: '5px' }}>LAST UPDATED</div>
+                  <div style={{ fontSize: '12px', fontWeight: 800 }}>
+                    {botSettings.lastUpdated ? new Date(botSettings.lastUpdated.toDate()).toLocaleString('id-ID') : 'Never'}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => window.open('/api/bot/start', '_blank')}
+                style={{
+                  background: '#007bff',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 15px',
+                  borderRadius: '6px',
+                  fontWeight: 800,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 RESTART BOT
+              </button>
+              <button
+                onClick={() => window.open('/api/bot/secret?action=list', '_blank')}
+                style={{
+                  background: '#28a745',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 15px',
+                  borderRadius: '6px',
+                  fontWeight: 800,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                🔐 SECRET URLS
+              </button>
+              <button
+                onClick={() => window.open('/api/bot/guilds?path=server-stats', '_blank')}
+                style={{
+                  background: '#6f42c1',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 15px',
+                  borderRadius: '6px',
+                  fontWeight: 800,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                📊 BOT STATS
+              </button>
+            </div>
           </div>
        </div>
 
