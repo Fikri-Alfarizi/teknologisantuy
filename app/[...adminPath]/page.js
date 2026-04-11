@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { notFound, useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import UserManagement from '@/components/admin/UserManagement';
@@ -12,17 +12,17 @@ import GameManagement from '@/components/admin/GameManagement';
 import AnalyticsDetail from '@/components/admin/AnalyticsDetail';
 import ContactInbox from '@/components/admin/ContactInbox';
 
-export default function AdminSecretPage({ params: paramsPromise }) {
-  const params = use(paramsPromise);
+export default function AdminSecretPage({ params }) {
   const { userProfile, loading } = useAuth();
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const secretPath = process.env.NEXT_PUBLIC_ADMIN_PATH || 'admin-secret-portal';
+  const adminPath = params?.adminPath ?? [];
   
   // params.adminPath is an array like ['secret-vault', 'users']
-  const rootPath = params.adminPath[0];
-  const subPath = params.adminPath[1] || 'dashboard';
+  const rootPath = adminPath[0];
+  const subPath = adminPath[1] || 'dashboard';
 
   useEffect(() => {
     // 1. Verify URL matches secret path (case insensitive)
