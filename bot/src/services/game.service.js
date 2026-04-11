@@ -1,4 +1,4 @@
-import db from '../db/index.js';
+import { gameCacheService, guildService as firebaseGuildService } from '../db/firebase-db.js';
 import guildService from './guild.service.js';
 
 /**
@@ -48,29 +48,23 @@ class GameService {
             // Filter hanya message valid (bukan bot, ada content)
             const validMessages = allMessages.filter(m => !m.author.bot && m.content.length > 5);
 
-            // Clear old cache untuk guild ini
-            db.prepare('DELETE FROM games_cache WHERE guild_id = ?').run(guildId);
-
-            // Insert new games
-            const insertStmt = db.prepare(`
-                INSERT OR REPLACE INTO games_cache 
-                (guild_id, message_id, title, content, link, image_url, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `);
+            // Clear old cache untuk guild ini - Firebase doesn't need explicit clear, just overwrite
 
             let count = 0;
             for (const msg of validMessages) {
                 const parsed = this.parseGameMessage(msg);
                 if (parsed.title) {
-                    insertStmt.run(
-                        guildId,
-                        msg.id,
-                        parsed.title,
-                        parsed.content,
-                        parsed.link,
-                        parsed.imageUrl,
-                        Math.floor(msg.createdTimestamp / 1000)
-                    );
+                    const gameData = {
+                        guild_id: guildId,
+                        message_id: msg.id,
+                        title: parsed.title,
+                        content: parsed.content,
+                        link: parsed.link,
+                        image_url: parsed.imageUrl,
+                        created_at: Math.floor(msg.createdTimestamp / 1000)
+                    };
+
+                    await gameCacheService.set(guildId, 'games', gameData);
                     count++;
                 }
             }

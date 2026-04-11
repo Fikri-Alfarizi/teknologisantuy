@@ -1,27 +1,61 @@
-import db from '../db/index.js';
+import { guildService as firebaseGuildService } from '../db/firebase-db.js';
 
 class GuildService {
-    getSettings(guildId) {
-        let settings = db.prepare('SELECT * FROM guild_settings WHERE guild_id = ?').get(guildId);
-        if (!settings) {
-            const info = db.prepare('INSERT INTO guild_settings (guild_id) VALUES (?)').run(guildId);
-            settings = {
+    async getSettings(guildId) {
+        const guild = await firebaseGuildService.get(guildId);
+        if (!guild) {
+            // Create default settings
+            await firebaseGuildService.create(guildId, {
+                settings: JSON.stringify({
+                    welcome_channel_id: null,
+                    leave_channel_id: null,
+                    log_channel_id: null,
+                    game_source_channel_id: null,
+                    request_channel_id: null,
+                    news_channel_id: null,
+                    general_chat_channel_id: null,
+                    welcome_message: 'Selamat datang {user} di {server}!',
+                    auto_role_id: null,
+                    admin_allowed_roles: null
+                })
+            });
+            return {
                 guild_id: guildId,
                 welcome_channel_id: null,
                 leave_channel_id: null,
                 log_channel_id: null,
+                game_source_channel_id: null,
+                request_channel_id: null,
+                news_channel_id: null,
+                general_chat_channel_id: null,
                 welcome_message: 'Selamat datang {user} di {server}!',
                 auto_role_id: null,
                 admin_allowed_roles: null
             };
         }
-        return settings;
+
+        // Parse settings from JSON string
+        let parsedSettings = {};
+        try {
+            parsedSettings = JSON.parse(guild.settings || '{}');
+        } catch (e) {
+            parsedSettings = {};
+        }
+
+        return {
+            guild_id: guildId,
+            ...parsedSettings
+        };
     }
 
-    updateSetting(guildId, key, value) {
-        this.getSettings(guildId); // Ensure exists
-        const stmt = db.prepare(`UPDATE guild_settings SET ${key} = ? WHERE guild_id = ?`);
-        return stmt.run(value, guildId);
+    async updateSetting(guildId, key, value) {
+        const currentSettings = await this.getSettings(guildId);
+        currentSettings[key] = value;
+
+        // Remove guild_id from settings before saving
+        const { guild_id, ...settingsToSave } = currentSettings;
+
+        return await firebaseGuildService.updateSettings(guildId, settingsToSave);
     }
 
     // --- ACCESS CONTROL ---

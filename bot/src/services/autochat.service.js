@@ -10,7 +10,7 @@ export async function runAutoChat(client, timeLabel) {
     const guilds = client.guilds.cache.map(g => g.id);
 
     for (const guildId of guilds) {
-        const settings = guildService.getSettings(guildId);
+        const settings = await guildService.getSettings(guildId);
 
         if (!settings || !settings.general_chat_channel_id) continue;
 

@@ -1,5 +1,6 @@
 import Parser from 'rss-parser';
-import db from '../db/index.js';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../../lib/firebase.js';
 import guildService from './guild.service.js';
 
 const parser = new Parser();
@@ -24,11 +25,12 @@ export async function checkAndPostNews(client) {
 
             for (const item of items) {
                 // Cek apakah sudah pernah dipost (Global check biar hemat DB)
-                const exists = db.prepare('SELECT id FROM news_history WHERE news_guid = ?').get(item.guid || item.link);
+                const newsRef = doc(db, 'news_history', item.guid || item.link);
+                const exists = await getDoc(newsRef);
 
-                if (!exists) {
+                if (!exists.exists()) {
                     // Simpan ke DB
-                    db.prepare('INSERT INTO news_history (news_guid) VALUES (?)').run(item.guid || item.link);
+                    await setDoc(newsRef, { posted_at: new Date() });
 
                     // Broadcast ke semua guild yang aktifkan fitur news
                     for (const guildId of guilds) {
