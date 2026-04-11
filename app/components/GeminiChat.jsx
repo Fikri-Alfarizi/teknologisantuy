@@ -5,6 +5,9 @@ import { geminiChatAtom } from '@/atoms/geminiChatAtom';
 
 const { useAtom } = jotai;
 
+// Detect mobile device
+const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 // --- UTILS ---
 function renderMarkdown(text) {
   if (!text) return '';
@@ -24,7 +27,11 @@ function useTypingEffect(text, speed = 8, onDone) {
   const indexRef = useRef(0);
 
   useEffect(() => {
-    if (!text) return;
+    if (!text || isMobile) { // Skip animation on mobile for performance
+      setDisplayed(text || '');
+      if (onDone) onDone();
+      return;
+    }
     setDisplayed('');
     indexRef.current = 0;
     setIsTyping(true);
@@ -42,7 +49,7 @@ function useTypingEffect(text, speed = 8, onDone) {
     return () => clearInterval(interval);
   }, [text, speed, onDone]);
 
-  return { displayed, isTyping };
+  return { displayed: isMobile ? text : displayed, isTyping: isMobile ? false : isTyping };
 }
 
 // --- COMPONENTS ---
@@ -60,12 +67,23 @@ function AiMessage({ text, shouldAnimate, onAnimationDone, image }) {
       boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
     }}>
       {image && (
-        <img src={`data:${image.mimeType};base64,${image.data}`} alt="Uploaded" 
-             style={{ width: '100%', borderRadius: '8px', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.1)' }} />
+        <img 
+          src={`data:${image.mimeType};base64,${image.data}`} 
+          alt="Uploaded" 
+          loading="lazy"
+          style={{ 
+            width: isMobile ? '200px' : '100%', // Smaller images on mobile
+            maxWidth: '100%', 
+            borderRadius: '8px', 
+            marginBottom: '10px', 
+            border: '1px solid rgba(255,255,255,0.1)',
+            height: 'auto'
+          }} 
+        />
       )}
       <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
-      {isTyping && <span style={{ display: 'inline-block', width: '6px', height: '14px', background: 'var(--yellow)', marginLeft: '2px', animation: 'blink 0.6s infinite' }} />}
-      <style jsx>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
+      {isTyping && !isMobile && <span style={{ display: 'inline-block', width: '6px', height: '14px', background: 'var(--yellow)', marginLeft: '2px', animation: 'blink 0.6s infinite' }} />}
+      {!isMobile && <style jsx>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>}
     </div>
   );
 }
@@ -91,17 +109,27 @@ export default function GeminiChat() {
   const messages = activeSession.messages;
 
   useEffect(() => {
+    if (isMobile) return; // Skip localStorage on mobile for performance
     const saved = localStorage.getItem('ts_chat_sessions');
     if (saved) {
-      setSessions(JSON.parse(saved));
-      const lastSessionId = localStorage.getItem('ts_active_session_id');
-      if (lastSessionId) setActiveSessionId(lastSessionId);
+      try {
+        setSessions(JSON.parse(saved));
+        const lastSessionId = localStorage.getItem('ts_active_session_id');
+        if (lastSessionId) setActiveSessionId(lastSessionId);
+      } catch (e) {
+        console.warn('Failed to load chat sessions from localStorage');
+      }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('ts_chat_sessions', JSON.stringify(sessions));
-    localStorage.setItem('ts_active_session_id', activeSessionId);
+    if (isMobile) return; // Skip saving to localStorage on mobile
+    try {
+      localStorage.setItem('ts_chat_sessions', JSON.stringify(sessions));
+      localStorage.setItem('ts_active_session_id', activeSessionId);
+    } catch (e) {
+      console.warn('Failed to save chat sessions to localStorage');
+    }
   }, [sessions, activeSessionId]);
 
   useEffect(() => {
@@ -153,12 +181,15 @@ export default function GeminiChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: abortControllerRef.current.signal,
-        body: JSON.stringify({ message: userMsg, stepContext, image: userImg ? { inlineData: userImg } : null, history: messages.slice(-10).map(m => ({ role: m.role, text: m.text })) })
+        body: JSON.stringify({ message: userMsg, stepContext, image: userImg ? { inlineData: userImg } : null, history: messages.slice(-5).map(m => ({ role: m.role, text: m.text })) }) // Reduce history on mobile
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: data.reply || data.error, animate: true }]);
+      updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: data.reply || data.error, animate: !isMobile }]); // Skip animation on mobile
     } catch (err) {
-      if (err.name !== 'AbortError') updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: 'Gagal terhubung ke AI.', animate: true }]);
+      if (err.name === 'AbortError') return;
+      console.error('Chat error:', err);
+      updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: isMobile ? 'Error: Periksa koneksi' : 'Gagal terhubung ke AI. Coba lagi.', animate: false }]);
     } finally {
       setLoading(false);
       abortControllerRef.current = null;
@@ -181,21 +212,23 @@ export default function GeminiChat() {
   return (
     <div style={{
       position: 'fixed', bottom: '24px', left: '24px', zIndex: 2000,
-      width: '380px', height: '580px', maxHeight: '85vh',
+      width: isMobile ? '320px' : '380px', height: isMobile ? '480px' : '580px', maxHeight: '85vh',
       background: 'var(--blue-base, rgba(13, 63, 94, 0.85))',
-      backdropFilter: 'blur(12px)',
+      backdropFilter: isMobile ? 'none' : 'blur(8px)', // Reduce blur on mobile
       border: '1px solid rgba(255,255,255,0.15)',
       borderRadius: '24px',
       boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      animation: 'chat-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+      animation: isMobile ? 'none' : 'chat-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' // Skip animation on mobile
     }}>
-      <style jsx>{`
-        @keyframes chat-appear {
-          from { opacity: 0; transform: translateY(20px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-      `}</style>
+      {!isMobile && (
+        <style jsx>{`
+          @keyframes chat-appear {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+        `}</style>
+      )}
       {/* Header */}
       <div style={{
         padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -260,7 +293,7 @@ export default function GeminiChat() {
               background: 'var(--yellow)', color: '#000', borderRadius: '16px 2px 16px 16px',
               fontSize: '13.5px', fontWeight: 700, boxShadow: '0 4px 15px rgba(255, 225, 53, 0.2)'
             }}>
-              {msg.image && <img src={`data:${msg.image.mimeType};base64,${msg.image.data}`} alt="User upload" style={{ width: '100%', borderRadius: '10px', marginBottom: '8px' }} />}
+              {msg.image && <img src={`data:${msg.image.mimeType};base64,${msg.image.data}`} alt="User upload" loading="lazy" style={{ width: isMobile ? '200px' : '100%', maxWidth: '100%', borderRadius: '10px', marginBottom: '8px', height: 'auto' }} />}
               {msg.text}
             </div>
           )
@@ -303,6 +336,7 @@ export default function GeminiChat() {
             }} />
           </button>
           <button type="button" onClick={() => {
+            if (isMobile) return; // Skip speech recognition on mobile for compatibility
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SR) return alert("Mic tidak didukung");
             const recognition = new SR();
@@ -311,8 +345,13 @@ export default function GeminiChat() {
             recognition.onresult = e => setInput(e.results[0][0].transcript);
             recognition.onend = () => setIsListening(false);
             recognition.start();
-          }} style={{ width: '36px', height: '36px', background: 'transparent', border: 'none', color: isListening ? 'var(--yellow)' : 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
-            <i className={`fa-solid ${isListening ? 'fa-microphone-lines fa-beat-fade' : 'fa-microphone'}`}></i>
+          }} style={{ 
+            width: '36px', height: '36px', background: 'transparent', border: 'none', 
+            color: (isListening && !isMobile) ? 'var(--yellow)' : 'rgba(255,255,255,0.6)', 
+            cursor: isMobile ? 'default' : 'pointer',
+            opacity: isMobile ? 0.3 : 1
+          }}>
+            <i className={`fa-solid ${isListening && !isMobile ? 'fa-microphone-lines fa-beat-fade' : 'fa-microphone'}`}></i>
           </button>
           
           <input 
