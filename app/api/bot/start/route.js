@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { initializeBot } from '../../../bot/src/vercel-bot.js';
+import { initializeBot } from '../../../lib/bot-functions.js';
 
 // Global variable to track if bot is running
 let botStarted = false;

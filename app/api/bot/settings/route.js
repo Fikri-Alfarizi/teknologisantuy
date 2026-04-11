@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { botSettings } from '../../../bot/src/db/firebase-db.js';
+import { botSettings } from '../../../lib/bot-db.js';
 
 export async function GET() {
     try {

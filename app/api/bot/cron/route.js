@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { runScheduledTask } from '../../../bot/src/vercel-bot.js';
+import { runScheduledTask } from '../../../lib/bot-functions.js';
 
 export async function GET(request) {
     const { searchParams } = new URL(request.url);

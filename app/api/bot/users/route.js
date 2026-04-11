@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import client from '../../../bot/src/config/discord.js';
-import userService from '../../../bot/src/services/user.service.js';
+import { userService } from '../../../lib/bot-db.js';
 
 export async function GET(request, { params }) {
     const { searchParams } = new URL(request.url);

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import client from '../../../bot/src/config/discord.js';
 
 async function getGuild(searchParams) {
+    // Dynamic import to avoid bundling issues
+    const { default: client } = await import('../../../bot/src/config/discord.js');
     const guild_id = searchParams.get('guild_id');
     if (guild_id) {
         return await client.guilds.fetch(guild_id);
