@@ -236,6 +236,20 @@ export const guildService = {
       console.error('Error updating guild settings:', error);
       return false;
     }
+  },
+
+  async getAll() {
+    try {
+      const q = query(collection(db, COLLECTIONS.GUILDS));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+    } catch (error) {
+      console.error('Error getting all guilds:', error);
+      return [];
+    }
   }
 };
 
