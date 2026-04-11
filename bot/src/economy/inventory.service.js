@@ -42,13 +42,3 @@ class InventoryService {
 }
 
 export default new InventoryService();
-        const stmt = db.prepare(`
-            DELETE FROM inventory 
-            WHERE expires_at IS NOT NULL AND expires_at <= ?
-        `);
-
-        return stmt.run(now);
-    }
-}
-
-export default new InventoryService();
