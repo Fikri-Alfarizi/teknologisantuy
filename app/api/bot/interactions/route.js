@@ -2,6 +2,10 @@ import { verifyKey, InteractionType, InteractionResponseType } from 'discord-int
 
 export const runtime = 'nodejs';
 
+export async function GET() {
+    return new Response('Interactions endpoint is active! 🚀', { status: 200 });
+}
+
 export async function POST(request) {
     const signature = request.headers.get('x-signature-ed25519');
     const timestamp = request.headers.get('x-signature-timestamp');
@@ -25,6 +29,7 @@ export async function POST(request) {
     );
 
     if (!isValidRequest) {
+        console.warn('⚠️ Invalid request signature received from Discord. Check if DISCORD_PUBLIC_KEY matches.');
         return new Response('Bad request signature', { status: 401 });
     }
 
