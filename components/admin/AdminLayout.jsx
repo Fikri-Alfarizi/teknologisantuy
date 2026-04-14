@@ -26,6 +26,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
     router.push('/');
   };
 
+  const activeTabLabel = navItems.find(item => item.id === activeTab)?.label || 'Dashboard';
+
   // Format tanggal untuk Header
   const today = new Date().toLocaleDateString('id-ID', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -94,8 +96,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         {/* Top Header */}
         <header className="flex justify-between items-center px-8 py-6 bg-surface z-40">
           <div>
-            <h2 className="text-2xl font-extrabold font-headline text-on-surface capitalize">
-              {activeTab.replace('-', ' ')}
+            <h2 className="text-2xl font-extrabold font-headline text-on-surface">
+              {activeTabLabel}
             </h2>
             <p className="text-sm text-on-surface-variant font-medium opacity-70">{today}</p>
           </div>
