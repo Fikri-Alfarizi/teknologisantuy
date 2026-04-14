@@ -36,20 +36,29 @@ function AdsterraAd({ id, width, height, slotId }) {
 
 function DownloadContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('to');
-  const gameName = searchParams.get('name') || 'Game';
+  const [gameName, setGameName] = useState('Game');
+  const [targetUrl, setTargetUrl] = useState('');
   
   const [countdown, setCountdown] = useState(10);
   const [isReady, setIsReady] = useState(false);
-  const [targetUrl, setTargetUrl] = useState('');
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('Mengamankan koneksi...');
 
+  // Capture parameters and CLEAN URL immediately
   useEffect(() => {
+    const token = searchParams.get('to');
+    const name = searchParams.get('name');
+    
     if (token) {
       setTargetUrl(decodeDownloadUrl(token));
+      if (name) setGameName(name);
+
+      // Clean the URL bar immediately (within 1ms)
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/download');
+      }
     }
-  }, [token]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (countdown > 0) {
