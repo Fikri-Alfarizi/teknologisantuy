@@ -2,14 +2,17 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure data directory exists
+const isVercel = process.env.VERCEL || process.env.NEXT_PUBLIC_VERCEL_ENV;
+
+// Ensure data directory exists (SKIP ON VERCEL)
 const dataDir = path.resolve('data');
-if (!fs.existsSync(dataDir)) {
+if (!isVercel && !fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir);
 }
 
-const dbPath = path.join(dataDir, 'santuy.db');
-const db = new Database(dbPath/*, { verbose: console.log }*/);
+const db = isVercel 
+    ? new Database(':memory:') 
+    : new Database(path.join(dataDir, 'santuy.db'));
 
 // Initialize tables
 db.exec(`

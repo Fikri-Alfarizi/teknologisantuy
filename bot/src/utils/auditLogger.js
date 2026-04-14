@@ -6,9 +6,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const LOG_DIR = path.join(__dirname, '../../logs');
+const isVercel = process.env.VERCEL || process.env.NEXT_PUBLIC_VERCEL_ENV;
 
-// Ensure log directory exists
-if (!fs.existsSync(LOG_DIR)) {
+// Ensure log directory exists (SKIP ON VERCEL)
+if (!isVercel && !fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
@@ -16,11 +17,17 @@ if (!fs.existsSync(LOG_DIR)) {
  * Write log to file
  */
 function writeLog(filename, message) {
+    if (isVercel) return; // Skip file logging on Vercel
+    
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] ${message}\n`;
     const logPath = path.join(LOG_DIR, filename);
 
-    fs.appendFileSync(logPath, logMessage, 'utf8');
+    try {
+        fs.appendFileSync(logPath, logMessage, 'utf8');
+    } catch (err) {
+        console.error(`Failed to write log to ${filename}:`, err.message);
+    }
 }
 
 /**
