@@ -2,6 +2,9 @@
 const nextConfig = {
   experimental: {
     externalDir: true,
+    outputFileTracingIncludes: {
+      '/api/**/*': ['./bot/**/*']
+    }
   },
   serverExternalPackages: ['discord.js', '@discordjs/ws', 'zlib-sync', 'bufferutil', 'utf-8-validate', '@google/generative-ai'],
   transpilePackages: ['bot'],
