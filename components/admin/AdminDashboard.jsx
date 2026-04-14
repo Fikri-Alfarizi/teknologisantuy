@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/actions/adminActions';
-import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine, FaRobot, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import RealtimeActiveUsers from './RealtimeActiveUsers';
+
+// Import chart secara dinamis agar tidak error saat SSR Next.js
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
   const [analytics, setAnalytics] = useState(null);
-  const [popularity, setPopularity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [botSettings, setBotSettings] = useState(null);
   const [botLoading, setBotLoading] = useState(false);
@@ -16,15 +18,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [statsRes, analyticsRes, popularityRes] = await Promise.all([
+        const [statsRes, analyticsRes] = await Promise.all([
           getDashboardStats(),
-          getAnalyticsStats(),
-          getGamePopularity()
+          getAnalyticsStats()
         ]);
-
         if (statsRes.success) setData(statsRes.data);
         if (analyticsRes.success) setAnalytics(analyticsRes.data);
-        if (popularityRes.success) setPopularity(popularityRes.data);
       } catch (err) {
         console.error("Dashboard Load Error:", err);
       } finally {
@@ -32,17 +31,13 @@ export default function AdminDashboard() {
       }
     }
     loadData();
-  }, []);
 
-  // Load bot settings
-  useEffect(() => {
+    // Load Bot Settings
     async function loadBotSettings() {
       try {
         const response = await fetch('/api/bot/settings');
         const result = await response.json();
-        if (result.success) {
-          setBotSettings(result.settings);
-        }
+        if (result.success) setBotSettings(result.settings);
       } catch (err) {
         console.error("Bot Settings Load Error:", err);
       }
@@ -61,275 +56,257 @@ export default function AdminDashboard() {
       const result = await response.json();
       if (result.success) {
         setBotSettings(result.settings);
-        alert(result.message);
-      } else {
-        alert('Gagal mengubah status bot');
       }
     } catch (err) {
       console.error("Bot Toggle Error:", err);
-      alert('Error: ' + err.message);
     } finally {
       setBotLoading(false);
     }
   };
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
-      <div style={{ fontWeight: 800, textTransform: 'uppercase', color: '#000', fontSize: '20px', letterSpacing: '2px' }}>
-        <div style={{ width: '40px', height: '40px', border: '6px solid #000', borderTopColor: '#ffe600', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }}></div>
-        Syncing Engine...
-      </div>
-      <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div className="flex h-full items-center justify-center">
+      <div className="w-12 h-12 border-4 border-surface-container-high border-t-primary rounded-full animate-spin"></div>
     </div>
   );
 
   const { stats, latestFeedback, totalUsers } = data || { stats: { totalVotes: 0, yesVotes: 0, noVotes: 0, feedbackCount: 0 }, latestFeedback: [], totalUsers: 0 };
   const yesPercent = stats.totalVotes > 0 ? Math.round((stats.yesVotes / stats.totalVotes) * 100) : 0;
-  const noPercent = stats.totalVotes > 0 ? Math.round((stats.noVotes / stats.totalVotes) * 100) : 0;
+  
+  // Data Chart Sumber Traffic
+  const fbCount = analytics?.sources?.Facebook || 0;
+  const igCount = analytics?.sources?.Instagram || 0;
+  const directCount = (analytics?.sources?.Direct || 0) + (analytics?.sources?.Other || 0);
+  
+  const radialOptions = {
+    chart: { type: 'radialBar', fontFamily: 'Inter, sans-serif' },
+    plotOptions: {
+      radialBar: {
+        hollow: { size: '40%' },
+        track: { background: '#f2f4f6', margin: 8 },
+        dataLabels: {
+          name: { show: false },
+          value: {
+            fontSize: '24px', fontWeight: 800, fontFamily: 'Manrope, sans-serif', color: '#191c1e',
+            show: true, formatter: function () { return analytics?.totalViews || 0; }
+          }
+        }
+      }
+    },
+    colors: ['#4f46e5', '#E4405F', '#1877F2'], 
+    labels: ['Direct', 'Instagram', 'Facebook'],
+    stroke: { lineCap: 'round' }
+  };
 
   return (
-    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '30px', color: '#000' }}>
-      
-      {/* Real-time users banner */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <RealtimeActiveUsers />
-      </div>
-
-      {/* Stats Cards - Unified Yellow/White Palette */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-         <StatBox 
-            title="Total Suara" count={stats.totalVotes} 
-            icon={<FaCommentDots />} color="#ffe600" textColor="#000"
-         />
-         <StatBox 
-            title="Saran Masuk" count={stats.feedbackCount} 
-            icon={<FaCheckCircle />} color="#ffffff" textColor="#000"
-         />
-         <StatBox 
-            title="User Terdaftar" count={totalUsers} 
-            icon={<FaUsers />} color="#ffe600" textColor="#000"
-         />
-         <StatBox 
-            title="Pesaing (%)" count={`${yesPercent}%`} 
-            icon={<FaRocket />} color="#ffffff" textColor="#000"
-         />
-      </div>
-
-      {/* Analytics Rows */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '30px' }}>
-          {/* World Traffic Tracking */}
-          <div style={{ background: '#fff', color: '#000', border: '4px solid #000', boxShadow: '10px 10px 0 #000', padding: '25px' }}>
-            <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px', color: '#000' }}>
-              <FaGlobe /> Traffic Dunia
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {analytics?.countryData.map((c, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800 }}>
-                  <span style={{ fontSize: '13px' }}>{c.name}</span>
-                  <span style={{ background: '#000', color: '#fff', padding: '2px 8px', fontSize: '11px' }}>{c.count} Views</span>
-                </div>
-              )) || <p>Memuat data...</p>}
-            </div>
-          </div>
-
-          {/* Source Breakdown */}
-          <div style={{ background: '#fff', color: '#000', border: '4px solid #000', boxShadow: '10px 10px 0 #000', padding: '25px' }}>
-            <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px', color: '#000' }}>
-              🔗 Sumber Traffic
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-               <SourceBox icon={<FaFacebook color="#1877F2" />} label="Facebook" count={analytics?.sources?.Facebook || 0} total={analytics?.totalViews || 1} color="#1877F2" />
-               <SourceBox icon={<FaInstagram color="#E4405F" />} label="Instagram" count={analytics?.sources?.Instagram || 0} total={analytics?.totalViews || 1} color="#E4405F" />
-               <SourceBox icon={<FaLink color="#333" />} label="Direct / Other" count={(analytics?.sources?.Direct || 0) + (analytics?.sources?.Other || 0)} total={analytics?.totalViews || 1} color="#333" />
-            </div>
-          </div>
-
-          {/* Top Pages */}
-          <div style={{ background: '#fff', color: '#000', border: '4px solid #000', boxShadow: '10px 10px 0 #000', padding: '25px' }}>
-            <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px', color: '#000' }}>
-              📄 Top Pages
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {analytics?.pageData.map((p, i) => (
-                <div key={i} style={{ fontSize: '12px', fontWeight: 700, borderLeft: '3px solid #ffe600', paddingLeft: '10px', color: '#000' }}>
-                  <div style={{ color: '#444', fontSize: '10px' }}>{p.path}</div>
-                  <div>{p.count} Kunjungan</div>
-                </div>
-              ))}
-            </div>
-          </div>
-      </div>
-
-      {/* Bot Control Section */}
-      <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', padding: '30px' }}>
-          <h3 style={{ margin: '0 0 25px', fontSize: '16px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '12px', color: '#000', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <FaRobot /> Kontrol Bot Discord
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: '#f9f9f9', border: '2px solid #000' }}>
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#000' }}>Status Bot</div>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                  {botSettings ? (botSettings.enabled ? '🟢 AKTIF' : '🔴 NONAKTIF') : 'Memuat...'}
-                </div>
+    <div className="flex w-full">
+      {/* Konten Utama Kiri */}
+      <div className="flex-1 px-8 pb-8 pr-[340px]">
+        
+        {/* Grid Widget */}
+        <div className="grid grid-cols-4 gap-6 mb-8">
+          
+          {/* Card 1: Total Suara */}
+          <div className="col-span-2 bg-primary-gradient p-8 rounded-3xl text-white shadow-xl shadow-primary/20 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors duration-500"></div>
+            <div className="flex justify-between items-start mb-12 relative z-10">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <span className="material-symbols-outlined">forum</span>
               </div>
-              <button
-                onClick={toggleBot}
-                disabled={botLoading}
-                style={{
-                  background: botSettings?.enabled ? '#ff4757' : '#2ed573',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '12px 20px',
-                  borderRadius: '8px',
-                  fontWeight: 900,
-                  fontSize: '14px',
-                  cursor: botLoading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  opacity: botLoading ? 0.6 : 1
-                }}
-              >
-                {botLoading ? (
-                  <>
-                    <div style={{ width: '16px', height: '16px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    Memproses...
-                  </>
-                ) : (
-                  <>
-                    {botSettings?.enabled ? <FaToggleOff /> : <FaToggleOn />}
-                    {botSettings?.enabled ? 'MATIKAN BOT' : 'AKTIFKAN BOT'}
-                  </>
-                )}
-              </button>
+              <RealtimeActiveUsers />
             </div>
-
-            {botSettings && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                <div style={{ padding: '15px', background: '#ffe600', border: '2px solid #000' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#000', marginBottom: '5px' }}>MAINTENANCE MODE</div>
-                  <div style={{ fontSize: '16px', fontWeight: 950 }}>
-                    {botSettings.maintenance ? '🟠 ON' : '🟢 OFF'}
-                  </div>
-                </div>
-                <div style={{ padding: '15px', background: '#f9f9f9', border: '2px solid #000' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#000', marginBottom: '5px' }}>LAST UPDATED</div>
-                  <div style={{ fontSize: '12px', fontWeight: 800 }}>
-                    {botSettings.lastUpdated ? new Date(botSettings.lastUpdated.toDate()).toLocaleString('id-ID') : 'Never'}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => window.open('/api/bot/start', '_blank')}
-                style={{
-                  background: '#007bff',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 15px',
-                  borderRadius: '6px',
-                  fontWeight: 800,
-                  fontSize: '12px',
-                  cursor: 'pointer'
-                }}
-              >
-                🔄 RESTART BOT
-              </button>
-              <button
-                onClick={() => window.open('/api/bot/secret?action=list', '_blank')}
-                style={{
-                  background: '#28a745',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 15px',
-                  borderRadius: '6px',
-                  fontWeight: 800,
-                  fontSize: '12px',
-                  cursor: 'pointer'
-                }}
-              >
-                🔐 SECRET URLS
-              </button>
-              <button
-                onClick={() => window.open('/api/bot/guilds?path=server-stats', '_blank')}
-                style={{
-                  background: '#6f42c1',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 15px',
-                  borderRadius: '6px',
-                  fontWeight: 800,
-                  fontSize: '12px',
-                  cursor: 'pointer'
-                }}
-              >
-                📊 BOT STATS
-              </button>
+            <div className="relative z-10">
+              <p className="text-white/80 text-xs font-bold mb-1 uppercase tracking-widest">Total Suara Terkumpul</p>
+              <h3 className="text-5xl font-extrabold font-headline tracking-tight">{stats.totalVotes}</h3>
             </div>
           </div>
-       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
-         {/* Vote Breakdown */}
-         <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', padding: '30px' }}>
-            <h3 style={{ margin: '0 0 25px', fontSize: '16px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '3px solid #000', paddingBottom: '12px', color: '#000' }}>📊 Respon Komunitas</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-               <ProgressBar label="Lanjutkan (SETUJU)" percent={yesPercent} color="#ffe600" />
-               <ProgressBar label="Jangan Dulu (BATAL)" percent={noPercent} color="#222" fontColor="#fff" />
+          {/* Card 2: Saran Masuk */}
+          <div className="bg-surface-container-lowest p-6 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer">
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined">mark_email_read</span>
+              </div>
+              <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">Updated</span>
             </div>
-            <p style={{ marginTop: '30px', fontSize: '12px', color: '#000', fontWeight: 900, textTransform: 'uppercase', textAlign: 'center', background: '#ffe600', padding: '5px', border: '2px solid #000' }}>Total: {stats.totalVotes} Responden</p>
-         </div>
+            <div className="mt-8">
+              <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">Saran Masuk</p>
+              <span className="text-2xl font-bold font-headline">{stats.feedbackCount}</span>
+            </div>
+          </div>
 
-         {/* Recent Feedback Table */}
-         <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', overflow: 'hidden' }}>
-            <div style={{ padding: '15px 25px', borderBottom: '4px solid #000', background: '#ffe600' }}>
-               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 950, textTransform: 'uppercase', color: '#000' }}>💬 Feedback Terbaru</h3>
+          {/* Card 3: User Terdaftar */}
+          <div className="bg-surface-container-lowest p-6 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer">
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 bg-tertiary-container/10 text-tertiary-container rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined">group</span>
+              </div>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead style={{ background: '#eee', fontSize: '12px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '2px solid #000', color: '#000' }}>
-                     <tr>
-                        <th style={{ padding: '18px 25px' }}>Status</th>
-                        <th style={{ padding: '18px 25px' }}>Pilihan</th>
-                        <th style={{ padding: '18px 25px' }}>Saran / Masukan</th>
-                        <th style={{ padding: '18px 25px' }}>Waktu</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     {latestFeedback.map((fb, i) => (
-                        <tr key={fb.id} style={{ borderBottom: '2px solid #000', fontSize: '14px', background: i % 2 === 0 ? '#fff' : '#f9f9f9', color: '#000' }}>
-                           <td style={{ padding: '18px 25px', fontWeight: 900 }}>
-                              <span style={{ 
-                                 padding: '4px 8px', background: fb.userId === 'anonymous' ? '#eee' : '#ffe600', 
-                                 border: '1px solid #000', fontSize: '10px' 
-                              }}>
-                                 {fb.userId === 'anonymous' ? 'TAMU' : 'PREMIUM'}
-                              </span>
-                           </td>
-                           <td style={{ padding: '18px 25px' }}>
-                              <span style={{ 
-                                 padding: '6px 12px', border: '2px solid #000',
-                                 background: fb.vote ? '#ffe600' : '#000', color: fb.vote ? '#000' : '#fff', fontSize: '11px', fontWeight: 950, textTransform: 'uppercase'
-                              }}>
-                                 {fb.vote ? 'SETUJU' : 'BATAL'}
-                              </span>
-                           </td>
-                           <td style={{ padding: '18px 25px', maxWidth: '400px', fontWeight: 700 }}>
-                              {fb.feedback || <em style={{ opacity: 0.3 }}>Tidak ada pesan</em>}
-                           </td>
-                           <td style={{ padding: '18px 25px', color: '#000', fontSize: '12px', fontWeight: 800 }}>
-                              {new Date(fb.timestamp).toLocaleString('id-ID')}
-                           </td>
-                        </tr>
-                     ))}
-                  </tbody>
-               </table>
+            <div className="mt-8">
+              <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">User Terdaftar</p>
+              <span className="text-2xl font-bold font-headline">{totalUsers}</span>
             </div>
-         </div>
+          </div>
+
+          {/* Card 4: Persentase Pesaing / Setuju (Kombinasi User List Style) */}
+          <div className="col-span-4 bg-surface-container-lowest p-8 rounded-3xl shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-2">Respon Komunitas (SETUJU)</p>
+              <div className="flex items-end gap-3">
+                 <h3 className="text-4xl font-bold font-headline">{yesPercent}%</h3>
+                 <span className="text-primary font-bold mb-1">Mendukung Lanjut</span>
+              </div>
+            </div>
+            <div className="w-1/2">
+                <div className="flex justify-between text-xs font-bold mb-2">
+                    <span className="text-primary">Setuju: {stats.yesVotes}</span>
+                    <span className="text-on-surface-variant">Batal: {stats.noVotes}</span>
+                </div>
+                <div className="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div className="h-full bg-primary-gradient rounded-full transition-all duration-1000" style={{ width: `${yesPercent}%` }}></div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Feedback List Table */}
+        <div className="bg-surface-container-lowest rounded-3xl shadow-sm overflow-hidden mb-8">
+          <div className="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+             <h3 className="text-lg font-bold font-headline">💬 Feedback Terbaru</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                <tr>
+                  <th className="p-4 pl-6">Status</th>
+                  <th className="p-4">Pilihan</th>
+                  <th className="p-4 w-1/2">Saran / Masukan</th>
+                  <th className="p-4 pr-6">Waktu</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm font-medium">
+                {latestFeedback.map((fb, i) => (
+                  <tr key={fb.id} className="border-b border-outline-variant/10 hover:bg-surface-container-lowest transition-colors">
+                    <td className="p-4 pl-6">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${fb.userId === 'anonymous' ? 'bg-surface-container-high text-on-surface-variant' : 'bg-primary/10 text-primary'}`}>
+                        {fb.userId === 'anonymous' ? 'TAMU' : 'PREMIUM'}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                       <span className={`flex items-center gap-1.5 font-bold ${fb.vote ? 'text-primary' : 'text-error'}`}>
+                          <span className="material-symbols-outlined text-[16px]">{fb.vote ? 'thumb_up' : 'thumb_down'}</span>
+                          {fb.vote ? 'SETUJU' : 'BATAL'}
+                       </span>
+                    </td>
+                    <td className="p-4 text-on-surface-variant">
+                      {fb.feedback || <em className="opacity-50">Tidak ada pesan</em>}
+                    </td>
+                    <td className="p-4 pr-6 text-xs text-on-surface-variant/70">
+                      {new Date(fb.timestamp).toLocaleString('id-ID')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      {/* Sidebar Kanan Statis di dalam Page */}
+      <aside className="w-80 h-[calc(100vh-80px)] fixed right-0 top-[80px] bg-white shadow-[-4px_0_24px_rgba(0,0,0,0.02)] p-8 border-l border-surface-container-high overflow-y-auto hide-scrollbar z-30">
+        
+        {/* Sumber Traffic (Chart) */}
+        <section className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold font-headline">Sumber Traffic</h3>
+          </div>
+          <div className="bg-surface relative rounded-3xl p-6">
+            <div className="flex justify-center -mt-4">
+               {(typeof window !== 'undefined') && (
+                  <ReactApexChart options={radialOptions} series={[directCount, igCount, fbCount]} type="radialBar" height={220} />
+               )}
+            </div>
+            <div className="mt-2 space-y-4">
+              <div className="flex justify-between items-center p-2 -mx-2 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></div>
+                  <span className="text-xs font-semibold text-on-surface-variant">Direct/Lainnya</span>
+                </div>
+                <span className="text-xs font-bold">{directCount}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 -mx-2 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#E4405F]"></div>
+                  <span className="text-xs font-semibold text-on-surface-variant">Instagram</span>
+                </div>
+                <span className="text-xs font-bold">{igCount}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 -mx-2 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#1877F2]"></div>
+                  <span className="text-xs font-semibold text-on-surface-variant">Facebook</span>
+                </div>
+                <span className="text-xs font-bold">{fbCount}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Traffic Dunia (List) */}
+        <section className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold font-headline">Traffic Dunia</h3>
+          </div>
+          <div className="bg-surface rounded-3xl p-6 space-y-5">
+             {analytics?.countryData?.slice(0, 4).map((c, i) => {
+                const percent = Math.round((c.count / (analytics.totalViews || 1)) * 100);
+                return (
+                  <div key={i} className="flex items-center gap-4 group">
+                    <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-sm font-bold border border-outline-variant/10">📍</div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-xs font-bold text-on-surface-variant group-hover:text-on-surface transition-colors">{c.name}</span>
+                        <span className="text-xs font-bold text-primary">{c.count}</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                        <div className="h-full bg-primary-gradient rounded-full" style={{width: `${percent}%`}}></div>
+                      </div>
+                    </div>
+                  </div>
+                )
+             })}
+          </div>
+        </section>
+
+        {/* Bot Controls - Styled Like Promo Card */}
+        <section className="mt-8">
+           <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                 <span className="material-symbols-outlined text-primary">smart_toy</span>
+                 <h3 className="font-bold font-headline text-sm">Bot Control</h3>
+              </div>
+              
+              <div className="bg-surface rounded-xl p-4 mb-4 flex justify-between items-center">
+                 <div>
+                    <p className="text-[10px] uppercase font-bold text-on-surface-variant">Status</p>
+                    <p className={`text-xs font-bold ${botSettings?.enabled ? 'text-green-600' : 'text-error'}`}>
+                       {botSettings ? (botSettings.enabled ? '🟢 AKTIF' : '🔴 NONAKTIF') : 'Memuat...'}
+                    </p>
+                 </div>
+                 <button onClick={toggleBot} disabled={botLoading}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all ${botSettings?.enabled ? 'bg-error hover:bg-on-error-container' : 'bg-primary hover:bg-primary-container'} ${botLoading ? 'opacity-50' : ''}`}
+                 >
+                    {botLoading ? 'Proses..' : (botSettings?.enabled ? 'Matikan' : 'Aktifkan')}
+                 </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                 <button onClick={() => window.open('/api/bot/start', '_blank')} className="py-2 bg-surface hover:bg-surface-container-high text-xs font-bold rounded-lg transition-colors border border-outline-variant/10">Restart</button>
+                 <button onClick={() => window.open('/api/bot/secret?action=list', '_blank')} className="py-2 bg-surface hover:bg-surface-container-high text-xs font-bold rounded-lg transition-colors border border-outline-variant/10">Log Data</button>
+              </div>
+           </div>
+        </section>
+      </aside>
     </div>
   );
 }

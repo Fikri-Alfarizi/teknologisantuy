@@ -1,4 +1,4 @@
-import { Space_Grotesk, Archivo_Black, Inter, Manrope } from "next/font/google";
+import { Space_Grotesk, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import GlobalEffects from './components/GlobalEffects';
 import ConsoleWatermark from './components/ConsoleWatermark';
@@ -13,16 +13,6 @@ const spaceGrotesk = Space_Grotesk({
 const archivoBlack = Archivo_Black({
   variable: "--font-archivo-black",
   weight: "400",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -103,9 +93,8 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
       </head>
-      <body className={`${spaceGrotesk.variable} ${archivoBlack.variable} ${inter.variable} ${manrope.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} ${archivoBlack.variable} antialiased`} suppressHydrationWarning>
         {/* Global Watermark Branding */}
         <ConsoleWatermark />
 
