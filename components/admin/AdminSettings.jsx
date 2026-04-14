@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getAdminSettings, saveAdminSettings } from '@/app/actions/adminActionsV2';
-import { FaCog, FaPalette, FaSave, FaCheck, FaGlobe, FaDesktop } from 'react-icons/fa';
+import { FaCog, FaPalette, FaCheck, FaGlobe, FaDesktop } from 'react-icons/fa';
+import { useAdminSettings } from '@/components/admin/AdminSettingsContext';
 
 const ACCENT_COLORS = [
   { name: 'Kuning', value: '#ffe600' },
@@ -16,42 +16,7 @@ const ACCENT_COLORS = [
 ];
 
 export default function AdminSettings() {
-  const [settings, setSettings] = useState({
-    theme: 'light',
-    accentColor: '#ffe600',
-    sidebarDensity: 'comfortable',
-    language: 'id',
-    autoRefresh: true,
-    refreshInterval: 30,
-    showSystemHealth: true,
-    showActiveUsers: true,
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      const res = await getAdminSettings();
-      if (res.success && res.data) {
-        setSettings(prev => ({ ...prev, ...res.data }));
-      }
-      setLoading(false);
-    }
-    load();
-  }, []);
-
-  async function handleSave() {
-    setSaving(true);
-    const res = await saveAdminSettings(settings);
-    setSaving(false);
-    if (res.success) {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } else {
-      alert('Gagal menyimpan: ' + res.error);
-    }
-  }
+  const { settings, updateSetting, loading } = useAdminSettings();
 
   if (loading) return <div style={{ padding: '40px', fontWeight: 800 }}>Memuat Pengaturan...</div>;
 
@@ -59,16 +24,11 @@ export default function AdminSettings() {
     <div style={{ color: '#000', maxWidth: '800px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '3px solid #000', paddingBottom: '16px' }}>
         <h2 style={{ margin: 0, fontWeight: 950, fontSize: '24px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <FaCog /> Pengaturan <span style={{ background: '#ffe600', padding: '0 10px', border: '2px solid #000', borderRadius: '4px' }}>Dashboard</span>
+          <FaCog /> Pengaturan <span style={{ background: settings?.accentColor || '#ffe600', padding: '0 10px', border: '2px solid #000', borderRadius: '4px', transition: '0.3s' }}>Dashboard</span>
         </h2>
-        <button onClick={handleSave} disabled={saving} style={{
-          padding: '12px 24px', background: saved ? '#4caf50' : '#ffe600',
-          border: '2px solid #000', borderRadius: '8px', fontWeight: 900,
-          cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-          boxShadow: '3px 3px 0 rgba(0,0,0,0.1)', transition: '0.3s', color: saved ? '#fff' : '#000'
-        }}>
-          {saved ? <><FaCheck /> Tersimpan!</> : saving ? 'Menyimpan...' : <><FaSave /> Simpan</>}
-        </button>
+        <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <FaCheck color="#4caf50" /> Tersimpan Otomatis
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -84,11 +44,12 @@ export default function AdminSettings() {
                 { id: 'light', label: '☀️ Light', desc: 'Mode terang' },
                 { id: 'dark', label: '🌙 Dark', desc: 'Mode gelap' },
               ].map(theme => (
-                <button key={theme.id} onClick={() => setSettings({ ...settings, theme: theme.id })} style={{
-                  flex: 1, padding: '16px', background: settings.theme === theme.id ? '#ffe600' : '#fff',
+                <button key={theme.id} onClick={() => updateSetting('theme', theme.id)} style={{
+                  flex: 1, padding: '16px', background: settings.theme === theme.id ? (settings.accentColor || '#ffe600') : '#fff',
                   border: settings.theme === theme.id ? '3px solid #000' : '2px solid #ddd',
                   borderRadius: '10px', cursor: 'pointer', textAlign: 'center',
-                  boxShadow: settings.theme === theme.id ? '3px 3px 0 rgba(0,0,0,0.1)' : 'none'
+                  boxShadow: settings.theme === theme.id ? '3px 3px 0 rgba(0,0,0,0.1)' : 'none',
+                  transition: '0.2s'
                 }}>
                   <div style={{ fontSize: '24px', marginBottom: '6px' }}>{theme.label.split(' ')[0]}</div>
                   <div style={{ fontWeight: 900, fontSize: '13px' }}>{theme.label.split(' ')[1]}</div>
@@ -105,11 +66,13 @@ export default function AdminSettings() {
             </label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {ACCENT_COLORS.map(color => (
-                <button key={color.value} onClick={() => setSettings({ ...settings, accentColor: color.value })} style={{
+                <button key={color.value} onClick={() => updateSetting('accentColor', color.value)} style={{
                   width: '40px', height: '40px', borderRadius: '10px',
-                  background: color.value, border: settings.accentColor === color.value ? '3px solid #000' : '2px solid #ddd',
+                  background: color.value, border: settings.accentColor === color.value ? '4px solid #000' : '2px solid #ddd',
                   cursor: 'pointer', position: 'relative',
-                  boxShadow: settings.accentColor === color.value ? '2px 2px 0 rgba(0,0,0,0.2)' : 'none'
+                  boxShadow: settings.accentColor === color.value ? '2px 2px 0 rgba(0,0,0,0.2)' : 'none',
+                  transition: '0.2s',
+                  transform: settings.accentColor === color.value ? 'scale(1.1)' : 'scale(1)'
                 }} title={color.name}>
                   {settings.accentColor === color.value && (
                     <FaCheck size={14} color="#000" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
@@ -126,11 +89,12 @@ export default function AdminSettings() {
             </label>
             <div style={{ display: 'flex', gap: '10px' }}>
               {['compact', 'comfortable', 'spacious'].map(density => (
-                <button key={density} onClick={() => setSettings({ ...settings, sidebarDensity: density })} style={{
+                <button key={density} onClick={() => updateSetting('sidebarDensity', density)} style={{
                   flex: 1, padding: '12px', borderRadius: '8px',
                   border: settings.sidebarDensity === density ? '2px solid #000' : '2px solid #ddd',
-                  background: settings.sidebarDensity === density ? '#ffe600' : '#fff',
-                  fontWeight: 800, fontSize: '12px', cursor: 'pointer', textTransform: 'uppercase'
+                  background: settings.sidebarDensity === density ? (settings.accentColor || '#ffe600') : '#fff',
+                  fontWeight: 800, fontSize: '12px', cursor: 'pointer', textTransform: 'uppercase',
+                  transition: '0.2s'
                 }}>
                   {density}
                 </button>
@@ -146,11 +110,12 @@ export default function AdminSettings() {
               { id: 'id', label: '🇮🇩 Bahasa Indonesia' },
               { id: 'en', label: '🇺🇸 English' },
             ].map(lang => (
-              <button key={lang.id} onClick={() => setSettings({ ...settings, language: lang.id })} style={{
+              <button key={lang.id} onClick={() => updateSetting('language', lang.id)} style={{
                 flex: 1, padding: '14px', borderRadius: '8px',
                 border: settings.language === lang.id ? '2px solid #000' : '2px solid #ddd',
-                background: settings.language === lang.id ? '#ffe600' : '#fff',
-                fontWeight: 800, fontSize: '13px', cursor: 'pointer'
+                background: settings.language === lang.id ? (settings.accentColor || '#ffe600') : '#fff',
+                fontWeight: 800, fontSize: '13px', cursor: 'pointer',
+                transition: '0.2s'
               }}>
                 {lang.label}
               </button>
@@ -162,11 +127,11 @@ export default function AdminSettings() {
         <SettingsSection title="⚙️ Perilaku Dashboard" description="Kontrol auto-refresh dan widget">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <ToggleRow label="Auto Refresh Data" value={settings.autoRefresh}
-              onChange={v => setSettings({ ...settings, autoRefresh: v })} />
+              onChange={v => updateSetting('autoRefresh', v)} />
             <ToggleRow label="Tampilkan System Health" value={settings.showSystemHealth}
-              onChange={v => setSettings({ ...settings, showSystemHealth: v })} />
+              onChange={v => updateSetting('showSystemHealth', v)} />
             <ToggleRow label="Tampilkan Active Users" value={settings.showActiveUsers}
-              onChange={v => setSettings({ ...settings, showActiveUsers: v })} />
+              onChange={v => updateSetting('showActiveUsers', v)} />
 
             {settings.autoRefresh && (
               <div>
@@ -174,7 +139,7 @@ export default function AdminSettings() {
                   Interval Refresh (detik): {settings.refreshInterval}s
                 </label>
                 <input type="range" min="10" max="120" step="10" value={settings.refreshInterval}
-                  onChange={e => setSettings({ ...settings, refreshInterval: parseInt(e.target.value) })}
+                  onChange={e => updateSetting('refreshInterval', parseInt(e.target.value))}
                   style={{ width: '100%' }} />
               </div>
             )}

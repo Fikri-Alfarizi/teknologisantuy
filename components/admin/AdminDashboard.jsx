@@ -5,6 +5,7 @@ import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/a
 import { getAnalyticsTimeSeries, getSystemHealth } from '@/app/actions/adminActionsV2';
 import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine, FaRobot, FaToggleOn, FaToggleOff, FaHeartbeat, FaArrowUp, FaArrowDown, FaEye, FaDesktop, FaMobileAlt } from 'react-icons/fa';
 import RealtimeActiveUsers from './RealtimeActiveUsers';
+import { useAdminSettings } from '@/components/admin/AdminSettingsContext';
 
 // Dynamic import for recharts (client-side only)
 import dynamic from 'next/dynamic';
@@ -34,6 +35,12 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [botSettings, setBotSettings] = useState(null);
   const [botLoading, setBotLoading] = useState(false);
+  const { settings } = useAdminSettings() || {};
+  
+  const contentBg = settings?.theme === 'dark' ? '#1e1e1e' : '#fff';
+  const themeText = settings?.theme === 'dark' ? '#eee' : '#000';
+  const cardBorder = settings?.theme === 'dark' ? '3px solid #444' : '3px solid #000';
+  const accent = settings?.accentColor || '#ffe600';
 
   useEffect(() => {
     async function loadData() {
@@ -56,7 +63,18 @@ export default function AdminDashboard() {
       }
     }
     loadData();
-  }, []);
+    
+    // Auto Refresh Logic
+    let interval;
+    if (settings?.autoRefresh) {
+      interval = setInterval(() => {
+        loadData();
+      }, (settings.refreshInterval || 30) * 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [settings?.autoRefresh, settings?.refreshInterval]);
 
   // Load bot settings
   useEffect(() => {
@@ -107,12 +125,12 @@ export default function AdminDashboard() {
   const noPercent = stats.totalVotes > 0 ? Math.round((stats.noVotes / stats.totalVotes) * 100) : 0;
 
   return (
-    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '24px', color: '#000' }}>
+    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '24px', color: themeText }}>
 
       {/* Row 1: Real-time + System Status */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '20px', alignItems: 'start' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {systemHealth && (
+          {(settings?.showSystemHealth !== false) && systemHealth && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '8px 16px', background: systemHealth.status === 'healthy' ? '#e8f5e9' : '#fff3e0',
@@ -126,7 +144,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-        <RealtimeActiveUsers />
+        {(settings?.showActiveUsers !== false) && <RealtimeActiveUsers />}
       </div>
 
       {/* Row 2: Stats Cards */}
@@ -140,9 +158,9 @@ export default function AdminDashboard() {
       {/* Row 3: Traffic Chart + Device Breakdown */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         {/* Traffic Trend Chart */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
           <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FaChartLine color="#ffe600" /> Traffic Trend (30 Hari Terakhir)
+            <FaChartLine color={accent} /> Traffic Trend (30 Hari Terakhir)
           </h3>
           <div style={{ width: '100%', height: 250 }}>
             {timeSeries?.dailyData && (
@@ -172,7 +190,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Device Breakdown Pie */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
           <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FaDesktop /> Device Breakdown
           </h3>
@@ -205,8 +223,8 @@ export default function AdminDashboard() {
       {/* Row 4: World Traffic + Sources + Top Pages */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
         {/* World Traffic */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #eee', paddingBottom: '10px' }}>
             <FaGlobe /> Traffic Dunia
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -223,8 +241,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Source Breakdown */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #eee', paddingBottom: '10px' }}>
             🔗 Sumber Traffic
           </h3>
           <SourceBar icon={<FaFacebook color="#1877F2" />} label="Facebook" count={analytics?.sources?.Facebook || 0} total={analytics?.totalViews || 1} color="#1877F2" />
@@ -233,8 +251,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Pages */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+          <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #eee', paddingBottom: '10px' }}>
             📄 Top Pages
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -254,7 +272,7 @@ export default function AdminDashboard() {
       {/* Row 5: Hourly Distribution + Browser Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         {/* Hourly Traffic Chart */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
           <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase' }}>
             ⏰ Distribusi Traffic Per Jam
           </h3>
@@ -274,7 +292,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Browser Breakdown */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
           <h3 style={{ margin: '0 0 18px', fontSize: '13px', fontWeight: 950, textTransform: 'uppercase' }}>
             🌐 Browser Stats
           </h3>
@@ -299,8 +317,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Row 6: Bot Control */}
-      <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '28px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-        <h3 style={{ margin: '0 0 20px', fontSize: '15px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '2px solid #eee', paddingBottom: '12px' }}>
+      <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '28px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+        <h3 style={{ margin: '0 0 20px', fontSize: '15px', fontWeight: 950, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #eee', paddingBottom: '12px' }}>
           <FaRobot /> Kontrol Bot Discord
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -333,18 +351,18 @@ export default function AdminDashboard() {
       {/* Row 7: Community Response + Feedback Table */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
         {/* Vote Chart */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-          <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 950, textTransform: 'uppercase', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>📊 Respon Komunitas</h3>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', padding: '24px', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+          <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: 950, textTransform: 'uppercase', borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #eee', paddingBottom: '10px' }}>📊 Respon Komunitas</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <ProgressBar label="Lanjutkan (SETUJU)" percent={yesPercent} color="#ffe600" />
-            <ProgressBar label="Jangan Dulu (BATAL)" percent={noPercent} color="#333" fontColor="#fff" />
+            <ProgressBar label="Lanjutkan (SETUJU)" percent={yesPercent} color={accent} />
+            <ProgressBar label="Jangan Dulu (BATAL)" percent={noPercent} color={settings?.theme === 'dark' ? '#555' : '#333'} fontColor="#fff" />
           </div>
-          <p style={{ marginTop: '20px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', textAlign: 'center', background: '#ffe600', padding: '6px 12px', border: '2px solid #000', borderRadius: '6px' }}>Total: {stats.totalVotes} Responden</p>
+          <p style={{ marginTop: '20px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', textAlign: 'center', background: accent, color: '#000', padding: '6px 12px', border: '2px solid #000', borderRadius: '6px' }}>Total: {stats.totalVotes} Responden</p>
         </div>
 
         {/* Feedback Table */}
-        <div style={{ background: '#fff', border: '3px solid #000', borderRadius: '12px', overflow: 'hidden', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
-          <div style={{ padding: '14px 24px', borderBottom: '3px solid #000', background: '#ffe600' }}>
+        <div style={{ background: contentBg, border: cardBorder, borderRadius: '12px', overflow: 'hidden', boxShadow: '6px 6px 0 rgba(0,0,0,0.08)' }}>
+          <div style={{ padding: '14px 24px', borderBottom: '3px solid #000', background: accent, color: '#000' }}>
             <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 950, textTransform: 'uppercase' }}>💬 Feedback Terbaru</h3>
           </div>
           <div style={{ overflowX: 'auto' }}>
@@ -359,14 +377,14 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {latestFeedback.map((fb, i) => (
-                  <tr key={fb.id} style={{ borderBottom: '1px solid #f0f0f0', fontSize: '13px', background: i % 2 === 0 ? '#fff' : '#fcfcfc' }}>
+                  <tr key={fb.id} style={{ borderBottom: settings?.theme === 'dark' ? '1px solid #333' : '1px solid #f0f0f0', fontSize: '13px', background: i % 2 === 0 ? 'transparent' : settings?.theme === 'dark' ? '#222' : '#fcfcfc' }}>
                     <td style={{ padding: '14px 20px' }}>
-                      <span style={{ padding: '3px 8px', background: fb.userId === 'anonymous' ? '#f0f0f0' : '#ffe600', border: '1px solid #ddd', fontSize: '10px', fontWeight: 900, borderRadius: '4px' }}>
+                      <span style={{ padding: '3px 8px', background: fb.userId === 'anonymous' ? '#f0f0f0' : accent, color: '#000', border: '1px solid #ddd', fontSize: '10px', fontWeight: 900, borderRadius: '4px' }}>
                         {fb.userId === 'anonymous' ? 'TAMU' : 'PREMIUM'}
                       </span>
                     </td>
                     <td style={{ padding: '14px 20px' }}>
-                      <span style={{ padding: '4px 10px', border: '2px solid #000', background: fb.vote ? '#ffe600' : '#000', color: fb.vote ? '#000' : '#fff', fontSize: '10px', fontWeight: 950, borderRadius: '4px' }}>
+                      <span style={{ padding: '4px 10px', border: '2px solid #000', background: fb.vote ? accent : '#000', color: fb.vote ? '#000' : '#fff', fontSize: '10px', fontWeight: 950, borderRadius: '4px' }}>
                         {fb.vote ? 'SETUJU' : 'BATAL'}
                       </span>
                     </td>

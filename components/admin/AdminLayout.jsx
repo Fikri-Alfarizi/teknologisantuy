@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { useAdminSettings } from '@/components/admin/AdminSettingsContext';
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '@/app/actions/adminActionsV2';
 import {
   FaTachometerAlt, FaUsers, FaCommentAlt, FaSignOutAlt, FaRocket, FaGlobe,
@@ -21,8 +22,18 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
   const [expandedGroups, setExpandedGroups] = useState(['overview', 'analytics', 'community', 'content', 'system']);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { settings } = useAdminSettings() || {};
 
   const adminPath = process.env.NEXT_PUBLIC_ADMIN_PATH || 'admin-secret-portal';
+
+  // Apply settings
+  const themeBg = settings?.theme === 'dark' ? '#121212' : '#f4f6f9';
+  const themeText = settings?.theme === 'dark' ? '#eee' : '#000';
+  const contentBg = settings?.theme === 'dark' ? '#1e1e1e' : '#fff';
+  const accent = settings?.accentColor || '#ffe600';
+  
+  const sidebarWidth = settings?.sidebarDensity === 'compact' ? '220px' : settings?.sidebarDensity === 'spacious' ? '300px' : '260px';
+  const itemPadding = settings?.sidebarDensity === 'compact' ? '6px 10px' : settings?.sidebarDensity === 'spacious' ? '12px 16px' : '9px 12px 9px 14px';
 
   // Nav groups with collapsible sections
   const navGroups = [
@@ -133,11 +144,11 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
   );
 
   return (
-    <div suppressHydrationWarning style={{ display: 'flex', height: '100vh', background: '#f4f6f9', overflow: 'hidden' }}>
+    <div suppressHydrationWarning style={{ display: 'flex', height: '100vh', background: themeBg, color: themeText, overflow: 'hidden' }}>
       {/* Sidebar */}
       <aside style={{
-        width: isSidebarOpen ? '260px' : '0',
-        minWidth: isSidebarOpen ? '260px' : '0',
+        width: isSidebarOpen ? sidebarWidth : '0',
+        minWidth: isSidebarOpen ? sidebarWidth : '0',
         background: '#1a1d23',
         color: '#c2c7d0',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -157,7 +168,7 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
           gap: '12px'
         }}>
           <div style={{
-            background: 'linear-gradient(135deg, #ffe600, #ffb300)',
+            background: accent,
             padding: '8px',
             border: '2px solid #000',
             borderRadius: '8px',
@@ -180,8 +191,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
           borderBottom: '1px solid rgba(255,255,255,0.06)'
         }}>
           <img
-            src={userProfile?.photoURL || 'https://ui-avatars.com/api/?name=Admin&background=ffe600&color=000'}
-            style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #ffe600' }}
+            src={userProfile?.photoURL || 'https://ui-avatars.com/api/?name=Admin&background=000&color=fff'}
+            style={{ width: '32px', height: '32px', borderRadius: '50%', border: `2px solid ${accent}` }}
             alt="Admin"
           />
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -215,8 +226,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                     <li key={item.id}>
                       <Link href={item.href} style={{
                         display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '9px 12px 9px 14px',
-                        background: activeTab === item.id ? 'linear-gradient(135deg, #ffe600, #ffd000)' : 'transparent',
+                        padding: itemPadding,
+                        background: activeTab === item.id ? accent : 'transparent',
                         color: activeTab === item.id ? '#000' : '#b0b5bd',
                         textDecoration: 'none',
                         borderRadius: '6px',
@@ -256,13 +267,12 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         {/* Top Navbar */}
         <header style={{
-          background: '#fff',
+          background: contentBg,
           height: '56px',
-          borderBottom: '2px solid #e0e0e0',
+          borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #e0e0e0',
           display: 'flex',
           alignItems: 'center',
           padding: '0 20px',
@@ -271,17 +281,17 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         }}>
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{
             background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
-            padding: '6px', borderRadius: '4px', color: '#333'
+            padding: '6px', borderRadius: '4px', color: themeText
           }}>
             {isSidebarOpen ? <FaBars /> : <FaBars />}
           </button>
 
           {/* Breadcrumb */}
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', color: '#333' }}>
-              Teknologi Santuy Control Center
+            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', color: themeText }}>
+              Teknologi Santuy {settings?.language === 'en' ? 'Control Center' : 'Pusat Kontrol'}
             </span>
-            <span style={{ fontSize: '10px', background: '#ffe600', padding: '2px 8px', border: '1px solid #000', fontWeight: 900, borderRadius: '3px' }}>v2.0</span>
+            <span style={{ fontSize: '10px', background: accent, color: '#000', padding: '2px 8px', border: '1px solid #000', fontWeight: 900, borderRadius: '3px' }}>v2.0</span>
           </div>
 
           {/* Command Palette Trigger */}
@@ -366,14 +376,14 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
 
           {/* Admin avatar in header */}
           <img
-            src={userProfile?.photoURL || 'https://ui-avatars.com/api/?name=A&background=ffe600&color=000'}
-            style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #ffe600' }}
+            src={userProfile?.photoURL || 'https://ui-avatars.com/api/?name=A&background=000&color=fff'}
+            style={{ width: '32px', height: '32px', borderRadius: '50%', border: `2px solid ${accent}` }}
             alt=""
           />
         </header>
 
         {/* Content Section */}
-        <main style={{ flex: 1, padding: '24px', overflowY: 'auto', background: '#f4f6f9' }}>
+        <main style={{ flex: 1, padding: '24px', overflowY: 'auto', background: themeBg }}>
           {children}
         </main>
       </div>
