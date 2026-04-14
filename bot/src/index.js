@@ -11,6 +11,8 @@ import { sendDailyAlarm } from './cron/dailyAlarm.js';
 import { startPresence } from './utils/presence.js';
 import { runAutoChat } from './services/autochat.service.js';
 import gameService from './services/game.service.js';
+import { db } from '../../app/lib/firebase.js';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -92,5 +94,35 @@ client.once('ready', async () => {
 (async () => {
     await loadCommands(client);
     await loadEvents(client);
-    await client.login(process.env.DISCORD_BOT_TOKEN);
+    
+    console.log('Menghubungkan ke Firebase untuk sinkronisasi Dashboard...');
+    const settingsRef = doc(db, 'bot_settings', 'main');
+    let isConnected = false;
+    let lastRestartTrigger = null;
+
+    onSnapshot(settingsRef, async (docSnap) => {
+        if (!docSnap.exists()) return;
+        const data = docSnap.data();
+
+        // Handle Restart Signal
+        if (data.restart_trigger && lastRestartTrigger && data.restart_trigger !== lastRestartTrigger) {
+            console.log('🔄 Sinyal Restart diterima dari Dashboard! Memulai ulang server...');
+            process.exit(1); 
+        }
+        lastRestartTrigger = data.restart_trigger || null;
+
+        // Handle Toggle Connection
+        if (data.enabled === true && !isConnected) {
+            console.log('🟢 Bot Diaktifkan via Dashboard - Menyambungkan ke Discord...');
+            try {
+                await client.login(process.env.DISCORD_BOT_TOKEN);
+                isConnected = true;
+            } catch(e) { console.error('Login error:', e); }
+        } else if (data.enabled === false && isConnected) {
+            console.log('🔴 Bot Dinonaktifkan via Dashboard - Memutuskan koneksi...');
+            client.destroy();
+            isConnected = false;
+        }
+    });
+
 })();
