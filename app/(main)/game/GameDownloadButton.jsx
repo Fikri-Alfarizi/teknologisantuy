@@ -1,3 +1,5 @@
+'use client';
+
 import { encodeDownloadUrl } from '../../lib/url-obfuscator';
 
 export default function GameDownloadButton({ game, className, style, children }) {
