@@ -25,43 +25,54 @@ export default function GlobalError({ error, reset }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-2xl mx-auto text-center brutal-box-lg bg-[var(--blue-dark)] p-12 md:p-16 relative z-10"
+        className="brutal-box-lg bg-[var(--blue-dark)] relative z-10 mx-auto text-center"
+        style={{ maxWidth: '520px', padding: '48px 32px', width: '90%' }}
       >
-        <div className="inline-flex items-center justify-center w-24 h-24 bg-[#FF4757] rounded-[var(--r-md)] border-[var(--bw)] border-[var(--black)] shadow-[var(--bs)] mb-8">
-          <span className="material-symbols-outlined text-5xl text-white">
+        <div 
+          className="inline-flex items-center justify-center bg-[#FF4757] shadow-[var(--bs)] mb-6"
+          style={{ width: '80px', height: '80px', borderRadius: '16px', border: '2.5px solid var(--black)' }}
+        >
+          <span className="material-symbols-outlined text-white" style={{ fontSize: '42px' }}>
             warning
           </span>
         </div>
         
-        <h1 className="text-4xl md:text-5xl font-black mb-4 text-white tracking-tight" style={{ fontFamily: 'var(--font-archivo-black)' }}>
+        <h1 className="font-black mb-2 text-white" style={{ fontFamily: 'var(--font-archivo-black)', fontSize: '56px', lineHeight: '1.1' }}>
           Ups! Sistem Error
         </h1>
-        <div className="inline-block bg-[var(--black)] text-[#FF4757] px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest mb-6 rotate-[-2deg]">
+        <div 
+          className="inline-block bg-[var(--black)] text-[#FF4757] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
+          style={{ transform: 'rotate(-2deg)' }}
+        >
           500 - Internal Error
         </div>
         
-        <p className="text-[#B0BEC5] text-lg mb-8 max-w-md mx-auto">
+        <p className="text-[#B0BEC5] mb-8 mx-auto" style={{ fontSize: '15px', lineHeight: '1.6', maxWidth: '380px' }}>
           Maaf banget, sepertinya ada masalah di server kami. Teknisi virtual kami sedang berusaha memperbaikinya.
         </p>
 
         {error?.message && (
-          <div className="p-4 bg-[var(--black)]/50 rounded-[var(--r-md)] mb-8 text-left border border-[var(--black)] overflow-x-auto max-w-full">
-            <code className="text-[#FF4757] text-sm break-words whitespace-pre-wrap font-mono">
+          <div 
+            className="p-4 bg-[var(--black)]/50 rounded-[var(--r-md)] mb-8 text-left border border-[var(--black)] overflow-x-auto mx-auto"
+            style={{ maxWidth: '100%', wordBreak: 'break-word' }}
+          >
+            <code className="text-[#FF4757] text-sm whitespace-pre-wrap font-mono">
               {error.message}
             </code>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button 
             onClick={() => reset()} 
-            className="btn w-full sm:w-auto justify-center bg-[#FF4757] text-white hover:bg-[#ff6b77] border-[var(--black)]"
+            className="btn bg-[#FF4757] text-white hover:bg-[#ff6b77] border-[var(--black)]"
+            style={{ flex: '0 1 auto' }}
           >
-            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>refresh</span>
             Coba Lagi
           </button>
-          <Link href="/" className="btn btn-outline-white w-full sm:w-auto justify-center">
-            <span className="material-symbols-outlined text-[18px]">home</span>
+          <Link href="/" className="btn btn-outline-white" style={{ flex: '0 1 auto' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>home</span>
             Beranda
           </Link>
         </div>

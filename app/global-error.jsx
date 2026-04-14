@@ -22,24 +22,30 @@ export default function GlobalError({ error, reset }) {
           />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF4757]/10 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="w-full max-w-2xl mx-auto text-center p-12 md:p-16 relative z-10" style={{
+          <div className="mx-auto text-center relative z-10" style={{
+            maxWidth: '520px',
+            width: '90%',
+            padding: '48px 32px',
             border: '2.5px solid #111820', 
             borderRadius: '28px', 
             backgroundColor: '#2C3A47',
             boxShadow: '7px 7px 0 #111820'
           }}>
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-[#FF4757] mb-8" style={{
-              borderRadius: '18px',
+            <div className="inline-flex items-center justify-center mb-6" style={{
+              width: '80px',
+              height: '80px',
+              backgroundColor: '#FF4757',
+              borderRadius: '16px',
               border: '2.5px solid #111820',
-              boxShadow: '5px 5px 0 #111820'
+              boxShadow: '4px 4px 0 #111820'
             }}>
-              <span className="text-white" style={{ fontSize: '48px' }}>⚠️</span>
+              <span className="text-white" style={{ fontSize: '42px' }}>⚠️</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-black mb-4 text-white tracking-tight">
+            <h1 className="font-black mb-2 text-white" style={{ fontSize: '56px', lineHeight: '1.1' }}>
               Fatal Error
             </h1>
-            <div className="inline-block px-4 py-1 mb-6 text-sm font-bold uppercase tracking-widest" style={{
+            <div className="inline-block px-4 py-1 mb-6 text-xs font-bold uppercase tracking-widest" style={{
               backgroundColor: '#111820',
               color: '#FF4757',
               borderRadius: '40px',
@@ -48,44 +54,50 @@ export default function GlobalError({ error, reset }) {
               Kritis - Root Crash
             </div>
             
-            <p className="text-lg mb-8 max-w-md mx-auto" style={{ color: '#B0BEC5' }}>
+            <p className="mb-8 mx-auto" style={{ color: '#B0BEC5', fontSize: '15px', lineHeight: '1.6', maxWidth: '380px' }}>
               Oops! Aplikasi mengalami crash berat. Kami sarankan untuk merefresh halaman.
             </p>
 
             {error?.message && (
-              <div className="p-4 mb-8 text-left overflow-x-auto max-w-full" style={{
+              <div className="p-4 mb-8 text-left overflow-x-auto mx-auto" style={{
                 backgroundColor: 'rgba(17,24,32,0.5)',
-                borderRadius: '18px',
-                border: '1px solid #111820'
+                borderRadius: '16px',
+                border: '1px solid #111820',
+                maxWidth: '100%',
+                wordBreak: 'break-word'
               }}>
-                <code className="text-sm break-words whitespace-pre-wrap font-mono" style={{ color: '#FF4757' }}>
+                <code className="text-sm whitespace-pre-wrap font-mono" style={{ color: '#FF4757' }}>
                   {error.message}
                 </code>
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button 
                 onClick={() => reset()} 
-                className="w-full sm:w-auto justify-center font-bold px-6 py-3" style={{
+                className="font-bold px-6 py-3" style={{
+                  flex: '0 1 auto',
                   backgroundColor: '#FF4757',
                   color: 'white',
                   border: '2.5px solid #111820',
-                  borderRadius: '18px',
-                  boxShadow: '5px 5px 0 #111820',
-                  cursor: 'pointer'
+                  borderRadius: '14px',
+                  boxShadow: '4px 4px 0 #111820',
+                  cursor: 'pointer',
+                  fontSize: '15px'
                 }}
               >
                 Refresh Halaman
               </button>
               <button 
                 onClick={() => window.location.href = '/'} 
-                className="w-full sm:w-auto justify-center font-bold px-6 py-3" style={{
+                className="font-bold px-6 py-3" style={{
+                  flex: '0 1 auto',
                   backgroundColor: 'transparent',
                   color: 'white',
                   border: '2.5px solid white',
-                  borderRadius: '18px',
-                  cursor: 'pointer'
+                  borderRadius: '14px',
+                  cursor: 'pointer',
+                  fontSize: '15px'
                 }}
               >
                 Ke Beranda
