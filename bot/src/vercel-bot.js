@@ -89,23 +89,23 @@ export async function runScheduledTask(taskName) {
                 break;
 
             case 'autochat-morning':
-                const { runAutoChat } = await import('./services/autochat.service.js');
-                await runAutoChat(client, 'Pagi');
+                const { runAutoChat: runAutoChatMorning } = await import('./services/autochat.service.js');
+                await runAutoChatMorning(client, 'Pagi');
                 break;
 
             case 'autochat-noon':
-                const { runAutoChat } = await import('./services/autochat.service.js');
-                await runAutoChat(client, 'Siang');
+                const { runAutoChat: runAutoChatNoon } = await import('./services/autochat.service.js');
+                await runAutoChatNoon(client, 'Siang');
                 break;
 
             case 'autochat-afternoon':
-                const { runAutoChat } = await import('./services/autochat.service.js');
-                await runAutoChat(client, 'Sore');
+                const { runAutoChat: runAutoChatAfternoon } = await import('./services/autochat.service.js');
+                await runAutoChatAfternoon(client, 'Sore');
                 break;
 
             case 'autochat-evening':
-                const { runAutoChat } = await import('./services/autochat.service.js');
-                await runAutoChat(client, 'Malam');
+                const { runAutoChat: runAutoChatEvening } = await import('./services/autochat.service.js');
+                await runAutoChatEvening(client, 'Malam');
                 break;
 
             case 'game-sync':
