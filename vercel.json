@@ -2,6 +2,9 @@
   "functions": {
     "app/api/bot/cron/route.js": {
       "maxDuration": 30
+    },
+    "app/api/bot/interactions/route.js": {
+      "maxDuration": 20
     }
   },
   "crons": [
@@ -12,6 +15,10 @@
     {
       "path": "/api/bot/cron?task=autochat-morning",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/bot/cron?task=news",
+      "schedule": "*/30 * * * *"
     }
   ]
 }
