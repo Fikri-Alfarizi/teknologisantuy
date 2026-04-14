@@ -53,8 +53,26 @@ export function AdminSettingsProvider({ children }) {
     });
   };
 
+  // Compute theme tokens
+  const isDark = settings.theme === 'dark';
+  const themeTokens = {
+    bg: isDark ? '#1a1b26' : '#f4f6f9', // Tokyo night dark or light gray
+    contentBg: isDark ? '#24283b' : '#fff', // Lighter dark or pure white
+    text: isDark ? '#c0caf5' : '#000', // Bright blueish text or pure black
+    textMuted: isDark ? '#9aa5ce' : '#666',
+    border: isDark ? '3px solid #15161e' : '3px solid #000', // Pitch black borders in dark mode
+    borderLight: isDark ? '2px solid #292e42' : '2px solid #eee',
+    borderColor: isDark ? '#15161e' : '#000',
+    shadow: isDark ? '6px 6px 0 #15161e' : '6px 6px 0 rgba(0,0,0,0.08)',
+    sidebarBg: isDark ? '#15161e' : '#1a1d23',
+    cardBorder: isDark ? '3px solid #15161e' : '3px solid #000',
+    hoverBg: isDark ? '#292e42' : '#f5f5f5',
+    danger: isDark ? '#f7768e' : '#ff4757',
+    success: isDark ? '#9ece6a' : '#2ed573',
+  };
+
   return (
-    <AdminSettingsContext.Provider value={{ settings, updateSetting, updateMultipleSettings, loading }}>
+    <AdminSettingsContext.Provider value={{ settings, updateSetting, updateMultipleSettings, loading, theme: themeTokens }}>
       {children}
     </AdminSettingsContext.Provider>
   );

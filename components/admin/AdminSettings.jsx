@@ -16,13 +16,13 @@ const ACCENT_COLORS = [
 ];
 
 export default function AdminSettings() {
-  const { settings, updateSetting, loading } = useAdminSettings();
+  const { settings, updateSetting, loading, theme } = useAdminSettings();
 
   if (loading) return <div style={{ padding: '40px', fontWeight: 800 }}>Memuat Pengaturan...</div>;
 
   return (
-    <div style={{ color: '#000', maxWidth: '800px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '3px solid #000', paddingBottom: '16px' }}>
+    <div style={{ color: theme?.text || '#000', maxWidth: '800px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: theme?.border || '3px solid #000', paddingBottom: '16px' }}>
         <h2 style={{ margin: 0, fontWeight: 950, fontSize: '24px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <FaCog /> Pengaturan <span style={{ background: settings?.accentColor || '#ffe600', padding: '0 10px', border: '2px solid #000', borderRadius: '4px', transition: '0.3s' }}>Dashboard</span>
         </h2>
@@ -33,27 +33,27 @@ export default function AdminSettings() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* Appearance */}
-        <SettingsSection title="🎨 Tampilan" description="Kustomisasi tampilan dashboard">
+        <SettingsSection title="🎨 Tampilan" description="Kustomisasi tampilan dashboard" theme={theme}>
           {/* Theme */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase', color: theme?.text }}>
               Mode Tema
             </label>
             <div style={{ display: 'flex', gap: '10px' }}>
               {[
                 { id: 'light', label: '☀️ Light', desc: 'Mode terang' },
                 { id: 'dark', label: '🌙 Dark', desc: 'Mode gelap' },
-              ].map(theme => (
-                <button key={theme.id} onClick={() => updateSetting('theme', theme.id)} style={{
-                  flex: 1, padding: '16px', background: settings.theme === theme.id ? (settings.accentColor || '#ffe600') : '#fff',
-                  border: settings.theme === theme.id ? '3px solid #000' : '2px solid #ddd',
+              ].map(t => (
+                <button key={t.id} onClick={() => updateSetting('theme', t.id)} style={{
+                  flex: 1, padding: '16px', background: settings.theme === t.id ? (settings.accentColor || '#ffe600') : (theme?.bg || '#fff'),
+                  border: settings.theme === t.id ? (theme?.border || '3px solid #000') : (theme?.borderLight || '2px solid #ddd'),
                   borderRadius: '10px', cursor: 'pointer', textAlign: 'center',
-                  boxShadow: settings.theme === theme.id ? '3px 3px 0 rgba(0,0,0,0.1)' : 'none',
-                  transition: '0.2s'
+                  boxShadow: settings.theme === t.id ? '3px 3px 0 rgba(0,0,0,0.15)' : 'none',
+                  transition: '0.2s', color: settings.theme === t.id ? '#000' : theme?.text
                 }}>
-                  <div style={{ fontSize: '24px', marginBottom: '6px' }}>{theme.label.split(' ')[0]}</div>
-                  <div style={{ fontWeight: 900, fontSize: '13px' }}>{theme.label.split(' ')[1]}</div>
-                  <div style={{ fontSize: '10px', color: '#888', marginTop: '4px' }}>{theme.desc}</div>
+                  <div style={{ fontSize: '24px', marginBottom: '6px' }}>{t.label.split(' ')[0]}</div>
+                  <div style={{ fontWeight: 900, fontSize: '13px' }}>{t.label.split(' ')[1]}</div>
+                  <div style={{ fontSize: '10px', color: settings.theme === t.id ? '#333' : theme?.textMuted, marginTop: '4px' }}>{t.desc}</div>
                 </button>
               ))}
             </div>
@@ -61,16 +61,16 @@ export default function AdminSettings() {
 
           {/* Accent Color */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase', color: theme?.text }}>
               Warna Aksen
             </label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {ACCENT_COLORS.map(color => (
                 <button key={color.value} onClick={() => updateSetting('accentColor', color.value)} style={{
                   width: '40px', height: '40px', borderRadius: '10px',
-                  background: color.value, border: settings.accentColor === color.value ? '4px solid #000' : '2px solid #ddd',
+                  background: color.value, border: settings.accentColor === color.value ? '4px solid #fff' : (theme?.borderLight || '2px solid #ddd'),
                   cursor: 'pointer', position: 'relative',
-                  boxShadow: settings.accentColor === color.value ? '2px 2px 0 rgba(0,0,0,0.2)' : 'none',
+                  boxShadow: settings.accentColor === color.value ? '0 0 0 3px #000, 3px 3px 0 rgba(0,0,0,0.4)' : 'none',
                   transition: '0.2s',
                   transform: settings.accentColor === color.value ? 'scale(1.1)' : 'scale(1)'
                 }} title={color.name}>
@@ -84,15 +84,16 @@ export default function AdminSettings() {
 
           {/* Sidebar Density */}
           <div>
-            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase' }}>
+            <label style={{ display: 'block', fontWeight: 800, fontSize: '13px', marginBottom: '10px', textTransform: 'uppercase', color: theme?.text }}>
               Kepadatan Sidebar
             </label>
             <div style={{ display: 'flex', gap: '10px' }}>
               {['compact', 'comfortable', 'spacious'].map(density => (
                 <button key={density} onClick={() => updateSetting('sidebarDensity', density)} style={{
                   flex: 1, padding: '12px', borderRadius: '8px',
-                  border: settings.sidebarDensity === density ? '2px solid #000' : '2px solid #ddd',
-                  background: settings.sidebarDensity === density ? (settings.accentColor || '#ffe600') : '#fff',
+                  border: settings.sidebarDensity === density ? (theme?.border || '2px solid #000') : (theme?.borderLight || '2px solid #ddd'),
+                  background: settings.sidebarDensity === density ? (settings.accentColor || '#ffe600') : (theme?.bg || '#fff'),
+                  color: settings.sidebarDensity === density ? '#000' : theme?.text,
                   fontWeight: 800, fontSize: '12px', cursor: 'pointer', textTransform: 'uppercase',
                   transition: '0.2s'
                 }}>
@@ -104,7 +105,7 @@ export default function AdminSettings() {
         </SettingsSection>
 
         {/* Language */}
-        <SettingsSection title="🌐 Bahasa" description="Pengaturan bahasa dashboard">
+        <SettingsSection title="🌐 Bahasa" description="Pengaturan bahasa dashboard" theme={theme}>
           <div style={{ display: 'flex', gap: '10px' }}>
             {[
               { id: 'id', label: '🇮🇩 Bahasa Indonesia' },
@@ -112,8 +113,9 @@ export default function AdminSettings() {
             ].map(lang => (
               <button key={lang.id} onClick={() => updateSetting('language', lang.id)} style={{
                 flex: 1, padding: '14px', borderRadius: '8px',
-                border: settings.language === lang.id ? '2px solid #000' : '2px solid #ddd',
-                background: settings.language === lang.id ? (settings.accentColor || '#ffe600') : '#fff',
+                border: settings.language === lang.id ? (theme?.border || '2px solid #000') : (theme?.borderLight || '2px solid #ddd'),
+                background: settings.language === lang.id ? (settings.accentColor || '#ffe600') : (theme?.bg || '#fff'),
+                color: settings.language === lang.id ? '#000' : theme?.text,
                 fontWeight: 800, fontSize: '13px', cursor: 'pointer',
                 transition: '0.2s'
               }}>
@@ -124,14 +126,14 @@ export default function AdminSettings() {
         </SettingsSection>
 
         {/* Dashboard Behavior */}
-        <SettingsSection title="⚙️ Perilaku Dashboard" description="Kontrol auto-refresh dan widget">
+        <SettingsSection title="⚙️ Perilaku Dashboard" description="Kontrol auto-refresh dan widget" theme={theme}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <ToggleRow label="Auto Refresh Data" value={settings.autoRefresh}
-              onChange={v => updateSetting('autoRefresh', v)} />
+              onChange={v => updateSetting('autoRefresh', v)} theme={theme} />
             <ToggleRow label="Tampilkan System Health" value={settings.showSystemHealth}
-              onChange={v => updateSetting('showSystemHealth', v)} />
+              onChange={v => updateSetting('showSystemHealth', v)} theme={theme} />
             <ToggleRow label="Tampilkan Active Users" value={settings.showActiveUsers}
-              onChange={v => updateSetting('showActiveUsers', v)} />
+              onChange={v => updateSetting('showActiveUsers', v)} theme={theme} />
 
             {settings.autoRefresh && (
               <div>
@@ -148,10 +150,10 @@ export default function AdminSettings() {
 
         {/* Info */}
         <div style={{
-          background: '#f5f5f5', border: '2px solid #ddd', borderRadius: '10px', padding: '20px',
-          fontSize: '12px', color: '#888', fontWeight: 600, textAlign: 'center'
+          background: theme?.hoverBg || '#f5f5f5', border: theme?.borderLight || '2px solid #ddd', borderRadius: '10px', padding: '20px',
+          fontSize: '12px', color: theme?.textMuted || '#888', fontWeight: 600, textAlign: 'center'
         }}>
-          <div style={{ fontWeight: 900, marginBottom: '8px', fontSize: '14px', color: '#333' }}>Teknologi Santuy Dashboard v2.0</div>
+          <div style={{ fontWeight: 900, marginBottom: '8px', fontSize: '14px', color: theme?.text || '#333' }}>Teknologi Santuy Dashboard v2.0</div>
           Built with Next.js 16 • Firebase • Recharts<br />
           © 2026 Teknologi Santuy. All rights reserved.
         </div>
@@ -160,26 +162,26 @@ export default function AdminSettings() {
   );
 }
 
-function SettingsSection({ title, description, children }) {
+function SettingsSection({ title, description, children, theme }) {
   return (
     <div style={{
-      background: '#fff', border: '3px solid #000', borderRadius: '12px',
-      padding: '24px', boxShadow: '4px 4px 0 rgba(0,0,0,0.06)'
+      background: theme?.contentBg || '#fff', border: theme?.border || '3px solid #000', borderRadius: '12px',
+      padding: '24px', boxShadow: theme?.shadow || '4px 4px 0 rgba(0,0,0,0.06)'
     }}>
-      <h3 style={{ margin: '0 0 4px', fontWeight: 900, fontSize: '16px' }}>{title}</h3>
-      <p style={{ margin: '0 0 20px', fontSize: '12px', color: '#888', fontWeight: 600 }}>{description}</p>
+      <h3 style={{ margin: '0 0 4px', fontWeight: 900, fontSize: '16px', color: theme?.text }}>{title}</h3>
+      <p style={{ margin: '0 0 20px', fontSize: '12px', color: theme?.textMuted || '#888', fontWeight: 600 }}>{description}</p>
       {children}
     </div>
   );
 }
 
-function ToggleRow({ label, value, onChange }) {
+function ToggleRow({ label, value, onChange, theme }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#fafafa', borderRadius: '8px', border: '1px solid #eee' }}>
-      <span style={{ fontWeight: 800, fontSize: '13px' }}>{label}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: theme?.hoverBg || '#fafafa', borderRadius: '8px', border: theme?.borderLight || '1px solid #eee' }}>
+      <span style={{ fontWeight: 800, fontSize: '13px', color: theme?.text }}>{label}</span>
       <button onClick={() => onChange(!value)} style={{
-        width: '48px', height: '26px', borderRadius: '13px', border: '2px solid #000',
-        background: value ? '#4caf50' : '#ddd', cursor: 'pointer', position: 'relative', transition: '0.3s'
+        width: '48px', height: '26px', borderRadius: '13px', border: value ? '2px solid transparent' : '2px solid #ccc',
+        background: value ? (theme?.success || '#4caf50') : (theme?.bg || '#ddd'), cursor: 'pointer', position: 'relative', transition: '0.3s'
       }}>
         <div style={{
           width: '18px', height: '18px', borderRadius: '50%', background: '#fff',

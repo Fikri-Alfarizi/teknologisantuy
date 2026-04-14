@@ -22,14 +22,11 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
   const [expandedGroups, setExpandedGroups] = useState(['overview', 'analytics', 'community', 'content', 'system']);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { settings } = useAdminSettings() || {};
+  const { settings, theme } = useAdminSettings() || {};
 
   const adminPath = process.env.NEXT_PUBLIC_ADMIN_PATH || 'admin-secret-portal';
 
   // Apply settings
-  const themeBg = settings?.theme === 'dark' ? '#121212' : '#f4f6f9';
-  const themeText = settings?.theme === 'dark' ? '#eee' : '#000';
-  const contentBg = settings?.theme === 'dark' ? '#1e1e1e' : '#fff';
   const accent = settings?.accentColor || '#ffe600';
   
   const sidebarWidth = settings?.sidebarDensity === 'compact' ? '220px' : settings?.sidebarDensity === 'spacious' ? '300px' : '260px';
@@ -144,24 +141,24 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
   );
 
   return (
-    <div suppressHydrationWarning style={{ display: 'flex', height: '100vh', background: themeBg, color: themeText, overflow: 'hidden' }}>
+    <div suppressHydrationWarning style={{ display: 'flex', height: '100vh', background: theme?.bg || '#f4f6f9', color: theme?.text || '#000', overflow: 'hidden' }}>
       {/* Sidebar */}
       <aside style={{
         width: isSidebarOpen ? sidebarWidth : '0',
         minWidth: isSidebarOpen ? sidebarWidth : '0',
-        background: '#1a1d23',
-        color: '#c2c7d0',
+        background: theme?.sidebarBg || '#1a1d23',
+        color: theme?.textMuted || '#c2c7d0',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         display: 'flex',
         flexDirection: 'column',
-        borderRight: isSidebarOpen ? '3px solid #000' : 'none',
+        borderRight: isSidebarOpen ? (theme?.border || '3px solid #000') : 'none',
         overflow: 'hidden',
         zIndex: 100
       }}>
         {/* Logo Area */}
         <div style={{
           padding: '18px 20px',
-          background: '#12141a',
+          background: 'rgba(0,0,0,0.2)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
           display: 'flex',
           alignItems: 'center',
@@ -170,7 +167,7 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
           <div style={{
             background: accent,
             padding: '8px',
-            border: '2px solid #000',
+            border: '2px solid #000', // Deepest black so it still pops against bright accent
             borderRadius: '8px',
             boxShadow: '2px 2px 0 rgba(0,0,0,0.3)'
           }}>
@@ -228,12 +225,12 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                         display: 'flex', alignItems: 'center', gap: '10px',
                         padding: itemPadding,
                         background: activeTab === item.id ? accent : 'transparent',
-                        color: activeTab === item.id ? '#000' : '#b0b5bd',
+                        color: activeTab === item.id ? '#000' : (theme?.textMuted || '#b0b5bd'),
                         textDecoration: 'none',
                         borderRadius: '6px',
-                        fontWeight: activeTab === item.id ? 900 : 600,
+                        fontWeight: activeTab === item.id ? 900 : 700,
                         fontSize: '13px',
-                        border: activeTab === item.id ? '2px solid #000' : '2px solid transparent',
+                        border: activeTab === item.id ? (theme?.border || '2px solid #000') : '2px solid transparent',
                         transition: '0.15s',
                         boxShadow: activeTab === item.id ? '2px 2px 0 rgba(0,0,0,0.2)' : 'none'
                       }}>
@@ -270,9 +267,9 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         {/* Top Navbar */}
         <header style={{
-          background: contentBg,
+          background: theme?.contentBg || '#fff',
           height: '56px',
-          borderBottom: settings?.theme === 'dark' ? '2px solid #333' : '2px solid #e0e0e0',
+          borderBottom: theme?.borderLight || '2px solid #e0e0e0',
           display: 'flex',
           alignItems: 'center',
           padding: '0 20px',
@@ -281,14 +278,14 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         }}>
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{
             background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
-            padding: '6px', borderRadius: '4px', color: themeText
+            padding: '6px', borderRadius: '4px', color: theme?.text || '#333'
           }}>
             {isSidebarOpen ? <FaBars /> : <FaBars />}
           </button>
 
           {/* Breadcrumb */}
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', color: themeText }}>
+            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', color: theme?.text || '#333' }}>
               Teknologi Santuy {settings?.language === 'en' ? 'Control Center' : 'Pusat Kontrol'}
             </span>
             <span style={{ fontSize: '10px', background: accent, color: '#000', padding: '2px 8px', border: '1px solid #000', fontWeight: 900, borderRadius: '3px' }}>v2.0</span>
@@ -299,8 +296,8 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
             onClick={() => setCommandPaletteOpen(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '6px 14px', background: '#f5f5f5', border: '1px solid #ddd',
-              borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: '#888', fontWeight: 600
+              padding: '6px 14px', background: theme?.hoverBg || '#f5f5f5', border: theme?.borderLight || '1px solid #ddd',
+              borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: theme?.textMuted || '#888', fontWeight: 600
             }}
           >
             <FaSearch size={11} /> <span>Cari...</span>
@@ -313,14 +310,14 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
               onClick={() => setShowNotifPanel(!showNotifPanel)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
-                padding: '8px', borderRadius: '6px', position: 'relative', color: '#555'
+                padding: '8px', borderRadius: '6px', position: 'relative', color: theme?.textMuted || '#555'
               }}
             >
               <FaBell />
               {unreadCount > 0 && (
                 <span style={{
                   position: 'absolute', top: '2px', right: '2px',
-                  background: '#ff4757', color: '#fff', fontSize: '9px', fontWeight: 900,
+                  background: theme?.danger || '#ff4757', color: '#fff', fontSize: '9px', fontWeight: 900,
                   width: '16px', height: '16px', borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>{unreadCount}</span>
@@ -331,13 +328,13 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
             {showNotifPanel && (
               <div style={{
                 position: 'absolute', top: '45px', right: 0, width: '360px',
-                background: '#fff', border: '3px solid #000', boxShadow: '8px 8px 0 rgba(0,0,0,0.15)',
+                background: theme?.contentBg || '#fff', border: theme?.border || '3px solid #000', boxShadow: theme?.shadow || '8px 8px 0 rgba(0,0,0,0.15)',
                 borderRadius: '8px', zIndex: 200, maxHeight: '450px', overflow: 'hidden'
               }}>
                 <div style={{
-                  padding: '14px 18px', borderBottom: '2px solid #000',
+                  padding: '14px 18px', borderBottom: theme?.border || '2px solid #000',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: '#fafafa'
+                  background: theme?.hoverBg || '#fafafa'
                 }}>
                   <span style={{ fontWeight: 900, fontSize: '13px', textTransform: 'uppercase' }}>🔔 Notifikasi</span>
                   <button onClick={handleMarkAllRead} style={{
@@ -347,13 +344,13 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                 </div>
                 <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
                   {notifications.length === 0 ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: '#999', fontWeight: 700, fontSize: '13px' }}>
+                    <div style={{ padding: '40px', textAlign: 'center', color: theme?.textMuted || '#999', fontWeight: 700, fontSize: '13px' }}>
                       Tidak ada notifikasi
                     </div>
                   ) : notifications.map(notif => (
                     <div key={notif.id} style={{
-                      padding: '12px 18px', borderBottom: '1px solid #eee',
-                      background: notif.read ? '#fff' : '#fffde7',
+                      padding: '12px 18px', borderBottom: theme?.borderLight || '1px solid #eee',
+                      background: notif.read ? 'transparent' : (settings?.theme === 'dark' ? '#2f2c15' : '#fffde7'),
                       cursor: 'pointer', transition: '0.1s'
                     }} onClick={async () => {
                       if (!notif.read) {
@@ -362,9 +359,9 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                         setUnreadCount(prev => Math.max(0, prev - 1));
                       }
                     }}>
-                      <div style={{ fontWeight: 800, fontSize: '13px', color: '#000', marginBottom: '3px' }}>{notif.title}</div>
-                      <div style={{ fontSize: '12px', color: '#666', fontWeight: 600 }}>{notif.message}</div>
-                      <div style={{ fontSize: '10px', color: '#999', marginTop: '4px', fontWeight: 700 }}>
+                      <div style={{ fontWeight: 800, fontSize: '13px', color: theme?.text || '#000', marginBottom: '3px' }}>{notif.title}</div>
+                      <div style={{ fontSize: '12px', color: theme?.textMuted || '#666', fontWeight: 600 }}>{notif.message}</div>
+                      <div style={{ fontSize: '10px', color: theme?.textMuted || '#999', marginTop: '4px', fontWeight: 700 }}>
                         {new Date(notif.timestamp).toLocaleString('id-ID')}
                       </div>
                     </div>
@@ -383,7 +380,7 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         </header>
 
         {/* Content Section */}
-        <main style={{ flex: 1, padding: '24px', overflowY: 'auto', background: themeBg }}>
+        <main style={{ flex: 1, padding: '24px', overflowY: 'auto', background: theme?.bg || '#f4f6f9' }}>
           {children}
         </main>
       </div>
@@ -401,14 +398,14 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
         >
           <div
             style={{
-              background: '#fff', width: '520px', borderRadius: '12px',
-              border: '3px solid #000', boxShadow: '10px 10px 0 rgba(0,0,0,0.15)',
+              background: theme?.contentBg || '#fff', width: '520px', borderRadius: '12px',
+              border: theme?.border || '3px solid #000', boxShadow: theme?.shadow || '10px 10px 0 rgba(0,0,0,0.15)',
               overflow: 'hidden'
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '14px 18px', borderBottom: '2px solid #eee', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <FaSearch color="#999" />
+            <div style={{ padding: '14px 18px', borderBottom: theme?.borderLight || '2px solid #eee', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <FaSearch color={theme?.textMuted || "#999"} />
               <input
                 autoFocus
                 placeholder="Cari halaman, fitur, atau aksi..."
@@ -416,10 +413,10 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
                   flex: 1, border: 'none', outline: 'none', fontSize: '15px',
-                  fontWeight: 600, background: 'none', color: '#000'
+                  fontWeight: 600, background: 'none', color: theme?.text || '#000'
                 }}
               />
-              <kbd style={{ fontSize: '10px', background: '#eee', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, color: '#666' }}>ESC</kbd>
+              <kbd style={{ fontSize: '10px', background: theme?.hoverBg || '#eee', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, color: theme?.textMuted || '#666' }}>ESC</kbd>
             </div>
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
               {filteredSearchItems.map(item => (
@@ -429,19 +426,19 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
                   onClick={() => { setCommandPaletteOpen(false); setSearchQuery(''); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '12px',
-                    padding: '12px 18px', textDecoration: 'none', color: '#333',
-                    fontWeight: 700, fontSize: '14px', borderBottom: '1px solid #f5f5f5',
+                    padding: '12px 18px', textDecoration: 'none', color: theme?.text || '#333',
+                    fontWeight: 700, fontSize: '14px', borderBottom: theme?.borderLight || '1px solid #f5f5f5',
                     transition: '0.1s'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#fffde7'}
+                  onMouseEnter={e => e.currentTarget.style.background = theme?.hoverBg || '#fffde7'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <span style={{ color: '#999', fontSize: '14px' }}>{item.icon}</span>
+                  <span style={{ color: theme?.textMuted || '#999', fontSize: '14px' }}>{item.icon}</span>
                   <span>{item.label}</span>
                 </Link>
               ))}
               {filteredSearchItems.length === 0 && (
-                <div style={{ padding: '30px', textAlign: 'center', color: '#999', fontWeight: 700 }}>
+                <div style={{ padding: '30px', textAlign: 'center', color: theme?.textMuted || '#999', fontWeight: 700 }}>
                   Tidak ditemukan
                 </div>
               )}
