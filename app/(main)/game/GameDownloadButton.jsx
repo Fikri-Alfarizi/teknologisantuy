@@ -1,12 +1,13 @@
-'use client';
+import { encodeDownloadUrl } from '../../lib/url-obfuscator';
 
 export default function GameDownloadButton({ game, className, style, children }) {
+  const downloadToken = encodeDownloadUrl(game.link);
+
   const handleClick = async (e) => {
-    // We don't prevent default because we want the link to open in new tab
     // Set sessionStorage to track for error reporting when user returns to this tab
     sessionStorage.setItem('lastDownloadedGame', JSON.stringify(game));
     
-    // However, we trigger the tracking API asynchronously
+    // Trigger tracking API
     try {
       fetch('/api/game/click', {
         method: 'POST',
@@ -20,9 +21,7 @@ export default function GameDownloadButton({ game, className, style, children })
 
   return (
     <a 
-      href={game.link} 
-      target="_blank" 
-      rel="noopener noreferrer" 
+      href={`/download?to=${downloadToken}&name=${encodeURIComponent(game.title)}`}
       className={className} 
       style={style}
       onClick={handleClick}
