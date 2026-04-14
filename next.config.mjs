@@ -2,11 +2,24 @@
 const nextConfig = {
   experimental: {
     externalDir: true,
-    outputFileTracingIncludes: {
-      '/api/**/*': ['./bot/**/*']
-    }
   },
-  serverExternalPackages: ['discord.js', '@discordjs/ws', 'zlib-sync', 'bufferutil', 'utf-8-validate', '@google/generative-ai'],
+  outputFileTracingIncludes: {
+    '/api/bot/**/*': ['./bot/**/*']
+  },
+  serverExternalPackages: [
+    'discord.js', 
+    '@discordjs/ws', 
+    '@discordjs/voice', 
+    'zlib-sync', 
+    'bufferutil', 
+    'utf-8-validate', 
+    '@google/generative-ai', 
+    '@snazzah/davey',
+    'better-sqlite3',
+    'ffmpeg-static',
+    'libsodium-wrappers',
+    '@discord-player/extractor'
+  ],
   transpilePackages: ['bot'],
   images: {
     remotePatterns: [
