@@ -7,11 +7,21 @@ export async function POST(request) {
     const timestamp = request.headers.get('x-signature-timestamp');
     const bodyText = await request.text();
 
+    if (!signature || !timestamp || !bodyText) {
+        return new Response('Missing signature or body', { status: 401 });
+    }
+
+    const publicKey = process.env.DISCORD_PUBLIC_KEY;
+    if (!publicKey) {
+        console.error('❌ DISCORD_PUBLIC_KEY is not set in environment variables!');
+        return new Response('Server configuration error', { status: 500 });
+    }
+
     const isValidRequest = verifyKey(
         bodyText,
         signature,
         timestamp,
-        process.env.DISCORD_PUBLIC_KEY
+        publicKey
     );
 
     if (!isValidRequest) {

@@ -11,14 +11,6 @@
     {
       "path": "/api/bot/cron?task=daily-alarm",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/bot/cron?task=autochat-morning",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/bot/cron?task=news",
-      "schedule": "*/30 * * * *"
     }
   ]
 }
