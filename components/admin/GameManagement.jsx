@@ -16,6 +16,8 @@ export default function GameManagement() {
   const [overrides, setOverrides] = useState({});
   const [loading, setLoading] = useState(true);
   const [editingGame, setEditingGame] = useState(null);
+  const [filterSearch, setFilterSearch] = useState('');
+  const [filterOption, setFilterOption] = useState('all');
   const [formData, setFormData] = useState({
     title: '',
     size: '',
@@ -117,14 +119,55 @@ export default function GameManagement() {
         </button>
       </div>
 
+      <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
+        <input 
+          type="text" 
+          placeholder="Cari nama game..." 
+          value={filterSearch}
+          onChange={e => setFilterSearch(e.target.value)}
+          style={{ flex: '1 1 300px', padding: '12px 18px', border: '4px solid #000', fontSize: '15px', fontWeight: 800, outline: 'none' }}
+        />
+        <select 
+          value={filterOption} 
+          onChange={e => setFilterOption(e.target.value)}
+          style={{ padding: '12px 18px', border: '4px solid #000', fontSize: '15px', fontWeight: 800, outline: 'none', background: '#fff', cursor: 'pointer' }}
+        >
+          <option value="all">Semua Game</option>
+          <option value="override">Override Aktif</option>
+          <option value="original">Original Discord</option>
+          <option value="most_clicked">Paling Banyak Diklik</option>
+        </select>
+      </div>
+
       <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '30px' }}>
-        {games.length === 0 && (
-          <div style={{ gridColumn: '1/-1', padding: '60px', textAlign: 'center', background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000' }}>
-             <p style={{ fontWeight: 950, textTransform: 'uppercase', fontSize: '18px' }}>Tidak ada game ditemukan di channel Discord.</p>
-          </div>
-        )}
-        
-        {games.map(game => {
+        {(() => {
+          const filteredGames = games.filter(game => {
+            const displayData = { ...game, ...(overrides[game.id] || {}) };
+            const searchMatch = displayData.title.toLowerCase().includes(filterSearch.toLowerCase());
+            if (!searchMatch) return false;
+
+            if (filterOption === 'override' && !overrides[game.id]) return false;
+            if (filterOption === 'original' && overrides[game.id]) return false;
+
+            return true;
+          }).sort((a, b) => {
+            if (filterOption === 'most_clicked') {
+              const clicksA = stats[a.id]?.clicks || 0;
+              const clicksB = stats[b.id]?.clicks || 0;
+              return clicksB - clicksA;
+            }
+            return 0; // Default order
+          });
+
+          if (filteredGames.length === 0) {
+            return (
+              <div style={{ gridColumn: '1/-1', padding: '60px', textAlign: 'center', background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000' }}>
+                 <p style={{ fontWeight: 950, textTransform: 'uppercase', fontSize: '18px' }}>Tidak ada game ditemukan.</p>
+              </div>
+            );
+          }
+
+          return filteredGames.map(game => {
           const gameStats = stats[game.id] || { clicks: 0 };
           const hasOverride = !!overrides[game.id];
           const displayData = { ...game, ...(overrides[game.id] || {}) };
@@ -179,7 +222,7 @@ export default function GameManagement() {
               </div>
             </div>
           );
-        })}
+        })})()}
       </div>
 
       {editingGame && (

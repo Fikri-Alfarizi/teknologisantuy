@@ -8,6 +8,8 @@ export default function AnalyticsDetail() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchLogs();
@@ -25,8 +27,18 @@ export default function AnalyticsDetail() {
   const filteredLogs = logs.filter(log => 
     log.ip?.includes(filter) || 
     log.country?.toLowerCase().includes(filter.toLowerCase()) || 
-    log.path?.toLowerCase().includes(filter.toLowerCase())
+    log.path?.toLowerCase().includes(filter.toLowerCase()) ||
+    log.referrer?.toLowerCase().includes(filter.toLowerCase())
   );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  const totalItems = filteredLogs.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentLogs = filteredLogs.slice(startIndex, startIndex + itemsPerPage);
 
   if (loading) return <div style={{ padding: '40px', fontWeight: 800 }}>Loading Traffic Data...</div>;
 
@@ -65,7 +77,7 @@ export default function AnalyticsDetail() {
               </tr>
             </thead>
             <tbody>
-              {filteredLogs.map((log, i) => (
+              {currentLogs.map((log, i) => (
                 <tr key={i} style={{ borderBottom: '2px solid #000', background: i % 2 === 0 ? '#fff' : '#f9f9f9', fontSize: '13px' }}>
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
@@ -94,13 +106,37 @@ export default function AnalyticsDetail() {
                   </td>
                 </tr>
               ))}
-              {filteredLogs.length === 0 && (
+              {currentLogs.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ padding: '60px', textAlign: 'center', fontWeight: 800 }}>Data tidak ditemukan.</td>
+                   <td colSpan="5" style={{ padding: '60px', textAlign: 'center', fontWeight: 800 }}>Data tidak ditemukan.</td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', background: '#eee', borderTop: '4px solid #000' }}>
+          <div style={{ fontWeight: 800, fontSize: '14px' }}>
+            Menampilkan {totalItems === 0 ? 0 : startIndex + 1} - {Math.min(startIndex + itemsPerPage, totalItems)} dari {totalItems} log
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              style={{ padding: '8px 16px', background: currentPage === 1 ? '#ccc' : '#fff', border: '3px solid #000', fontWeight: 900, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+            >
+              &laquo; Prev
+            </button>
+            <div style={{ padding: '8px 16px', background: 'var(--yellow)', border: '3px solid #000', fontWeight: 900 }}>
+              {currentPage} / {totalPages}
+            </div>
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              style={{ padding: '8px 16px', background: currentPage === totalPages ? '#ccc' : '#fff', border: '3px solid #000', fontWeight: 900, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+            >
+              Next &raquo;
+            </button>
+          </div>
         </div>
       </div>
     </div>
