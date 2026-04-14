@@ -10,7 +10,8 @@ export async function loadEvents(client) {
 
     for (const file of eventFiles) {
         const filePath = path.join(__dirname, file);
-        const event = await import(`file://${filePath}`);
+        const dynamicImport = new Function('p', 'return import(p)');
+        const event = await dynamicImport(`file://${filePath}`);
 
         if (event.default && event.default.once) {
             client.once(event.default.name, (...args) => event.default.execute(...args));

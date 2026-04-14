@@ -3,6 +3,7 @@ const nextConfig = {
   experimental: {
     externalDir: true,
   },
+  serverExternalPackages: ['discord.js', '@discordjs/ws', 'zlib-sync', 'bufferutil', 'utf-8-validate', '@google/generative-ai'],
   transpilePackages: ['bot'],
   images: {
     remotePatterns: [

@@ -13,7 +13,8 @@ export async function loadCommands(client) {
 
     for (const file of commandFiles) {
         const filePath = path.join(__dirname, file);
-        const command = await import(`file://${filePath}`); // Windows compatible
+        const dynamicImport = new Function('p', 'return import(p)');
+        const command = await dynamicImport(`file://${filePath}`); // Windows compatible
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
@@ -30,7 +31,8 @@ if (process.argv[1] === __filename) {
 
         for (const file of commandFiles) {
             const filePath = path.join(__dirname, file);
-            const command = await import(`file://${filePath}`);
+            const dynamicImport = new Function('p', 'return import(p)');
+            const command = await dynamicImport(`file://${filePath}`);
             if ('data' in command && 'execute' in command) {
                 commands.push(command.data.toJSON());
             }
