@@ -9,20 +9,22 @@ export async function GET() {
 export async function POST(request) {
     const signature = request.headers.get('x-signature-ed25519');
     const timestamp = request.headers.get('x-signature-timestamp');
-    const bodyText = await request.text();
+    // Use ArrayBuffer for most reliable raw body reading on Vercel
+    const rawBody = await request.arrayBuffer();
+    const body = Buffer.from(rawBody);
 
-    if (!signature || !timestamp || !bodyText) {
+    if (!signature || !timestamp || !body.length) {
         return new Response('Missing signature or body', { status: 401 });
     }
 
-    const publicKey = process.env.DISCORD_PUBLIC_KEY;
+    const publicKey = process.env.DISCORD_PUBLIC_KEY || 'd8d93e679ad87a4785e45f148a40dc946610157e9d0cd94276430399626e0223';
     if (!publicKey) {
-        console.error('❌ DISCORD_PUBLIC_KEY is not set in environment variables!');
+        console.error('❌ DISCORD_PUBLIC_KEY is missing!');
         return new Response('Server configuration error', { status: 500 });
     }
 
     const isValidRequest = verifyKey(
-        bodyText,
+        body,
         signature,
         timestamp,
         publicKey
@@ -33,7 +35,7 @@ export async function POST(request) {
         return new Response('Bad request signature', { status: 401 });
     }
 
-    const interaction = JSON.parse(bodyText);
+    const interaction = JSON.parse(body.toString());
 
     // Handle PING from Discord to verify interaction endpoint
     if (interaction.type === InteractionType.PING) {
