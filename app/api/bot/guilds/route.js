@@ -7,7 +7,7 @@ export async function GET(request) {
 
     if (path === 'server-stats') {
       // Lazy load guild service
-      const { guildService } = await import('../../../../lib/bot-db.js');
+      const { guildService } = await import('../../../lib/bot-db.js');
       
       // Get all guilds from Firebase
       const allGuilds = await guildService.getAll();

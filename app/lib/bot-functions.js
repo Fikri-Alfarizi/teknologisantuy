@@ -21,11 +21,11 @@ export async function initializeBot() {
         console.log('Initializing SantuyTL Discord Bot for Vercel...');
 
         // Dynamic imports to avoid bundling issues
-        const { default: discordClient } = await import('../../../bot/src/config/discord.js');
-        const { loadCommands } = await import('../../../bot/src/commands/index.js');
-        const { loadEvents } = await import('../../../bot/src/events/index.js');
-        const { startPresence } = await import('../../../bot/src/utils/presence.js');
-        const { default: gameService } = await import('../../../bot/src/services/game.service.js');
+        const { default: discordClient } = await import('../../bot/src/config/discord.js');
+        const { loadCommands } = await import('../../bot/src/commands/index.js');
+        const { loadEvents } = await import('../../bot/src/events/index.js');
+        const { startPresence } = await import('../../bot/src/utils/presence.js');
+        const { default: gameService } = await import('../../bot/src/services/game.service.js');
 
         client = discordClient;
 
@@ -75,42 +75,42 @@ export async function runScheduledTask(taskName) {
 
         switch (taskName) {
             case 'news':
-                const { checkAndPostNews } = await import('../../../bot/src/services/news.service.js');
+                const { checkAndPostNews } = await import('../../bot/src/services/news.service.js');
                 await checkAndPostNews(botClient);
                 break;
 
             case 'passive-income':
-                const { distributePassiveIncome } = await import('../../../bot/src/cron/passiveIncome.js');
+                const { distributePassiveIncome } = await import('../../bot/src/cron/passiveIncome.js');
                 await distributePassiveIncome(botClient);
                 break;
 
             case 'daily-alarm':
-                const { sendDailyAlarm } = await import('../../../bot/src/cron/dailyAlarm.js');
+                const { sendDailyAlarm } = await import('../../bot/src/cron/dailyAlarm.js');
                 await sendDailyAlarm(botClient);
                 break;
 
             case 'autochat-morning':
-                const { runAutoChat: runAutoChatMorning } = await import('../../../bot/src/services/autochat.service.js');
+                const { runAutoChat: runAutoChatMorning } = await import('../../bot/src/services/autochat.service.js');
                 await runAutoChatMorning(botClient, 'Pagi');
                 break;
 
             case 'autochat-noon':
-                const { runAutoChat: runAutoChatNoon } = await import('../../../bot/src/services/autochat.service.js');
+                const { runAutoChat: runAutoChatNoon } = await import('../../bot/src/services/autochat.service.js');
                 await runAutoChatNoon(botClient, 'Siang');
                 break;
 
             case 'autochat-afternoon':
-                const { runAutoChat: runAutoChatAfternoon } = await import('../../../bot/src/services/autochat.service.js');
+                const { runAutoChat: runAutoChatAfternoon } = await import('../../bot/src/services/autochat.service.js');
                 await runAutoChatAfternoon(botClient, 'Sore');
                 break;
 
             case 'autochat-evening':
-                const { runAutoChat: runAutoChatEvening } = await import('../../../bot/src/services/autochat.service.js');
+                const { runAutoChat: runAutoChatEvening } = await import('../../bot/src/services/autochat.service.js');
                 await runAutoChatEvening(botClient, 'Malam');
                 break;
 
             case 'game-sync':
-                const { default: gameSvc } = await import('../../../bot/src/services/game.service.js');
+                const { default: gameSvc } = await import('../../bot/src/services/game.service.js');
                 await gameSvc.syncAllGuilds(botClient);
                 break;
 

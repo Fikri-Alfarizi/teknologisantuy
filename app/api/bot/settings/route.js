@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 export async function GET(request) {
   try {
     // Lazy load to avoid build-time bundling
-    const { botSettings } = await import('../../../../lib/bot-db.js');
+    const { botSettings } = await import('../../../lib/bot-db.js');
     
     const settings = await botSettings.get();
     
@@ -28,7 +28,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const { botSettings } = await import('../../../../lib/bot-db.js');
+    const { botSettings } = await import('../../../lib/bot-db.js');
     const body = await request.json();
     const { action } = body;
 
