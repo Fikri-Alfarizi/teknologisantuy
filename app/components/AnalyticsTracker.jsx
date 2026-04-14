@@ -18,10 +18,10 @@ export default function AnalyticsTracker() {
       lastTrackedPath.current = currentFullUrl;
 
       try {
-        // 1. Get Geolocation & IP info (using a free public API)
+        // 1. Get Geolocation & IP info (via server-side proxy to avoid CORS)
         let geoData = { ip: 'Unknown', country_name: 'Unknown', city: 'Unknown' };
         try {
-          const geoRes = await fetch('https://ipapi.co/json/');
+          const geoRes = await fetch('/api/geo');
           if (geoRes.ok) {
             geoData = await geoRes.json();
           }
