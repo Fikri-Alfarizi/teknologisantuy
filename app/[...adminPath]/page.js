@@ -11,6 +11,14 @@ import NewsManagement from '@/components/admin/NewsManagement';
 import GameManagement from '@/components/admin/GameManagement';
 import AnalyticsDetail from '@/components/admin/AnalyticsDetail';
 import ContactInbox from '@/components/admin/ContactInbox';
+import ActivityLog from '@/components/admin/ActivityLog';
+import AnalyticsCharts from '@/components/admin/AnalyticsCharts';
+import GameRequestManager from '@/components/admin/GameRequestManager';
+import Scheduler from '@/components/admin/Scheduler';
+import TaskBoard from '@/components/admin/TaskBoard';
+import SystemHealth from '@/components/admin/SystemHealth';
+import BackupExport from '@/components/admin/BackupExport';
+import AdminSettings from '@/components/admin/AdminSettings';
 
 export default function AdminSecretPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -68,12 +76,24 @@ export default function AdminSecretPage({ params: paramsPromise }) {
   // Determine sub-component to render
   const renderContent = () => {
     switch (subPath.toLowerCase()) {
+      // Original modules
       case 'users': return <UserManagement />;
       case 'feedback': return <FeedbackHistory />;
       case 'news': return <NewsManagement />;
       case 'game-manager': return <GameManagement />;
       case 'analytics-detail': return <AnalyticsDetail />;
       case 'contact-inbox': return <ContactInbox />;
+      
+      // NEW V2 modules
+      case 'analytics-charts': return <AnalyticsCharts />;
+      case 'activity-log': return <ActivityLog />;
+      case 'game-requests': return <GameRequestManager />;
+      case 'scheduler': return <Scheduler />;
+      case 'task-board': return <TaskBoard />;
+      case 'system-health': return <SystemHealth />;
+      case 'backup': return <BackupExport />;
+      case 'settings': return <AdminSettings />;
+      
       default: return <AdminDashboard />;
     }
   };
@@ -84,4 +104,3 @@ export default function AdminSecretPage({ params: paramsPromise }) {
     </AdminLayout>
   );
 }
-
