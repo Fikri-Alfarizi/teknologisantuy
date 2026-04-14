@@ -9,9 +9,14 @@
     background: linear-gradient(135deg, #4f46e5 0%, #2170e4 100%);
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f7f9fb;
+    color: #191c1e;
 }
 
 /* Hide Scrollbar */
@@ -22,10 +27,6 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* ═══════════════════════════════════════════════
    RESET & ROOT
@@ -49,14 +50,6 @@ html{scroll-behavior:smooth}
   --section-gap:90px;
 }
 
-body{
-  /* Font families will be applied via Next.js next/font */
-  background:var(--blue-base);
-  color:var(--white);
-  overflow-x:clip;
-  max-width:100vw;
-  position:relative;
-}
 html{
   overflow-x:clip;
   max-width:100vw;
