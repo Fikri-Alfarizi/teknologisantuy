@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { getContactMessages, deleteContactMessage } from '@/app/actions/adminActions';
-import { FaEnvelope, FaTrash, FaUser, FaReply, FaClock } from 'react-icons/fa';
 
 export default function ContactInbox() {
   const [messages, setMessages] = useState([]);
@@ -26,71 +25,89 @@ export default function ContactInbox() {
     }
   }
 
-  if (loading) return <div style={{ padding: '40px', fontWeight: 800 }}>Membuka Kotak Masuk...</div>;
+  if (loading) return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-[#e6e8ea] border-t-[#4f46e5] rounded-full animate-spin" />
+        <p className="text-sm font-semibold text-[#464555]">Membuka Kotak Masuk...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={{ color: '#000' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '4px solid #000', paddingBottom: '20px' }}>
-        <h2 style={{ margin: 0, fontWeight: 950, fontSize: '28px', textTransform: 'uppercase', letterSpacing: '-1px' }}>
-          Kontak <span style={{ background: 'var(--yellow)', padding: '0 10px', border: '3px solid #000' }}>Pesan Masuk</span>
-        </h2>
-        <button onClick={fetchMessages} style={{ 
-          padding: '10px 20px', background: '#000', color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '5px 5px 0 var(--yellow)'
-        }}>Refresh Inbox</button>
+    <div className="px-4 md:px-8 pb-8">
+      {/* Header */}
+      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Kontak <span className="text-[#4f46e5]">Pesan Masuk</span>
+          </h2>
+          <p className="text-xs font-medium text-[#464555]/60 mt-1">{messages.length} pesan di inbox</p>
+        </div>
+        <button 
+          onClick={fetchMessages}
+          className="px-4 py-2.5 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+        >
+          <span className="material-symbols-outlined text-base">refresh</span>
+          Refresh Inbox
+        </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {messages.map((msg, i) => (
-          <div key={msg.id} style={{ 
-            background: '#fff', border: '4px solid #000', boxShadow: '8px 8px 0 #000', padding: '24px',
-            position: 'relative'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', borderBottom: '2px dashed #ddd', paddingBottom: '15px' }}>
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                <div style={{ width: '45px', height: '45px', background: 'var(--yellow)', border: '2px solid #000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
-                  <FaUser />
+      {/* Messages List */}
+      <div className="flex flex-col gap-5">
+        {messages.map((msg) => (
+          <div key={msg.id} className="bg-white rounded-3xl shadow-sm p-6 hover:shadow-md transition-all border border-transparent hover:border-[#e6e8ea]">
+            {/* Message Header */}
+            <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4 pb-4 border-b border-[#e6e8ea]">
+              <div className="flex gap-3 items-center">
+                <div className="w-11 h-11 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] rounded-xl flex items-center justify-center text-white">
+                  <span className="material-symbols-outlined text-xl">person</span>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 950, fontSize: '16px', textTransform: 'uppercase' }}>{msg.name}</div>
-                  <div style={{ fontSize: '12px', color: '#444', fontWeight: 700 }}>{msg.email}</div>
+                  <div className="font-bold text-sm" style={{ fontFamily: 'Manrope, sans-serif' }}>{msg.name}</div>
+                  <div className="text-xs text-[#464555]/60 font-semibold">{msg.email}</div>
                 </div>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 950, background: '#000', color: '#fff', padding: '2px 10px', fontSize: '10px', marginBottom: '5px' }}>{msg.subject || 'NO SUBJECT'}</div>
-                <div style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 800 }}>
-                  <FaClock /> {new Date(msg.timestamp).toLocaleString('id-ID')}
+              <div className="sm:text-right flex flex-col gap-1">
+                <span className="inline-block px-3 py-1 bg-[#191c1e] text-white rounded-full text-[10px] font-bold w-fit sm:ml-auto">
+                  {msg.subject || 'NO SUBJECT'}
+                </span>
+                <div className="text-[11px] text-[#464555]/60 font-semibold flex items-center gap-1 sm:justify-end">
+                  <span className="material-symbols-outlined text-xs">schedule</span>
+                  {new Date(msg.timestamp).toLocaleString('id-ID')}
                 </div>
               </div>
             </div>
 
-            <div style={{ padding: '10px 0', fontSize: '15px', fontWeight: 600, color: '#333', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+            {/* Message Body */}
+            <div className="text-sm text-[#464555] font-medium leading-relaxed whitespace-pre-wrap mb-5 pl-1">
               {msg.message}
             </div>
 
-            <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <a href={`mailto:${msg.email}?subject=RE: ${msg.subject}`} style={{ 
-                padding: '8px 20px', background: '#fff', border: '3px solid #000', borderRadius: '4px',
-                color: '#000', textDecoration: 'none', fontWeight: 900, fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '3px 3px 0 #000'
-              }}>
-                <FaReply /> Balas Lewat Email
+            {/* Actions */}
+            <div className="flex gap-3 justify-end">
+              <a 
+                href={`mailto:${msg.email}?subject=RE: ${msg.subject}`} 
+                className="px-4 py-2 bg-[#f7f9fb] hover:bg-[#e6e8ea] rounded-xl text-xs font-bold transition-colors flex items-center gap-2 border border-[#e6e8ea] no-underline text-[#191c1e]"
+              >
+                <span className="material-symbols-outlined text-base">reply</span>
+                Balas Lewat Email
               </a>
               <button 
                 onClick={() => handleDelete(msg.id)}
-                style={{ 
-                  padding: '8px 15px', background: '#ff6b6b', border: '3px solid #000', borderRadius: '4px',
-                  color: '#000', fontWeight: 900, cursor: 'pointer', boxShadow: '3px 3px 0 #000'
-                }}
+                className="px-4 py-2 bg-[#ffdad6]/50 hover:bg-[#ffdad6] text-[#ba1a1a] rounded-xl text-xs font-bold transition-colors flex items-center gap-2"
               >
-                <FaTrash /> Hapus
+                <span className="material-symbols-outlined text-base">delete</span>
+                Hapus
               </button>
             </div>
           </div>
         ))}
 
         {messages.length === 0 && (
-          <div style={{ padding: '100px', textAlign: 'center', background: '#fff', border: '4px solid #000', boxShadow: '10px 10px 0 #eee' }}>
-            <FaEnvelope size={50} style={{ opacity: 0.1, marginBottom: '20px' }} />
-            <p style={{ fontWeight: 950, fontSize: '18px', textTransform: 'uppercase' }}>Inbox Kosong.</p>
+          <div className="bg-white rounded-3xl shadow-sm p-20 text-center">
+            <span className="material-symbols-outlined text-6xl text-[#464555]/10 mb-4 block">inbox</span>
+            <p className="font-bold text-[#464555]/50" style={{ fontFamily: 'Manrope, sans-serif' }}>Inbox Kosong.</p>
           </div>
         )}
       </div>

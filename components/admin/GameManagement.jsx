@@ -100,27 +100,39 @@ export default function GameManagement() {
   };
 
   if (loading) return (
-    <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-      <div className="spinner-small" style={{ margin: '0 auto 15px' }}></div>
-      <p style={{ fontWeight: 600 }}>Menarik data dari Discord...</p>
+    <div className="flex h-64 items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-[#e6e8ea] border-t-[#4f46e5] rounded-full animate-spin" />
+        <p className="text-sm font-semibold text-[#464555]">Menarik data dari Discord...</p>
+      </div>
     </div>
   );
 
   return (
-    <div className="game-mgmt" style={{ color: '#000' }}>
-      <div className="header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '4px solid #000', paddingBottom: '20px' }}>
-        <h2 style={{ margin: 0, fontWeight: 950, fontSize: '28px', textTransform: 'uppercase', letterSpacing: '-1px', color: '#000' }}>
-          Kelola <span style={{ background: 'var(--yellow)', padding: '0 10px', border: '3px solid #000' }}>Katalog Game</span>
-        </h2>
-        <button onClick={fetchData} className="refresh-btn">
-          <i className="fa-solid fa-rotate"></i> Sinkronisasi Ulang
+    <div className="px-4 md:px-8 pb-8">
+      {/* Header */}
+      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Kelola <span className="text-[#4f46e5]">Katalog Game</span>
+          </h2>
+          <p className="text-xs font-medium text-[#464555]/60 mt-1">{games.length} game dari Discord</p>
+        </div>
+        <button 
+          onClick={fetchData}
+          className="px-4 py-2.5 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+        >
+          <span className="material-symbols-outlined text-base">sync</span>
+          Sinkronisasi Ulang
         </button>
       </div>
 
-      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '30px' }}>
+      {/* Game Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {games.length === 0 && (
-          <div style={{ gridColumn: '1/-1', padding: '60px', textAlign: 'center', background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000' }}>
-             <p style={{ fontWeight: 950, textTransform: 'uppercase', fontSize: '18px' }}>Tidak ada game ditemukan di channel Discord.</p>
+          <div className="md:col-span-2 xl:col-span-3 bg-white rounded-3xl shadow-sm p-16 text-center">
+            <span className="material-symbols-outlined text-6xl text-[#464555]/10 mb-4 block">sports_esports</span>
+            <p className="font-bold text-[#464555]/50" style={{ fontFamily: 'Manrope, sans-serif' }}>Tidak ada game ditemukan di channel Discord.</p>
           </div>
         )}
         
@@ -130,50 +142,38 @@ export default function GameManagement() {
           const displayData = { ...game, ...(overrides[game.id] || {}) };
 
           return (
-            <div key={game.id} className="admin-game-card" style={{
-              background: '#fff',
-              border: '4px solid #000',
-              padding: '25px',
-              position: 'relative',
-              boxShadow: '10px 10px 0 #000'
-            }}>
+            <div key={game.id} className="bg-white rounded-3xl shadow-sm p-5 relative hover:shadow-md transition-all border border-transparent hover:border-[#e6e8ea] group">
               {hasOverride && (
-                <span style={{
-                  position: 'absolute', top: '-18px', right: '18px',
-                  background: 'var(--yellow)', color: '#000', fontSize: '11px',
-                  padding: '5px 12px', border: '3px solid #000', fontWeight: '950', textTransform: 'uppercase', zIndex: 10
-                }}>Override Aktif</span>
+                <span className="absolute -top-2.5 right-5 px-3 py-1 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-full text-[9px] font-bold uppercase tracking-wider shadow-md z-10">
+                  Override Aktif
+                </span>
               )}
               
-              <div style={{ display: 'flex', gap: '20px' }}>
-                <div style={{ width: '90px', height: '90px', border: '4px solid #000', borderRadius: '4px', overflow: 'hidden', background: '#eee', flexShrink: 0 }}>
-                  <img src={displayData.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div className="flex gap-4 mb-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#f7f9fb] flex-shrink-0 border border-[#e6e8ea]">
+                  <img src={displayData.image} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ margin: '0 0 12px', fontSize: '15px', fontWeight: 950, lineHeight: 1.2, textTransform: 'uppercase' }}>{displayData.title}</h4>
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <div className="stat-pill">
-                       <i className="fa-solid fa-chart-line"></i> {gameStats.clicks} klik
-                    </div>
-                    <div className="stat-pill" style={{ background: '#fff' }}>
-                       {displayData.size}
-                    </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold mb-2 leading-tight line-clamp-2" style={{ fontFamily: 'Manrope, sans-serif' }}>{displayData.title}</h4>
+                  <div className="flex gap-2 flex-wrap">
+                    <span className="px-2.5 py-1 bg-[#4f46e5]/10 text-[#4f46e5] rounded-lg text-[10px] font-bold flex items-center gap-1">
+                      <span className="material-symbols-outlined text-xs">bar_chart</span>
+                      {gameStats.clicks} klik
+                    </span>
+                    <span className="px-2.5 py-1 bg-[#f7f9fb] text-[#464555] rounded-lg text-[10px] font-bold border border-[#e6e8ea]">
+                      {displayData.size}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="actions" style={{ marginTop: '25px', display: 'flex', gap: '12px' }}>
-                <button onClick={() => handleEdit(game)} style={{
-                  flex: 1, padding: '12px', background: '#fff', border: '4px solid #000', 
-                  fontWeight: 950, color: '#000', cursor: 'pointer', boxShadow: '4px 4px 0 #000',
-                  textTransform: 'uppercase', fontSize: '13px'
-                }}>Edit Detail</button>
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(game)} className="flex-1 py-2.5 bg-[#f7f9fb] hover:bg-[#e6e8ea] border border-[#e6e8ea] rounded-xl text-xs font-bold transition-colors">
+                  Edit Detail
+                </button>
                 {hasOverride && (
-                  <button onClick={() => handleReset(game.id)} style={{
-                    padding: '12px 18px', background: '#ff6b6b', border: '4px solid #000', 
-                    color: '#000', cursor: 'pointer', boxShadow: '4px 4px 0 #000'
-                  }} title="Reset ke asli Discord">
-                    <i className="fa-solid fa-undo"></i>
+                  <button onClick={() => handleReset(game.id)} className="py-2.5 px-3 bg-[#ffdad6]/50 hover:bg-[#ffdad6] text-[#ba1a1a] rounded-xl transition-colors" title="Reset ke asli Discord">
+                    <span className="material-symbols-outlined text-base">undo</span>
                   </button>
                 )}
               </div>
@@ -182,83 +182,63 @@ export default function GameManagement() {
         })}
       </div>
 
+      {/* Edit Modal */}
       {editingGame && (
-        <div className="modal-overlay" style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-        }}>
-          <div className="modal-content" style={{
-            background: '#fff', width: '100%', maxWidth: '600px', padding: '40px',
-            border: '4px solid #000', maxHeight: '90vh', overflowY: 'auto', boxShadow: '15px 15px 0px var(--yellow)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '4px solid #000', paddingBottom: '15px' }}>
-              <h3 style={{ margin: 0, fontWeight: 950, fontSize: '22px', textTransform: 'uppercase' }}>Edit Informasi Game</h3>
-              <button onClick={() => setEditingGame(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '28px', fontWeight: 900 }}>&times;</button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-8">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#e6e8ea]">
+              <h3 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>Edit Informasi Game</h3>
+              <button onClick={() => setEditingGame(null)} className="text-[#464555] hover:text-[#191c1e] transition-colors">
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
             </div>
             
-            <form onSubmit={handleSave}>
-              <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' }}>
-                <div className="form-group" style={{ gridColumn: '1/-1' }}>
-                  <label>Judul Game</label>
-                  <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+            <form onSubmit={handleSave} className="flex flex-col gap-5">
+              <div>
+                <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Judul Game</label>
+                <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Ukuran</label>
+                  <input type="text" value={formData.size} onChange={e => setFormData({...formData, size: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                 </div>
-                <div className="form-group">
-                  <label>Ukuran</label>
-                  <input type="text" value={formData.size} onChange={e => setFormData({...formData, size: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
-                </div>
-                <div className="form-group" style={{ gridColumn: '1/-1' }}>
-                  <label>Link Download</label>
-                  <input type="text" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} />
-                </div>
-                <div className="form-group" style={{ gridColumn: '1/-1' }}>
-                  <label>Link Gambar Cover</label>
-                  <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
+                <div>
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Password</label>
+                  <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})}
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Link Download</label>
+                <input type="text" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})}
+                  className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Link Gambar Cover</label>
+                <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})}
+                  className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
+              </div>
 
-              <div style={{ display: 'flex', gap: '15px', marginTop: '40px' }}>
-                <button type="submit" style={{
-                  flex: 1, padding: '16px', background: 'var(--yellow)', color: '#000', border: '4px solid #000', 
-                   fontWeight: 950, cursor: 'pointer', boxShadow: '6px 6px 0px #000', textTransform: 'uppercase'
-                }}>Simpan & Update Website</button>
-                <button type="button" onClick={() => setEditingGame(null)} style={{
-                  padding: '16px 30px', background: '#eee', color: '#000', border: '4px solid #000', 
-                   fontWeight: 950, cursor: 'pointer', boxShadow: '6px 6px 0px #000', textTransform: 'uppercase'
-                }}>Batal</button>
+              <div className="flex gap-3 mt-2 pt-4 border-t border-[#e6e8ea]">
+                <button type="submit"
+                  className="flex-1 py-3 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">save</span>
+                  Simpan & Update
+                </button>
+                <button type="button" onClick={() => setEditingGame(null)}
+                  className="py-3 px-6 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-bold hover:bg-[#e6e8ea] transition-colors"
+                >
+                  Batal
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .form-group { margin-bottom: 5px; }
-        label { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 950; color: #000; textTransform: uppercase; }
-        input { 
-          width: 100%; padding: 14px 18px; background: #fff; border: 4px solid #000; 
-          border-radius: 0; color: #000; outline: none; font-weight: 800;
-        }
-        input:focus { background: #fff; border-color: var(--yellow); }
-        .refresh-btn {
-          padding: 12px 24px; background: #fff; color: #000; border: 4px solid #000;
-          font-weight: 950; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 12px;
-          box-shadow: 6px 6px 0px #000; transition: 0.1s; text-transform: uppercase;
-        }
-        .refresh-btn:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0px #000; }
-        .stat-pill {
-          background: var(--yellow); color: #000; font-size: 11px; font-weight: 950; text-transform: uppercase;
-          padding: 5px 12px; border: 3px solid #000;
-        }
-        .spinner-small {
-          width: 40px; height: 40px; border: 6px solid #000; border-top-color: var(--yellow);
-          border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }

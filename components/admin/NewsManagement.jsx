@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaEye } from 'react-icons/fa';
 import Link from 'next/link';
 
 export default function NewsManagement() {
@@ -125,99 +124,109 @@ export default function NewsManagement() {
   };
 
   return (
-    <div style={{ background: '#fff', color: '#333', borderRadius: '8px', padding: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
-        <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Manajemen Berita Launcher</h2>
+    <div className="px-4 md:px-8 pb-8">
+      {/* Header */}
+      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>Manajemen Berita Launcher</h2>
+          <p className="text-xs font-medium text-[#464555]/60 mt-1">{newsList.length} artikel dipublikasi</p>
+        </div>
         <button 
           onClick={() => openModal()}
-          style={{ 
-            background: '#ffe600', border: '2px solid #000', borderRadius: '4px', 
-            padding: '8px 16px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px',
-            cursor: 'pointer', boxShadow: '2px 2px 0 #000', transition: 'all 0.1s' 
-          }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(2px, 2px)'; e.currentTarget.style.boxShadow = 'none'; }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0 #000'; }}
+          className="px-4 py-2.5 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
         >
-          <FaPlus /> Buat Berita Baru
+          <span className="material-symbols-outlined text-base">add</span>
+          Buat Berita Baru
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-        <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-          <thead>
-            <tr style={{ background: '#f8f9fa', color: '#212529', borderBottom: '2px solid #dee2e6' }}>
-              <th style={{ padding: '12px 15px', textAlign: 'left' }}>Judul</th>
-              <th style={{ padding: '12px 15px', textAlign: 'left' }}>Kategori</th>
-              <th style={{ padding: '12px 15px', textAlign: 'left' }}>Waktu Baca</th>
-              <th style={{ padding: '12px 15px', textAlign: 'left' }}>Tanggal</th>
-              <th style={{ padding: '12px 15px', textAlign: 'center' }}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}><div className="spinner" style={{ width: 30, height: 30, border: '3px solid #ffe600', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div><style dangerouslySetInnerHTML={{__html: `@keyframes spin { to { transform: rotate(360deg); } }`}}/></td></tr>
-            ) : newsList.length === 0 ? (
-              <tr><td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>Belum ada berita yang ditambahkan. Silakan klik "Buat Berita Baru".</td></tr>
-            ) : (
-              newsList.map((item) => (
-                <tr key={item.id} style={{ borderBottom: '1px solid #dee2e6', transition: 'background 0.2s', color: '#212529' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f3f5'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                  <td style={{ padding: '12px 15px' }}>
-                    <div style={{ fontWeight: 700 }}>{item.title}</div>
-                    <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '4px', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.excerpt || 'Tidak ada deskripsi singkat.'}</div>
-                  </td>
-                  <td style={{ padding: '12px 15px' }}>
-                    <span style={{ background: '#e9ecef', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 800 }}>{item.type}</span>
-                  </td>
-                  <td style={{ padding: '12px 15px', fontWeight: 600 }}>{item.readTime}</td>
-                  <td style={{ padding: '12px 15px', color: '#495057' }}>
-                    {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : 'Baru saja'}
-                  </td>
-                  <td style={{ padding: '12px 15px', textAlign: 'center' }}>
-                    <Link href={`/launcher/news/${item.id}`} target="_blank" style={{ display: 'inline-block', background: '#e8f5e9', color: '#2e7d32', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer', marginRight: '6px', textDecoration: 'none' }} title="Preview Berita">
-                      <FaEye />
-                    </Link>
-                    <button onClick={() => openModal(item)} style={{ background: '#e3f2fd', color: '#0d47a1', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer', marginRight: '6px' }} title="Edit Berita">
-                      <FaEdit />
-                    </button>
-                    <button onClick={() => handleDelete(item.id)} style={{ background: '#ffebee', color: '#b71c1c', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }} title="Hapus Berita">
-                      <FaTrash />
-                    </button>
+      {/* Table */}
+      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left border-collapse">
+            <thead className="bg-[#f7f9fb] text-xs font-bold text-[#464555] uppercase tracking-wider">
+              <tr>
+                <th className="p-4 pl-6">Judul</th>
+                <th className="p-4">Kategori</th>
+                <th className="p-4">Waktu Baca</th>
+                <th className="p-4">Tanggal</th>
+                <th className="p-4 pr-6 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm font-medium">
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="p-12 text-center">
+                    <div className="w-8 h-8 border-3 border-[#e6e8ea] border-t-[#4f46e5] rounded-full animate-spin mx-auto" />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : newsList.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="p-12 text-center text-sm text-[#464555]/50 font-semibold">
+                    Belum ada berita yang ditambahkan. Silakan klik &quot;Buat Berita Baru&quot;.
+                  </td>
+                </tr>
+              ) : (
+                newsList.map((item) => (
+                  <tr key={item.id} className="border-b border-[#464555]/5 hover:bg-[#f7f9fb] transition-colors">
+                    <td className="p-4 pl-6">
+                      <div className="font-bold text-sm">{item.title}</div>
+                      <div className="text-xs text-[#464555]/50 mt-1 max-w-[300px] truncate">{item.excerpt || 'Tidak ada deskripsi singkat.'}</div>
+                    </td>
+                    <td className="p-4">
+                      <span className="px-3 py-1 bg-[#4f46e5]/10 text-[#4f46e5] rounded-full text-[10px] font-bold">{item.type}</span>
+                    </td>
+                    <td className="p-4 text-xs font-semibold text-[#464555]">{item.readTime}</td>
+                    <td className="p-4 text-xs text-[#464555]/70 font-semibold">
+                      {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : 'Baru saja'}
+                    </td>
+                    <td className="p-4 pr-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link href={`/launcher/news/${item.id}`} target="_blank" className="w-8 h-8 bg-[#dcfce7] hover:bg-[#a7f3d0] text-[#15803d] rounded-lg flex items-center justify-center transition-colors no-underline" title="Preview Berita">
+                          <span className="material-symbols-outlined text-base">visibility</span>
+                        </Link>
+                        <button onClick={() => openModal(item)} className="w-8 h-8 bg-[#dbeafe] hover:bg-[#bfdbfe] text-[#1d4ed8] rounded-lg flex items-center justify-center transition-colors" title="Edit Berita">
+                          <span className="material-symbols-outlined text-base">edit</span>
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} className="w-8 h-8 bg-[#ffdad6]/50 hover:bg-[#ffdad6] text-[#ba1a1a] rounded-lg flex items-center justify-center transition-colors" title="Hapus Berita">
+                          <span className="material-symbols-outlined text-base">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Editor Modal */}
       {isModalOpen && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)', zIndex: 9999,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-        }}>
-          <div style={{
-            background: '#fff', color: '#333', borderRadius: '8px', border: '2px solid #000', 
-            boxShadow: '8px 8px 0 #000', width: '100%', maxWidth: '900px', maxHeight: '90vh',
-            display: 'flex', flexDirection: 'column', overflow: 'hidden'
-          }}>
-            <div style={{ padding: '15px 20px', borderBottom: '2px solid #000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa' }}>
-              <h3 style={{ margin: 0, fontWeight: 800 }}>{editingId ? 'Edit Berita' : 'Buat Berita Baru'}</h3>
-              <button type="button" onClick={closeModal} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', padding: 4 }}><FaTimes /></button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-[#e6e8ea] flex justify-between items-center bg-[#f7f9fb] rounded-t-3xl">
+              <h3 className="font-bold text-base" style={{ fontFamily: 'Manrope, sans-serif' }}>{editingId ? 'Edit Berita' : 'Buat Berita Baru'}</h3>
+              <button type="button" onClick={closeModal} className="text-[#464555] hover:text-[#191c1e] transition-colors">
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
             </div>
             
-            <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
-              <form id="newsForm" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Modal Body */}
+            <div className="px-6 py-5 overflow-y-auto flex-1">
+              <form id="newsForm" onSubmit={handleSave} className="flex flex-col gap-5">
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Judul Artikel</label>
-                  <input required placeholder="Contoh: Update Season 2 & Perubahan Database" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} style={inputStyle} />
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Judul Artikel</label>
+                  <input required placeholder="Contoh: Update Season 2 & Perubahan Database" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} 
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                 </div>
                 
-                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                  <div style={{ flex: '1 1 200px' }}>
-                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Kategori (Type)</label>
-                    <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} style={inputStyle}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Kategori (Type)</label>
+                    <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} 
+                      className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all">
                       <option value="NEWS">NEWS</option>
                       <option value="ANNOUNCEMENT">ANNOUNCEMENT</option>
                       <option value="PATCH NOTES">PATCH NOTES</option>
@@ -226,54 +235,51 @@ export default function NewsManagement() {
                       <option value="DEEP DIVE">DEEP DIVE</option>
                     </select>
                   </div>
-                  <div style={{ flex: '1 1 200px' }}>
-                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Estimasi Waktu Baca</label>
-                    <input required placeholder="Contoh: 5 MIN READ" value={formData.readTime} onChange={e => setFormData({...formData, readTime: e.target.value})} style={inputStyle} />
+                  <div>
+                    <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Estimasi Waktu Baca</label>
+                    <input required placeholder="Contoh: 5 MIN READ" value={formData.readTime} onChange={e => setFormData({...formData, readTime: e.target.value})} 
+                      className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Deskripsi Singkat (Excerpt)</label>
-                  <input required placeholder="Kalimat pendek yang tampil di kartu berita luar..." value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value})} style={inputStyle} />
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Deskripsi Singkat (Excerpt)</label>
+                  <input required placeholder="Kalimat pendek yang tampil di kartu berita luar..." value={formData.excerpt} onChange={e => setFormData({...formData, excerpt: e.target.value})} 
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>URL Gambar Sampul (Opsional)</label>
-                  <input placeholder="https://..." value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} style={inputStyle} />
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">URL Gambar Sampul (Opsional)</label>
+                  <input placeholder="https://..." value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} 
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all" />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>Konten Artikel HTML</label>
-                  <div style={{ marginBottom: '10px', fontSize: '13px', color: '#495057', background: '#f8f9fa', padding: '10px', borderRadius: '4px', border: '1px solid #ced4da' }}>
+                  <label className="block text-xs font-bold text-[#464555] uppercase tracking-wider mb-2">Konten Artikel HTML</label>
+                  <div className="mb-3 text-xs text-[#464555]/70 bg-[#f7f9fb] p-3 rounded-xl border border-[#e6e8ea]">
                     💡 <strong>Tips Render:</strong> Teks mendukung struktur HTML.
-                    <ul style={{ margin: '5px 0 0', paddingLeft: '20px' }}>
-                      <li><code>&lt;h2&gt;Sub-Judul Utama&lt;/h2&gt;</code> untuk section baru</li>
-                      <li><code>&lt;p&gt;Paragraf anda...&lt;/p&gt;</code> untuk paragraf teks</li>
-                      <li><code>&lt;ul&gt;&lt;li&gt;Poin 1&lt;/li&gt;&lt;/ul&gt;</code> untuk list/poin-poin (seperti patch notes)</li>
-                      <li><code>&lt;img src="url" /&gt;</code> untuk menambahkan gambar dalam artikel</li>
-                    </ul>
+                    <code className="ml-1 text-[#4f46e5]">&lt;h2&gt;</code>, <code className="text-[#4f46e5]">&lt;p&gt;</code>, <code className="text-[#4f46e5]">&lt;ul&gt;&lt;li&gt;</code>, <code className="text-[#4f46e5]">&lt;img&gt;</code>
                   </div>
-                  <textarea required placeholder="<p>Selamat datang di pembaruan season terbaru...</p>" rows={12} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} style={{...inputStyle, resize: 'vertical', fontFamily: 'monospace'}} />
+                  <textarea required placeholder="<p>Selamat datang di pembaruan season terbaru...</p>" rows={10} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} 
+                    className="w-full px-4 py-3 bg-[#f7f9fb] border border-[#e6e8ea] rounded-xl text-sm font-mono outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all resize-y" />
                 </div>
               </form>
             </div>
 
-            <div style={{ padding: '15px 20px', borderTop: '2px solid #000', display: 'flex', justifyContent: 'flex-end', gap: '15px', background: '#f8f9fa' }}>
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-[#e6e8ea] flex justify-end gap-3 bg-[#f7f9fb] rounded-b-3xl">
               <button 
                 type="button" onClick={closeModal} 
-                style={{ padding: '10px 20px', background: '#fff', border: '2px solid #000', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}
+                className="px-5 py-2.5 bg-white border border-[#e6e8ea] rounded-xl text-xs font-bold hover:bg-[#e6e8ea] transition-colors"
               >
                 Batal
               </button>
               <button 
                 form="newsForm" type="submit" disabled={loading}
-                style={{ 
-                  padding: '10px 20px', background: '#ffe600', border: '2px solid #000', borderRadius: '4px', 
-                  fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-                  opacity: loading ? 0.7 : 1
-                }}
+                className="px-5 py-2.5 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-50"
               >
-                <FaSave /> {loading ? 'Menyimpan...' : 'Simpan Artikel'}
+                <span className="material-symbols-outlined text-base">save</span>
+                {loading ? 'Menyimpan...' : 'Simpan Artikel'}
               </button>
             </div>
           </div>
@@ -282,9 +288,3 @@ export default function NewsManagement() {
     </div>
   );
 }
-
-const inputStyle = {
-  width: '100%', padding: '12px', border: '2px solid #ced4da', borderRadius: '4px',
-  fontFamily: 'inherit', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s',
-  boxSizing: 'border-box', color: '#000', backgroundColor: '#fff'
-};

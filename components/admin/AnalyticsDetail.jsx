@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { getAnalyticsStats } from '@/app/actions/adminActions';
-import { FaGlobe, FaDesktop, FaMobileAlt, FaLink, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 
 export default function AnalyticsDetail() {
   const [logs, setLogs] = useState([]);
@@ -28,75 +27,95 @@ export default function AnalyticsDetail() {
     log.path?.toLowerCase().includes(filter.toLowerCase())
   );
 
-  if (loading) return <div style={{ padding: '40px', fontWeight: 800 }}>Loading Traffic Data...</div>;
+  if (loading) return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-[#e6e8ea] border-t-[#4f46e5] rounded-full animate-spin" />
+        <p className="text-sm font-semibold text-[#464555]">Loading Traffic Data...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={{ color: '#000' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', borderBottom: '4px solid #000', paddingBottom: '20px' }}>
-        <h2 style={{ margin: 0, fontWeight: 950, fontSize: '28px', textTransform: 'uppercase', letterSpacing: '-1px' }}>
-          Analitik <span style={{ background: 'var(--yellow)', padding: '0 10px', border: '3px solid #000' }}>Pengunjung Detail</span>
-        </h2>
-        <div style={{ display: 'flex', gap: '15px' }}>
-           <input 
-             type="text" 
-             placeholder="Cari IP, Negara, atau Path..." 
-             value={filter}
-             onChange={e => setFilter(e.target.value)}
-             style={{ 
-               padding: '10px 15px', border: '3px solid #000', fontWeight: 800, outline: 'none', width: '250px'
-             }}
-           />
-           <button onClick={fetchLogs} style={{ 
-             padding: '10px 20px', background: '#000', color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '5px 5px 0 var(--yellow)'
-           }}>Refresh</button>
+    <div className="px-4 md:px-8 pb-8">
+      {/* Header */}
+      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Analitik <span className="text-[#4f46e5]">Pengunjung Detail</span>
+          </h2>
+          <p className="text-xs font-medium text-[#464555]/60 mt-1">{logs.length} total log tercatat</p>
+        </div>
+        <div className="flex gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#464555]/50 text-xl">search</span>
+            <input 
+              type="text" 
+              placeholder="Cari IP, Negara, atau Path..." 
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              className="w-full bg-[#f7f9fb] border-none rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all"
+            />
+          </div>
+          <button 
+            onClick={fetchLogs} 
+            className="px-4 py-2.5 bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-base">refresh</span>
+            Refresh
+          </button>
         </div>
       </div>
 
-      <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: '#eee', borderBottom: '4px solid #000' }}>
+      {/* Table */}
+      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left border-collapse">
+            <thead className="bg-[#f7f9fb] text-xs font-bold text-[#464555] uppercase tracking-wider">
               <tr>
-                <th style={thStyle}>Waktu</th>
-                <th style={thStyle}>Informasi Pengunjung</th>
-                <th style={thStyle}>Lokasi</th>
-                <th style={thStyle}>Halaman (Path)</th>
-                <th style={thStyle}>Sumber (Referrer)</th>
+                <th className="p-4 pl-6">Waktu</th>
+                <th className="p-4">Informasi Pengunjung</th>
+                <th className="p-4">Lokasi</th>
+                <th className="p-4">Halaman (Path)</th>
+                <th className="p-4 pr-6">Sumber (Referrer)</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-sm font-medium">
               {filteredLogs.map((log, i) => (
-                <tr key={i} style={{ borderBottom: '2px solid #000', background: i % 2 === 0 ? '#fff' : '#f9f9f9', fontSize: '13px' }}>
-                  <td style={tdStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
-                      <FaClock size={12} /> {new Date(log.timestamp || Date.now()).toLocaleString('id-ID')}
+                <tr key={i} className="border-b border-[#464555]/5 hover:bg-[#f7f9fb] transition-colors">
+                  <td className="p-4 pl-6">
+                    <div className="flex items-center gap-2 text-xs text-[#464555]/70 font-semibold">
+                      <span className="material-symbols-outlined text-sm">schedule</span>
+                      {new Date(log.timestamp || Date.now()).toLocaleString('id-ID')}
                     </div>
                   </td>
-                  <td style={tdStyle}>
-                    <div style={{ fontWeight: 900, marginBottom: '4px' }}>IP: {log.ip || 'Hidden'}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: '#666' }}>
-                      {log.platform === 'Mobile' ? <FaMobileAlt /> : <FaDesktop />} {log.platform}
+                  <td className="p-4">
+                    <div className="font-bold text-xs mb-1">IP: {log.ip || 'Hidden'}</div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#464555]/60 font-semibold">
+                      <span className="material-symbols-outlined text-xs">{log.platform === 'Mobile' ? 'phone_android' : 'desktop_windows'}</span>
+                      {log.platform}
                     </div>
                   </td>
-                  <td style={tdStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}>
-                       <FaMapMarkerAlt color="#ff1744" /> {log.country || 'Unknown'}
+                  <td className="p-4">
+                    <div className="flex items-center gap-2 font-bold text-xs">
+                      <span className="text-[#ba1a1a]">📍</span> {log.country || 'Unknown'}
                     </div>
-                    <div style={{ fontSize: '11px', marginLeft: '22px' }}>{log.city || '-'}</div>
+                    <div className="text-[10px] text-[#464555]/50 ml-5">{log.city || '-'}</div>
                   </td>
-                  <td style={tdStyle}>
-                    <code style={{ background: 'var(--yellow)', padding: '2px 6px', border: '1px solid #000' }}>{log.path}</code>
+                  <td className="p-4">
+                    <code className="bg-[#4f46e5]/10 text-[#4f46e5] px-2 py-1 rounded-lg text-[11px] font-bold">{log.path}</code>
                   </td>
-                  <td style={tdStyle}>
-                    <div style={{ fontSize: '11px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={log.referrer}>
-                      <FaLink size={10} style={{ marginRight: '5px' }} /> {log.referrer || 'Direct'}
+                  <td className="p-4 pr-6">
+                    <div className="text-[11px] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-[#464555]/70 font-semibold" title={log.referrer}>
+                      <span className="material-symbols-outlined text-xs mr-1 align-middle">link</span>
+                      {log.referrer || 'Direct'}
                     </div>
                   </td>
                 </tr>
               ))}
               {filteredLogs.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ padding: '60px', textAlign: 'center', fontWeight: 800 }}>Data tidak ditemukan.</td>
+                  <td colSpan="5" className="p-16 text-center text-sm text-[#464555]/50 font-semibold">Data tidak ditemukan.</td>
                 </tr>
               )}
             </tbody>
@@ -106,6 +125,3 @@ export default function AnalyticsDetail() {
     </div>
   );
 }
-
-const thStyle = { padding: '20px', fontWeight: 950, textTransform: 'uppercase', fontSize: '12px', borderRight: '2px solid #000' };
-const tdStyle = { padding: '18px 20px', fontWeight: 700, borderRight: '1px solid #ddd' };
