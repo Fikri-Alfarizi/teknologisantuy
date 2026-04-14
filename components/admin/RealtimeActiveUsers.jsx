@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getActiveUsersCount } from '@/app/actions/adminActions';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function RealtimeActiveUsers() {
   const [activeUsers, setActiveUsers] = useState(0);
@@ -18,18 +19,22 @@ export default function RealtimeActiveUsers() {
       }
     };
     
-    fetchActive(); 
-    const interval = setInterval(fetchActive, 10000); // 10 Detik Update
+    fetchActive(); // Initial fetch
+    const interval = setInterval(fetchActive, 10000); // Poll every 10 seconds
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="px-3 py-1 bg-white/20 rounded-full text-[11px] font-bold backdrop-blur-sm flex items-center gap-2 border border-white/10 shadow-sm">
-      <span className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-      </span>
-      {activeUsers} Live
+    <div style={{
+      background: '#00E676', border: '4px solid #000', padding: '15px 20px',
+      display: 'flex', alignItems: 'center', gap: '15px', color: '#000',
+      boxShadow: '6px 6px 0 #000', minWidth: '220px', position: 'relative'
+    }}>
+      <FaUserCircle size={40} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: '32px', fontWeight: 950, lineHeight: 1 }}>{activeUsers} <span style={{ fontSize: '10px', position: 'absolute', top: '10px', right: '10px' }}>🟢 LIVE</span></div>
+        <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>Pengguna Aktif</div>
+      </div>
     </div>
   );
 }

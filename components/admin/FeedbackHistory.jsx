@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { getAllVotes, deleteVote } from '@/app/actions/adminActions';
+import { FaTrash, FaFilter, FaSearch, FaCheck, FaTimes, FaUserAlt, FaUserSecret } from 'react-icons/fa';
 
 export default function FeedbackHistory() {
   const [votes, setVotes] = useState([]);
@@ -44,120 +45,128 @@ export default function FeedbackHistory() {
     return matchesSearch && matchesFilter;
   });
 
-  if (loading && votes.length === 0) return (
-    <div className="flex h-64 items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-[#e6e8ea] border-t-[#4f46e5] rounded-full animate-spin" />
-        <p className="text-sm font-semibold text-[#464555]">Mengambil Data Suara...</p>
-      </div>
-    </div>
-  );
+  if (loading && votes.length === 0) return <div style={{ fontWeight: 800, textTransform: 'uppercase', color: '#666' }}>Mengambil Data Suara...</div>;
 
   return (
-    <div suppressHydrationWarning className="px-4 md:px-8 pb-8">
+    <div suppressHydrationWarning style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
       {/* Filters Header */}
-      <div className="bg-white rounded-3xl shadow-sm p-5 md:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs font-bold text-[#464555]/60 uppercase tracking-wider mr-2">Filter:</span>
-          {[
-            { key: 'all', label: 'Semua' },
-            { key: 'setuju', label: 'Setuju' },
-            { key: 'batal', label: 'Batal' },
-          ].map(f => (
-            <button
-              key={f.key}
-              onClick={() => setFilterChoice(f.key)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                filterChoice === f.key 
-                  ? 'bg-gradient-to-br from-[#4f46e5] to-[#2170e4] text-white shadow-md' 
-                  : 'bg-[#f7f9fb] text-[#464555] hover:bg-[#e6e8ea]'
-              }`}
+      <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '10px 10px 0 #000', padding: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', justifyContent: 'space-between' }}>
+         <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <div style={{ background: '#ffe600', padding: '10px', border: '2px solid #000', fontWeight: 950, fontSize: '13px' }}>FILTER:</div>
+            <button 
+               onClick={() => setFilterChoice('all')}
+               style={{ 
+                  padding: '8px 15px', border: '2px solid #000', fontWeight: 800, cursor: 'pointer',
+                  background: filterChoice === 'all' ? '#000' : '#fff', color: filterChoice === 'all' ? '#fff' : '#000'
+               }}
             >
-              {f.label}
+               SEMUA
             </button>
-          ))}
-        </div>
+            <button 
+               onClick={() => setFilterChoice('setuju')}
+               style={{ 
+                  padding: '8px 15px', border: '2px solid #000', fontWeight: 800, cursor: 'pointer',
+                  background: filterChoice === 'setuju' ? '#ffe600' : '#fff', color: '#000'
+               }}
+            >
+               SETUJU
+            </button>
+            <button 
+               onClick={() => setFilterChoice('batal')}
+               style={{ 
+                  padding: '8px 15px', border: '2px solid #000', fontWeight: 800, cursor: 'pointer',
+                  background: filterChoice === 'batal' ? '#eee' : '#fff', color: '#000'
+               }}
+            >
+               BATAL
+            </button>
+         </div>
 
-        <div className="relative w-full sm:w-72">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#464555]/50 text-xl">search</span>
-          <input 
-            type="text" 
-            placeholder="Cari pesan atau ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#f7f9fb] border-none rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#3525cd]/20 transition-all"
-          />
-        </div>
+         <div style={{ position: 'relative', width: '300px' }}>
+            <FaSearch style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
+            <input 
+               type="text" 
+               placeholder="Cari pesan atau ID..."
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+               style={{ 
+                  width: '100%', padding: '10px 15px 10px 45px', border: '3px solid #000', 
+                  fontSize: '14px', fontWeight: 700, outline: 'none'
+               }}
+            />
+         </div>
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left border-collapse">
-            <thead className="bg-[#f7f9fb] text-xs font-bold text-[#464555] uppercase tracking-wider">
-              <tr>
-                <th className="p-4 pl-6">Pengirim</th>
-                <th className="p-4">Suara</th>
-                <th className="p-4">Saran / Masukan</th>
-                <th className="p-4">Waktu</th>
-                <th className="p-4 pr-6">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm font-medium">
-              {filteredVotes.length > 0 ? filteredVotes.map((v, i) => (
-                <tr key={v.id} className="border-b border-[#464555]/5 hover:bg-[#f7f9fb] transition-colors">
-                  <td className="p-4 pl-6">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm ${
-                        v.userId === 'anonymous' 
-                          ? 'bg-[#e6e8ea] text-[#464555]' 
-                          : 'bg-[#4f46e5]/10 text-[#4f46e5]'
-                      }`}>
-                        <span className="material-symbols-outlined text-lg">{v.userId === 'anonymous' ? 'person_off' : 'person'}</span>
-                      </div>
-                      <div>
-                        <div className="font-bold text-xs">{v.userId === 'anonymous' ? 'TAMU' : 'USER'}</div>
-                        <div className="text-[10px] text-[#464555]/50 font-semibold">{v.userId?.substring(0, 10)}...</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold ${
-                      v.vote 
-                        ? 'bg-[#dcfce7] text-[#15803d]' 
-                        : 'bg-[#ffdad6] text-[#93000a]'
-                    }`}>
-                      <span className="material-symbols-outlined text-xs">{v.vote ? 'thumb_up' : 'thumb_down'}</span>
-                      {v.vote ? 'SETUJU' : 'BATAL'}
-                    </span>
-                  </td>
-                  <td className="p-4 max-w-sm text-[#464555] text-sm">
-                    {v.feedback || <em className="opacity-40">Tidak ada pesan</em>}
-                  </td>
-                  <td className="p-4 text-xs text-[#464555]/70 font-semibold">
-                    {new Date(v.timestamp).toLocaleString('id-ID')}
-                  </td>
-                  <td className="p-4 pr-6">
-                    <button 
-                      disabled={isMutating}
-                      onClick={() => handleDelete(v.id)}
-                      className="w-9 h-9 bg-[#ffdad6]/50 hover:bg-[#ffdad6] text-[#ba1a1a] rounded-xl flex items-center justify-center transition-colors"
-                      title="Hapus Feedback"
-                    >
-                      <span className="material-symbols-outlined text-lg">delete</span>
-                    </button>
-                  </td>
-                </tr>
-              )) : (
-                <tr>
-                  <td colSpan="5" className="p-16 text-center text-sm text-[#464555]/50 font-semibold">
-                    Belum ada data suara masuk
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div style={{ background: '#fff', border: '4px solid #000', boxShadow: '12px 12px 0 #000', overflow: 'hidden' }}>
+         <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+               <thead style={{ background: '#000', color: '#fff' }}>
+                  <tr style={{ fontSize: '12px', fontWeight: 950, textTransform: 'uppercase' }}>
+                     <th style={{ padding: '18px 25px' }}>Pengirim</th>
+                     <th style={{ padding: '18px 25px' }}>Suara</th>
+                     <th style={{ padding: '18px 25px' }}>Saran / Masukan</th>
+                     <th style={{ padding: '18px 25px' }}>Waktu</th>
+                     <th style={{ padding: '18px 25px' }}>Aksi</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {filteredVotes.length > 0 ? filteredVotes.map((v, i) => (
+                     <tr key={v.id} style={{ borderBottom: '2px solid #000', background: i % 2 === 0 ? '#fff' : '#f9f9f9', color: '#000' }}>
+                        <td style={{ padding: '15px 25px' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <div style={{ 
+                                 width: '35px', height: '35px', border: '2px solid #000', borderRadius: '50%', 
+                                 display: 'flex', alignItems: 'center', justifyContent: 'center', background: v.userId === 'anonymous' ? '#eee' : '#ffe600' 
+                              }}>
+                                 {v.userId === 'anonymous' ? <FaUserSecret size={18} /> : <FaUserAlt size={16} />}
+                              </div>
+                              <div>
+                                 <div style={{ fontWeight: 900, fontSize: '13px' }}>{v.userId === 'anonymous' ? 'TAMU' : 'USER'}</div>
+                                 <div style={{ fontSize: '10px', color: '#888', fontWeight: 700 }}>{v.userId.substring(0, 10)}...</div>
+                              </div>
+                           </div>
+                        </td>
+                        <td style={{ padding: '15px 25px' }}>
+                           <span style={{ 
+                              display: 'inline-flex', alignItems: 'center', gap: '8px',
+                              padding: '6px 12px', border: '2px solid #000', 
+                              background: v.vote ? '#ffe600' : '#000', color: v.vote ? '#000' : '#fff',
+                              fontSize: '11px', fontWeight: 950, textTransform: 'uppercase'
+                           }}>
+                              {v.vote ? < FaCheck /> : <FaTimes />} {v.vote ? 'SETUJU' : 'BATAL'}
+                           </span>
+                        </td>
+                        <td style={{ padding: '15px 25px', maxWidth: '400px', fontWeight: 700, fontSize: '14px', lineHeight: '1.4' }}>
+                           {v.feedback || <em style={{ opacity: 0.3 }}>Tidak ada pesan</em>}
+                        </td>
+                        <td style={{ padding: '15px 25px', fontSize: '12px', fontWeight: 800 }}>
+                           {new Date(v.timestamp).toLocaleString('id-ID')}
+                        </td>
+                        <td style={{ padding: '15px 25px' }}>
+                           <button 
+                              disabled={isMutating}
+                              onClick={() => handleDelete(v.id)}
+                              style={{ 
+                                 background: '#fff', border: '2px solid #000', padding: '8px', 
+                                 cursor: 'pointer', transition: '0.2s'
+                              }}
+                              title="Hapus Feedback"
+                           >
+                              <FaTrash color="#dc3545" />
+                           </button>
+                        </td>
+                     </tr>
+                  )) : (
+                     <tr>
+                        <td colSpan="5" style={{ padding: '80px', textAlign: 'center' }}>
+                           <div style={{ opacity: 0.5, fontWeight: 900, textTransform: 'uppercase' }}>Belum ada data suara masuk</div>
+                        </td>
+                     </tr>
+                  )}
+               </tbody>
+            </table>
+         </div>
       </div>
     </div>
   );
