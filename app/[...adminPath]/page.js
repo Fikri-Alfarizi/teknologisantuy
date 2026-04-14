@@ -11,6 +11,7 @@ import NewsManagement from '@/components/admin/NewsManagement';
 import GameManagement from '@/components/admin/GameManagement';
 import AnalyticsDetail from '@/components/admin/AnalyticsDetail';
 import ContactInbox from '@/components/admin/ContactInbox';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 export default function AdminSecretPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -74,7 +75,7 @@ export default function AdminSecretPage({ params: paramsPromise }) {
       case 'game-manager': return <GameManagement />;
       case 'analytics-detail': return <AnalyticsDetail />;
       case 'contact-inbox': return <ContactInbox />;
-      default: return <AdminDashboard />;
+      default: return <AnalyticsDashboard />;
     }
   };
 

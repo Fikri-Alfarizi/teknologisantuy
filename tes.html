@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>DealDock | Analytics Intelligence</title>
+    
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#3525cd",
+              "primary-container": "#4f46e5",
+              "secondary-container": "#2170e4",
+              "surface": "#f7f9fb",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f2f4f6",
+              "surface-container-high": "#e6e8ea",
+              "on-surface": "#191c1e",
+              "on-surface-variant": "#464555",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "secondary": "#0058be",
+              "tertiary-container": "#a44100",
+              "secondary-fixed-dim": "#adc6ff",
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-primary-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #2170e4 100%);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Custom class untuk menyembunyikan scrollbar tapi tetap bisa di-scroll */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+
+    <aside class="h-screen w-64 fixed left-0 top-0 bg-[#eceef0] flex flex-col p-6 border-r border-outline-variant/20 z-50">
+        <div class="flex items-center gap-3 mb-10 px-2 cursor-pointer transition-transform hover:scale-105">
+            <div class="w-10 h-10 bg-primary-gradient rounded-xl flex items-center justify-center text-white shadow-md">
+                <span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold font-headline text-[#191c1e] leading-none">DealDock</h1>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant/60 mt-1">Analytics Intelligence</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-1 overflow-y-auto hide-scrollbar pb-6">
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 bg-white text-[#4f46e5] rounded-lg shadow-sm font-semibold text-sm transition-all" href="#">
+                <span class="material-symbols-outlined">analytics</span><span>Report</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">inventory_2</span><span>Products</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">groups</span><span>Consumer</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">receipt_long</span><span>Transactions</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">description</span><span>Invoices</span>
+            </a>
+            
+            <div class="pt-6 pb-2 px-4">
+                <span class="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-[0.1em]">Preference</span>
+            </div>
+            
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">settings</span><span>Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-[#191c1e]/70 hover:bg-white hover:shadow-sm rounded-lg transition-all font-medium text-sm" href="#">
+                <span class="material-symbols-outlined">help</span><span>Help</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto bg-slate-800 rounded-2xl p-5 relative overflow-hidden group shadow-lg">
+            <div class="absolute -top-4 -right-4 w-16 h-16 bg-primary/40 rounded-full blur-2xl group-hover:bg-primary/60 transition-all"></div>
+            <p class="text-white text-xs font-medium mb-1 opacity-80">Pro Version</p>
+            <h4 class="text-white font-headline text-lg mb-4 font-bold">Upgrade Pro</h4>
+            <button class="w-full py-2.5 bg-primary-gradient text-white rounded-xl text-sm font-bold shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 transition-all active:scale-95">
+                Upgrade $30
+            </button>
+        </div>
+    </aside>
+
+    <main class="ml-64 mr-80 min-h-screen p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-2xl font-extrabold font-headline text-on-surface">Sales Report</h2>
+                <p class="text-sm text-on-surface-variant font-medium opacity-70">Friday, December 15th 2023</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+                    <input class="bg-white border-none rounded-2xl py-3 pl-10 pr-4 w-64 text-sm shadow-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Search report..." type="text"/>
+                </div>
+                <button class="w-12 h-12 bg-white shadow-sm rounded-2xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors relative">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-error border-2 border-white rounded-full"></span>
+                </button>
+                <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30 cursor-pointer group">
+                    <div class="text-right">
+                        <p class="text-sm font-bold font-headline leading-none group-hover:text-primary transition-colors">Ferra Alexandra</p>
+                        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider mt-1">Admin store</p>
+                    </div>
+                    <img alt="User Profile" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-transparent group-hover:ring-primary/30 transition-all" src="https://ui-avatars.com/api/?name=Ferra+Alexandra&background=e2dfff&color=3525cd&rounded=true"/>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <div class="col-span-2 bg-primary-gradient p-8 rounded-3xl text-white shadow-xl shadow-primary/20 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-transform cursor-pointer">
+                <div class="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors duration-500"></div>
+                <div class="flex justify-between items-start mb-12 relative z-10">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <span class="material-symbols-outlined">payments</span>
+                    </div>
+                    <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-bold backdrop-blur-sm">+2.08%</span>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-white/80 text-xs font-bold mb-1 uppercase tracking-widest">Total Sales</p>
+                    <h3 class="text-5xl font-extrabold font-headline tracking-tight">$612.917</h3>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest p-6 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer border border-transparent hover:border-surface-container-high">
+                <div class="flex justify-between items-start">
+                    <div class="w-10 h-10 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                    </div>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">In-Stock</span>
+                </div>
+                <div class="mt-8">
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">Total Orders</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-bold font-headline">34.760</span>
+                        <span class="text-green-600 text-xs font-bold">↑ 12%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest p-6 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer border border-transparent hover:border-surface-container-high">
+                <div class="flex justify-between items-start">
+                    <div class="w-10 h-10 bg-tertiary-container/10 text-tertiary-container rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined">visibility</span>
+                    </div>
+                    <span class="px-2 py-1 bg-error-container text-on-error-container rounded-full text-[10px] font-bold">-2.08%</span>
+                </div>
+                <div class="mt-8">
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">Visitor</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-bold font-headline">14.987</span>
+                        <span class="text-error text-xs font-bold">↓ 3%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-2 bg-surface-container-lowest p-8 rounded-3xl shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-2">Total Sold Products</p>
+                    <h3 class="text-3xl font-bold font-headline mb-4">12.987</h3>
+                    <div class="flex -space-x-2">
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://ui-avatars.com/api/?name=User+One&background=random"/>
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://ui-avatars.com/api/?name=User+Two&background=random"/>
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://ui-avatars.com/api/?name=User+Three&background=random"/>
+                        <div class="w-8 h-8 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary z-10">+80</div>
+                    </div>
+                </div>
+                <div class="h-16 w-32 flex items-end gap-1">
+                    <div class="flex-1 bg-primary/10 rounded-t-sm h-[40%] hover:bg-primary/40 transition-colors"></div>
+                    <div class="flex-1 bg-primary/20 rounded-t-sm h-[60%] hover:bg-primary/40 transition-colors"></div>
+                    <div class="flex-1 bg-primary/40 rounded-t-sm h-[90%] hover:bg-primary/60 transition-colors"></div>
+                    <div class="flex-1 bg-primary/60 rounded-t-sm h-[70%] hover:bg-primary transition-colors"></div>
+                    <div class="flex-1 bg-primary-container rounded-t-sm h-[100%] hover:bg-primary transition-colors"></div>
+                </div>
+            </div>
+
+            <div class="col-span-2 bg-surface-container-lowest p-6 rounded-3xl shadow-sm flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-bold font-headline">Customer Habits</h3>
+                </div>
+                <div id="customerHabitsChart" class="-ml-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="w-80 h-screen fixed right-0 top-0 bg-white shadow-[-4px_0_24px_rgba(0,0,0,0.02)] p-8 border-l border-surface-container-high overflow-y-auto hide-scrollbar z-40">
+        
+        <section class="mb-10">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold font-headline">Product Statistic</h3>
+                <button class="text-on-surface-variant hover:bg-surface-container-low p-1 rounded-full transition-colors">
+                    <span class="material-symbols-outlined">more_horiz</span>
+                </button>
+            </div>
+            
+            <div class="bg-surface relative rounded-3xl p-6">
+                <div id="productStatisticChart" class="flex justify-center -mt-4"></div>
+                
+                <div class="mt-2 space-y-4">
+                    <div class="flex justify-between items-center group cursor-pointer hover:bg-white p-2 -mx-2 rounded-lg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></div>
+                            <span class="text-xs font-semibold text-on-surface-variant group-hover:text-on-surface transition-colors">Electronic</span>
+                        </div>
+                        <span class="text-xs font-bold">4.210</span>
+                    </div>
+                    <div class="flex justify-between items-center group cursor-pointer hover:bg-white p-2 -mx-2 rounded-lg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[#2170e4]"></div>
+                            <span class="text-xs font-semibold text-on-surface-variant group-hover:text-on-surface transition-colors">Games</span>
+                        </div>
+                        <span class="text-xs font-bold">3.120</span>
+                    </div>
+                    <div class="flex justify-between items-center group cursor-pointer hover:bg-white p-2 -mx-2 rounded-lg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2.5 h-2.5 rounded-full bg-[#adc6ff]"></div>
+                            <span class="text-xs font-semibold text-on-surface-variant group-hover:text-on-surface transition-colors">Furniture</span>
+                        </div>
+                        <span class="text-xs font-bold">2.499</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold font-headline">Customer Growth</h3>
+                <button class="text-xs font-bold text-primary px-3 py-1.5 bg-primary/10 hover:bg-primary/20 transition-colors rounded-full">View All</button>
+            </div>
+            
+            <div class="bg-surface rounded-3xl p-6">
+                <div class="relative h-40 w-full mb-6 overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] rounded-xl border border-outline-variant/20">
+                    <div class="absolute top-[20%] left-[10%] w-14 h-14 bg-[#4f46e5]/20 rounded-full flex items-center justify-center border border-[#4f46e5]/30 animate-pulse">
+                        <span class="text-[10px] font-bold text-[#4f46e5]">US</span>
+                    </div>
+                    <div class="absolute top-[45%] left-[45%] w-16 h-16 bg-[#2170e4]/30 rounded-full flex items-center justify-center border border-[#2170e4]/40 animate-[pulse_2.5s_infinite]">
+                        <span class="text-[10px] font-bold text-[#2170e4]">DE</span>
+                    </div>
+                    <div class="absolute top-[15%] left-[65%] w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/30 animate-[pulse_3s_infinite]">
+                        <span class="text-[10px] font-bold text-purple-700">AU</span>
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <div class="flex items-center gap-4 group">
+                        <div class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-sm font-bold">🇺🇸</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-xs font-bold text-on-surface-variant group-hover:text-on-surface transition-colors">United States</span>
+                                <span class="text-xs font-bold text-primary">78%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                <div class="w-[78%] h-full bg-primary-gradient rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 group">
+                        <div class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-sm font-bold">🇩🇪</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="text-xs font-bold text-on-surface-variant group-hover:text-on-surface transition-colors">Germany</span>
+                                <span class="text-xs font-bold text-[#2170e4]">62%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                <div class="w-[62%] h-full bg-[#2170e4] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="mt-8 rounded-3xl overflow-hidden relative h-36 group cursor-pointer shadow-lg">
+            <img alt="Promotion Banner" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent p-6 flex flex-col justify-end">
+                <p class="text-white/80 text-[10px] font-bold uppercase tracking-widest mb-1">New Update</p>
+                <h4 class="text-white text-lg font-bold font-headline leading-tight group-hover:text-primary-fixed transition-colors">Advanced Prediction</h4>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // 1. Setup Customer Habits Chart (Bar Chart)
+            var barOptions = {
+                series: [{
+                    name: 'Seen Product',
+                    data: [44, 55, 57, 56, 61, 58, 63]
+                }, {
+                    name: 'Sales',
+                    data: [76, 85, 101, 98, 87, 105, 91]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 220,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '50%',
+                        borderRadius: 4,
+                    },
+                },
+                dataLabels: { enabled: false },
+                stroke: { show: true, width: 2, colors: ['transparent'] },
+                colors: ['#c3c0ff', '#4f46e5'], // Menyesuaikan warna Tailwind
+                xaxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#777587', fontSize: '10px', fontWeight: 600 } }
+                },
+                yaxis: { show: false },
+                grid: {
+                    borderColor: '#f2f4f6',
+                    strokeDashArray: 4,
+                    yaxis: { lines: { show: true } }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    markers: { radius: 12 },
+                    itemMargin: { horizontal: 10, vertical: 0 }
+                },
+                fill: { opacity: 1 },
+                tooltip: {
+                    y: { formatter: function (val) { return val + " Users" } }
+                }
+            };
+            var barChart = new ApexCharts(document.querySelector("#customerHabitsChart"), barOptions);
+            barChart.render();
+
+            // 2. Setup Product Statistic Chart (Radial Bar)
+            var radialOptions = {
+                series: [44, 55, 67],
+                chart: {
+                    height: 250,
+                    type: 'radialBar',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                plotOptions: {
+                    radialBar: {
+                        hollow: { size: '40%' },
+                        track: { background: '#f2f4f6', margin: 8 },
+                        dataLabels: {
+                            name: { show: false },
+                            value: {
+                                fontSize: '24px',
+                                fontWeight: 800,
+                                fontFamily: 'Manrope, sans-serif',
+                                color: '#191c1e',
+                                show: true,
+                                formatter: function (val) { return "9.8K" } // Total Label
+                            }
+                        }
+                    }
+                },
+                colors: ['#adc6ff', '#2170e4', '#4f46e5'], // Furniture, Games, Electronic
+                labels: ['Furniture', 'Games', 'Electronic'],
+                stroke: { lineCap: 'round' }
+            };
+            var radialChart = new ApexCharts(document.querySelector("#productStatisticChart"), radialOptions);
+            radialChart.render();
+        });
+    </script>
+</body>
+</html>

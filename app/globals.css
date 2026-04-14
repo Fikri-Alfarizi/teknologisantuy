@@ -35,6 +35,21 @@ html{
   scroll-behavior:smooth;
 }
 
+/* Custom styles for analytics dashboard */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.bg-primary-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #2170e4 100%);
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ═══════════════════════════════════════════════
    CUSTOM CURSOR
 ═══════════════════════════════════════════════ */
