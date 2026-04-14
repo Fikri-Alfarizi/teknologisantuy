@@ -79,144 +79,142 @@ function DownloadContent() {
   }, [countdown]);
 
   return (
-    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 py-10 px-4 sm:px-6 lg:px-8 selection:bg-teal-500/30 selection:text-teal-200">
+    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans relative selection:bg-teal-500/30 selection:text-teal-200">
       {/* Adsterra Social Bar */}
       <Script src="https://pl29153603.profitablecpmratenetwork.com/ac/dd/97/acdd97eeb1fbbcd3524c8515b27438ee.js" strategy="lazyOnload" />
 
-      <div className="max-w-6xl mx-auto space-y-8">
+      {/* Background Decorative Glows */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col items-center">
         
-        {/* Top Header & Ad (728x90) */}
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <div className="hidden md:flex w-full max-w-[728px] min-h-[90px] bg-slate-900 border border-slate-800 rounded-2xl items-center justify-center overflow-hidden p-2 shadow-sm">
+        {/* Top Desktop Ad (728x90) */}
+        <div className="hidden lg:flex w-full justify-center mb-12">
+          <div className="w-full max-w-[728px] min-h-[90px] bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-xl">
             <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-top-728" />
           </div>
         </div>
 
-        {/* Main Grid Layout - 2 Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* ================= KOLOM KIRI (MAIN CONTENT - 8 Kolom) ================= */}
-          <div className="lg:col-span-8 space-y-6">
+          {/* ================= LEFT COLUMN: PROCESS (8/12) ================= */}
+          <div className="lg:col-span-8 space-y-8 flex flex-col items-center">
             
-            {/* Main Card */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-              {/* Decorative background glow */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-48 bg-teal-500/10 blur-[100px] pointer-events-none rounded-full" />
-
-              <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="w-full bg-slate-900/40 backdrop-blur-2xl border border-slate-800/60 rounded-[40px] p-8 md:p-16 shadow-2xl relative overflow-hidden group">
+              {/* Inner accent ring */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
+              
+              <div className="flex flex-col items-center text-center">
                 
-                {/* Status Icon */}
-                <div className="mb-6">
-                  {isReady ? (
-                    <div className="w-20 h-20 bg-teal-500/10 text-teal-400 rounded-full flex items-center justify-center ring-4 ring-teal-500/20 shadow-[0_0_30px_rgba(20,184,166,0.3)] transition-all duration-500">
-                      <CheckCircle2 className="w-10 h-10" />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center ring-4 ring-slate-700/50 animate-pulse transition-all duration-500">
-                      <Shield className="w-10 h-10" />
-                    </div>
-                  )}
+                {/* Dynamic Icon State */}
+                <div className="mb-10 relative">
+                  <div className={`absolute inset-0 blur-2xl rounded-full transition-all duration-700 ${isReady ? 'bg-teal-500/30' : 'bg-slate-700/20 animate-pulse'}`} />
+                  <div className={`w-24 h-24 rounded-[32px] flex items-center justify-center border-2 transition-all duration-500 relative z-10 ${isReady ? 'bg-teal-500 border-teal-400 text-slate-950 scale-110' : 'bg-slate-800 border-slate-700 text-slate-400'}`}>
+                    {isReady ? <CheckCircle2 className="w-12 h-12" /> : <Shield className="w-12 h-12 animate-pulse" />}
+                  </div>
                 </div>
 
-                {/* Title & Game Name */}
-                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-                  {isReady ? 'File Sudah Siap!' : 'Menyiapkan Data...'}
+                <h1 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
+                  {isReady ? 'LINK DOWNLOAD SIAP!' : 'MENYIAPKAN DATA...'}
                 </h1>
                 
-                <div className="inline-flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-5 py-2.5 rounded-full mb-10 shadow-inner">
-                   <Gamepad2 className="w-4 h-4 text-teal-400" />
-                   <p className="text-slate-300 font-medium text-sm sm:text-base">{gameName}</p>
+                <div className="inline-flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-6 py-2.5 rounded-2xl mb-12 shadow-inner">
+                   <Gamepad2 className="w-5 h-5 text-teal-400" />
+                   <span className="text-slate-200 font-bold uppercase tracking-widest text-sm md:text-base">{gameName}</span>
                 </div>
 
-                {/* Progress / Button Area */}
+                {/* Main Progress Area */}
                 {!isReady ? (
-                  <div className="w-full max-w-md space-y-6">
-                    <div className="flex justify-between items-center px-1">
-                      <span className="text-sm font-medium text-teal-400 animate-pulse">
+                  <div className="w-full max-w-xl space-y-8 animate-in fade-in duration-700">
+                    <div className="flex justify-between items-end mb-1 px-2 text-sm font-black uppercase tracking-[0.2em]">
+                      <span className="text-teal-400 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-teal-400 rounded-full animate-ping" />
                         {statusText}
                       </span>
-                      <span className="text-xl font-bold text-white bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
-                        {countdown}s
+                      <span className="text-white bg-slate-800 px-4 py-1.5 rounded-xl border border-slate-700 font-mono text-lg">
+                        {countdown}S
                       </span>
                     </div>
                     
-                    {/* Modern Progress Bar */}
-                    <div className="h-4 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800 shadow-inner p-0.5">
+                    <div className="h-10 w-full bg-slate-950 border-2 border-slate-800/80 rounded-3xl overflow-hidden p-1.5 shadow-2xl relative">
                       <div 
-                        className="h-full bg-gradient-to-r from-teal-600 to-teal-400 rounded-full transition-all duration-1000 ease-linear relative overflow-hidden"
+                        className="h-full bg-gradient-to-r from-teal-600 via-teal-400 to-teal-500 rounded-2xl transition-all duration-1000 ease-linear relative overflow-hidden shadow-[0_0_20px_rgba(20,184,166,0.4)]"
                         style={{ width: `${progress}%` }}
                       >
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 w-full h-full bg-white/20 animate-[shimmer_2s_infinite] -skew-x-12" />
+                         <div className="absolute inset-0 bg-white/20 skew-x-[-20deg] animate-[shimmer_2s_infinite] w-[30%]" />
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium tracking-wide">
-                      Mohon tunggu sebentar, sistem sedang memproses permintaan Anda.
-                    </p>
+
+                    <div className="py-4 flex justify-center min-h-[80px]">
+                       <div className="bg-white/5 backdrop-blur-sm border border-slate-800 rounded-2xl p-2.5 shadow-xl">
+                          <AdsterraAd id="9e3cd57d75a7607bfbb8eb212e8b0ee3" width={468} height={60} slotId="ad-mid-468" />
+                       </div>
+                    </div>
+                    
+                    <p className="text-xs text-slate-500 font-black uppercase tracking-[0.3em] opacity-40 italic">Membangun koneksi terenkripsi...</p>
                   </div>
                 ) : (
-                  <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
+                  <div className="w-full max-w-xl animate-in fade-in zoom-in slide-in-from-bottom-8 duration-700">
                     <a 
                       href={targetUrl}
-                      className="group relative flex items-center justify-center gap-3 w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-5 px-8 rounded-2xl shadow-[0_0_40px_rgba(20,184,166,0.3)] hover:shadow-[0_0_60px_rgba(20,184,166,0.5)] hover:-translate-y-1 transition-all duration-300 text-lg sm:text-xl"
+                      className="group relative w-full inline-flex items-center justify-center gap-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black py-8 px-12 rounded-[32px] shadow-[0_20px_50px_rgba(20,184,166,0.3)] hover:shadow-[0_25px_60px_rgba(20,184,166,0.5)] transition-all duration-300 transform hover:-translate-y-2 active:scale-95 text-2xl md:text-3xl"
                     >
-                      <Download className="w-6 h-6 group-hover:animate-bounce" />
-                      <span>Unduh Sekarang</span>
+                      <Download className="w-10 h-10 group-hover:bounce" />
+                      UNDUH SEKARANG
                     </a>
+                    <p className="mt-8 text-slate-500 font-bold uppercase text-[10px] tracking-[0.4em]">Terimakasih sudah mampir santuyers!</p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Mid Ad (468x60) */}
-            {!isReady && (
-              <div className="w-full min-h-[80px] bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-sm">
-                 <AdsterraAd id="9e3cd57d75a7607bfbb8eb212e8b0ee3" width={468} height={60} slotId="ad-mid-468" />
+            {/* Bottom Desktop Ad (728x90) */}
+            <div className="hidden lg:flex w-full justify-center">
+              <div className="w-full max-w-[728px] min-h-[90px] bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-xl">
+                <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-bottom-728" />
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* Security Guarantee Box */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex items-start gap-5 shadow-sm">
-              <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center shrink-0 border border-slate-700">
-                <Shield className="w-6 h-6 text-teal-400" />
+          {/* ================= RIGHT COLUMN: SIDEBAR (4/12) ================= */}
+          <div className="lg:col-span-4 space-y-8">
+            
+            {/* Ad Rectangle (300x250) */}
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-[32px] p-6 flex flex-col items-center justify-center min-h-[320px] shadow-2xl overflow-hidden relative group">
+               <div className="absolute top-4 left-4 text-[10px] font-black text-slate-600 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Sponsor Hub</div>
+               <AdsterraAd id="136aa22e44a04ff3d80d1888c11e7ecd" width={300} height={250} slotId="ad-rect-300" />
+            </div>
+
+            {/* Info Cards */}
+            <div className="space-y-4">
+              <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800 rounded-[28px] p-6 hover:bg-slate-800/40 transition-colors shadow-lg">
+                <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center border border-teal-500/20 mb-4">
+                  <Shield className="w-6 h-6 text-teal-400" />
+                </div>
+                <h3 className="text-white font-black text-lg mb-2 uppercase tracking-tight italic">AMOR PROTECTED</h3>
+                <p className="text-sm text-slate-400 font-bold leading-relaxed opacity-80">
+                  Semua link telah melewati verifikasi internal kami. Keamanan device kamu adalah prioritas nomor satu.
+                </p>
               </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-2">Keamanan Terjamin</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Tautan ini telah melalui proses verifikasi keamanan internal kami. Kami berkomitmen untuk memastikan perangkat Anda aman dari perangkat lunak berbahaya saat mengunduh.
+
+              <div className="bg-amber-950/20 backdrop-blur-xl border border-amber-500/20 rounded-[28px] p-6 shadow-lg">
+                <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20 mb-4">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                </div>
+                <h4 className="text-amber-500 font-black text-lg mb-2 uppercase tracking-tight italic">ALERT!</h4>
+                <p className="text-sm text-amber-100/60 font-medium leading-relaxed">
+                  Matikan <b>Ad-Blocker</b> jika tombol download tidak muncul. Iklan membantu kami menjaga server tetap online secara gratis.
                 </p>
               </div>
             </div>
 
-          </div>
-
-          {/* ================= KOLOM KANAN (SIDEBAR - 4 Kolom) ================= */}
-          <div className="lg:col-span-4 space-y-6">
-            
-            {/* Square Ad (300x250) */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-center min-h-[280px] shadow-sm">
-              <AdsterraAd id="136aa22e44a04ff3d80d1888c11e7ecd" width={300} height={250} slotId="ad-rect-300" />
-            </div>
-
-            {/* Warning Info Box */}
-            <div className="bg-amber-950/30 border border-amber-500/20 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" />
-                </div>
-                <h4 className="text-amber-500 font-semibold text-base">Perhatian Penting</h4>
-              </div>
-              <p className="text-amber-200/70 text-sm leading-relaxed">
-                Harap matikan <strong>Ad-Blocker</strong> Anda jika tombol unduhan tidak muncul. Iklan membantu kami mempertahankan server berkecepatan tinggi secara gratis untuk Anda.
-              </p>
-            </div>
-
-            {/* Native Recommendations */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-              <h4 className="text-sm text-slate-300 font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-teal-500"></span> Rekomendasi
-              </h4>
-              <div className="rounded-xl overflow-hidden min-h-[200px]">
+            {/* Native Ads Placeholder */}
+            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-[32px] p-6 shadow-2xl">
+              <p className="text-[10px] text-teal-500 font-black uppercase tracking-[0.3em] mb-6 text-center">TOP RECOMMENDATIONS</p>
+              <div className="rounded-2xl overflow-hidden min-h-[220px] bg-black/20 p-2">
                 <Script async="async" data-cfasync="false" src="https://pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js" strategy="lazyOnload" />
                 <div id="container-48133abeb7c91d73ea045430da0d0442" className="w-full"></div>
               </div>
@@ -224,20 +222,18 @@ function DownloadContent() {
 
           </div>
         </div>
-
-        {/* Bottom Banner (728x90) */}
-        <div className="flex justify-center mt-8">
-          <div className="w-full max-w-[728px] min-h-[100px] bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-sm">
-            <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-bottom-728" />
-          </div>
-        </div>
-
       </div>
 
-      {/* Global CSS for custom animations (shimmer) */}
+      {/* Animations */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes shimmer {
-          100% { transform: translateX(200%); }
+          0% { transform: translateX(-150%) skewX(-20deg); }
+          100% { transform: translateX(350%) skewX(-20deg); }
+        }
+        .bounce { animation: bounce 1s infinite; }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
         }
       `}} />
     </div>
