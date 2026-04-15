@@ -24,6 +24,8 @@ export default function GameDownloadButton({ game, className, style, children })
   return (
     <a 
       href={`/download?to=${downloadToken}&name=${encodeURIComponent(game.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
       className={className} 
       style={style}
       onClick={handleClick}

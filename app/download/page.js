@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { decodeDownloadUrl } from '../../lib/url-obfuscator';
+import { decodeDownloadUrl } from '../lib/url-obfuscator';
 import { Shield, Download, AlertTriangle, CheckCircle2, Loader2, Gamepad2, Share2, Bookmark, Zap, Cpu, MessageCircle, TrendingUp, Eye, Heart, MessageSquare } from 'lucide-react';
 import Script from 'next/script';
 
@@ -93,21 +94,17 @@ function DownloadContent() {
       `}</style>
 
       {/* HEADER */}
-      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
-        <nav className="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
-          <div className="text-2xl font-black tracking-tighter text-blue-600">TEKNOLOGI SANTUY</div>
-          
-          <div className="hidden md:flex items-center space-x-8">
-            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Home</a>
-            <a className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm" href="#">Download</a>
-            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Game</a>
-            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Tutorial</a>
+      <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200">
+        <nav className="flex flex-col md:flex-row justify-between items-center h-20 px-6 max-w-7xl mx-auto gap-4">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl font-black tracking-tighter text-blue-600">TEKNOLOGI SANTUY</div>
+            <span className="text-xs uppercase tracking-[0.25em] text-slate-500">Download Mandiri</span>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600">🔍</button>
-            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 hidden md:block">👤</button>
-            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 md:hidden">☰</button>
+
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link href="/" className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Beranda</Link>
+            <Link href="/game" className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Game</Link>
+            <Link href="/download" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm">Download</Link>
           </div>
         </nav>
       </header>
@@ -166,6 +163,8 @@ function DownloadContent() {
                 </div>
                 <a 
                   href={targetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition-all"
                 >
                   <Download className="w-5 h-5" />
