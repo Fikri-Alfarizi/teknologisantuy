@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mengunduh File... | Neo-Brutalism Download</title>
+    
+    <style>
+        /* ================= CSS RESET & VARIABEL ================= */
+        :root {
+            --bg-color: #f4f0ea; /* Warna latar krem/putih tulang */
+            --dark: #111820;     /* Hitam tegas */
+            --primary: #2EC4B6;  /* Hijau Teal */
+            --primary-hover: #20A39E;
+            --secondary: #FFD166; /* Kuning Peringatan */
+            --white: #FFFFFF;
+            
+            /* Konfigurasi Neo-Brutalism */
+            --border-thick: 4px solid var(--dark);
+            --border-thin: 2px solid var(--dark);
+            --shadow-hard: 8px 8px 0px 0px var(--dark);
+            --shadow-hard-sm: 4px 4px 0px 0px var(--dark);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--dark) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: 0 0;
+            color: var(--dark);
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        /* ================= LAYOUT SYSTEM (2 KOLOM) ================= */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 2 Kolom: Kiri lebih lebar */
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 992px) {
+            .grid-layout {
+                grid-template-columns: 1fr; /* Jadi 1 kolom di HP/Tablet */
+            }
+        }
+
+        /* ================= NEO-BRUTALISM COMPONENTS ================= */
+        .neo-card {
+            background-color: var(--white);
+            border: var(--border-thick);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-hard);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .neo-card-yellow { background-color: var(--secondary); }
+        .neo-card-teal { background-color: var(--primary); }
+
+        .ad-container {
+            background-color: var(--white);
+            border: var(--border-thick);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hard-sm);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 0.5rem;
+            margin: 0 auto;
+        }
+
+        .neo-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--white);
+            border: var(--border-thick);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: var(--shadow-hard-sm);
+            margin-bottom: 2rem;
+        }
+
+        /* ================= ICONS & TYPOGRAPHY ================= */
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            border: var(--border-thick);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hard-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            transition: var(--transition);
+        }
+
+        .icon-box.loading { background-color: var(--white); animation: pulse 2s infinite; }
+        .icon-box.ready { background-color: var(--primary); animation: none; }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        /* ================= PROGRESS BAR ================= */
+        .progress-wrapper {
+            max-width: 500px;
+            margin: 0 auto 1.5rem auto;
+            text-align: left;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .status-badge {
+            background: var(--dark);
+            color: var(--primary);
+            padding: 0.2rem 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .countdown-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .progress-track {
+            height: 24px;
+            background-color: var(--white);
+            border: var(--border-thick);
+            border-radius: var(--radius-md);
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            border-right: var(--border-thick);
+            transition: width 1s linear;
+        }
+
+        /* ================= TOMBOL DOWNLOAD ================= */
+        .neo-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background-color: var(--primary);
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 1.2rem 3rem;
+            border: var(--border-thick);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hard);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .neo-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translate(6px, 6px);
+            box-shadow: 2px 2px 0px 0px var(--dark);
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+
+    <script type='text/javascript' src='//pl29153603.profitablecpmratenetwork.com/ac/dd/97/acdd97eeb1fbbcd3524c8515b27438ee.js'></script>
+
+    <div class="container">
+        
+        <div class="ad-container" style="min-height: 100px; max-width: 740px;">
+            <div id="ad-top-728"></div>
+        </div>
+
+        <div class="grid-layout">
+            
+            <div class="main-column">
+                
+                <div class="neo-card text-center">
+                    
+                    <div id="icon-box" class="icon-box loading">
+                        <svg id="icon-shield" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <svg id="icon-check" class="hidden" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+
+                    <h1 id="main-title" class="title">MENYIAPKAN DATA</h1>
+                    
+                    <div class="neo-tag">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M14 12h.01"/><path d="M18 12h.01"/></svg>
+                        <span id="game-name">Memuat Game...</span>
+                    </div>
+
+                    <div id="progress-section" class="progress-wrapper">
+                        <div class="progress-header">
+                            <span id="status-text" class="status-badge">Mengamankan koneksi...</span>
+                            <span id="countdown-number" class="countdown-text">10s</span>
+                        </div>
+                        <div class="progress-track">
+                            <div id="progress-bar" class="progress-fill"></div>
+                        </div>
+                        <p style="text-align: center; margin-top: 1rem; font-weight: 600; font-size: 0.9rem;">Tunggu sebentar, sistem sedang meracik link untukmu.</p>
+                    </div>
+
+                    <div id="download-section" class="hidden">
+                        <a id="download-link" href="#" class="neo-btn">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            UNDUH SEKARANG
+                        </a>
+                    </div>
+                </div>
+
+                <div id="ad-mid-wrapper" class="ad-container" style="min-height: 80px; margin-bottom: 2rem;">
+                    <div id="ad-mid-468"></div>
+                </div>
+
+                <div class="neo-card" style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div style="background: var(--dark); color: var(--primary); padding: 1rem; border-radius: var(--radius-md); border: var(--border-thin);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </div>
+                    <div>
+                        <h3 style="font-weight: 900; font-size: 1.2rem; margin-bottom: 0.5rem; text-transform: uppercase;">BEBAS VIRUS & MALWARE</h3>
+                        <p style="font-weight: 600; font-size: 0.95rem;">Link ini telah divalidasi. File yang kamu unduh aman dari ancaman berbahaya. Gas terus santuyers!</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sidebar-column">
+                
+                <div class="ad-container" style="min-height: 270px; margin-bottom: 2rem;">
+                    <div id="ad-rect-300"></div>
+                </div>
+
+                <div class="neo-card neo-card-yellow">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                        <h4 style="font-weight: 900; font-size: 1.2rem; text-transform: uppercase;">PENTING BANGET!</h4>
+                    </div>
+                    <p style="font-weight: 600; font-size: 0.95rem;">
+                        Kalau tombol download tidak muncul, tolong <strong>MATIKAN AD-BLOCKER</strong> kamu. Iklan adalah satu-satunya cara kami patungan bayar server ngebut ini.
+                    </p>
+                </div>
+
+                <div class="neo-card" style="padding: 1.5rem;">
+                    <h4 style="font-weight: 900; font-size: 1rem; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="display: block; width: 12px; height: 12px; background: var(--primary); border: 2px solid var(--dark); border-radius: 50%;"></span>
+                        Rekomendasi
+                    </h4>
+                    <div style="min-height: 200px; border: var(--border-thin); border-radius: var(--radius-sm); overflow: hidden;" id="ad-native"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="ad-container" style="min-height: 100px; max-width: 740px;">
+            <div id="ad-bottom-728"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const statusText = document.getElementById('status-text');
+        const countdownNumber = document.getElementById('countdown-number');
+        const progressBar = document.getElementById('progress-bar');
+        const progressSection = document.getElementById('progress-section');
+        const downloadSection = document.getElementById('download-section');
+        const downloadLink = document.getElementById('download-link');
+        const mainTitle = document.getElementById('main-title');
+        const gameNameDisplay = document.getElementById('game-name');
+        const iconBox = document.getElementById('icon-box');
+        const iconShield = document.getElementById('icon-shield');
+        const iconCheck = document.getElementById('icon-check');
+        const adMidWrapper = document.getElementById('ad-mid-wrapper');
+
+        // State Variables
+        let countdown = 10;
+        let targetUrl = '#';
+
+        // URL Parameters Logic
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('to');
+        const name = urlParams.get('name');
+
+        if (name) gameNameDisplay.innerText = name;
+
+        if (token) {
+            try {
+                targetUrl = atob(token); // Base64 Decode
+            } catch (e) {
+                targetUrl = token;
+            }
+            // Hapus parameter URL agar bersih
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Timer Logic
+        const timerInterval = setInterval(() => {
+            countdown--;
+            progressBar.style.width = `${((10 - countdown) / 10) * 100}%`;
+            countdownNumber.innerText = `${countdown}s`;
+
+            if (countdown === 8) statusText.innerText = 'Mengecek integritas file...';
+            if (countdown === 6) statusText.innerText = 'Menghubungkan Mirror...';
+            if (countdown === 4) statusText.innerText = 'Bypass proteksi link...';
+            if (countdown === 2) statusText.innerText = 'Menyiapkan file...';
+
+            if (countdown <= 0) {
+                clearInterval(timerInterval);
+                finishLoading();
+            }
+        }, 1000);
+
+        function finishLoading() {
+            progressBar.style.width = '100%';
+            mainTitle.innerText = 'LINK SUDAH SIAP!';
+            
+            // Ubah Ikon Neo-Brutalism
+            iconBox.classList.remove('loading');
+            iconBox.classList.add('ready');
+            iconShield.classList.add('hidden');
+            iconCheck.classList.remove('hidden');
+
+            // Ganti Tampilan
+            progressSection.classList.add('hidden');
+            adMidWrapper.classList.add('hidden'); // Sembunyikan iklan tengah agar fokus ke tombol
+            downloadSection.classList.remove('hidden');
+            downloadLink.href = targetUrl;
+        }
+
+        // Adsterra Injector Function
+        function injectAdsterra(slotId, adId, width, height) {
+            const container = document.getElementById(slotId);
+            if (container && !container.hasChildNodes()) {
+                const scriptOptions = document.createElement('script');
+                scriptOptions.type = 'text/javascript';
+                scriptOptions.innerHTML = `atOptions = {'key' : '${adId}', 'format' : 'iframe', 'height' : ${height}, 'width' : ${width}, 'params' : {}};`;
+                
+                const scriptInvoke = document.createElement('script');
+                scriptInvoke.type = 'text/javascript';
+                scriptInvoke.src = `//www.highperformanceformat.com/${adId}/invoke.js`;
+                
+                container.appendChild(scriptOptions);
+                container.appendChild(scriptInvoke);
+            }
+        }
+
+        // Load Ads on Window Load
+        window.onload = () => {
+            injectAdsterra('ad-top-728', 'dc9dac060d8897a73c73d316590a3e03', 728, 90);
+            injectAdsterra('ad-mid-468', '9e3cd57d75a7607bfbb8eb212e8b0ee3', 468, 60);
+            injectAdsterra('ad-rect-300', '136aa22e44a04ff3d80d1888c11e7ecd', 300, 250);
+            injectAdsterra('ad-bottom-728', 'dc9dac060d8897a73c73d316590a3e03', 728, 90);
+
+            // Native Ad
+            const nativeContainer = document.getElementById('ad-native');
+            if(nativeContainer) {
+                const nativeInvoke = document.createElement('script');
+                nativeInvoke.async = true;
+                nativeInvoke.dataset.cfasync = "false";
+                nativeInvoke.src = "//pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js";
+                nativeContainer.appendChild(nativeInvoke);
+                
+                const nativeDiv = document.createElement('div');
+                nativeDiv.id = "container-48133abeb7c91d73ea045430da0d0442";
+                nativeContainer.appendChild(nativeDiv);
+            }
+        };
+    </script>
+</body>
+</html>

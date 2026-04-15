@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { useAdminSettings } from '@/components/admin/AdminSettingsContext';
+import AdsterraBalanceWidget from '@/components/admin/AdsterraBalanceWidget';
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '@/app/actions/adminActionsV2';
 import {
   FaTachometerAlt, FaUsers, FaCommentAlt, FaSignOutAlt, FaRocket, FaGlobe,
@@ -244,6 +245,11 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
             </div>
           ))}
         </nav>
+
+        {/* Adsterra Balance Widget */}
+        <div style={{ padding: '0 12px 12px' }}>
+          <AdsterraBalanceWidget theme={theme} accent={accent} />
+        </div>
 
         {/* Bottom Actions */}
         <div style={{ padding: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
