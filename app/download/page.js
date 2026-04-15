@@ -293,18 +293,18 @@ function DownloadContent() {
         <div className="two-columns">
           <article className="article-card">
             <header style={{ padding: '2rem', borderBottom: '1px solid #e8e8ea' }}>
-              <span className="tag">TEKNOLOGI</span>
-              <h1 className="article-title">Evolusi Gaming 2024: Bagaimana Game Modern Mengubah Industri</h1>
+              <span className="tag">KOMUNITAS</span>
+              <h1 className="article-title">Bergabung Discord Teknologi Santuy: Akses Unlimited Game & Support 24/7</h1>
               <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem', paddingTop: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '9999px', background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }} />
+                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '9999px', background: 'linear-gradient(135deg, #7289da, #5b7db8)' }} />
                   <div>
-                    <p style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Tim Teknologi Santuy</p>
-                    <p style={{ color: '#64748b', fontSize: '0.875rem' }}>25 Agustus 2024 • 8 min</p>
+                    <p style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Komunitas Teknologi Santuy</p>
+                    <p style={{ color: '#64748b', fontSize: '0.875rem' }}>15 April 2026 • Bergabunglah dengan 1000+ Member</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <button className="icon-round"><Share2 className="w-5 h-5" /></button>
+                  <a href="https://discord.gg/adMaSMC4sc" target="_blank" rel="noopener noreferrer" className="icon-round" style={{ background: '#7289da', color: 'white', textDecoration: 'none' }}><MessageCircle className="w-5 h-5" /></a>
                   <button className="icon-round"><Bookmark className="w-5 h-5" /></button>
                 </div>
               </div>
@@ -313,9 +313,9 @@ function DownloadContent() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', padding: '2rem' }}>
               <div>
                 <div className="featured-img">
-                  <img src="https://images.unsplash.com/photo-1538481527238-41badf67c289?w=800&q=80" alt="Gaming" />
+                  <img src="https://i.ibb.co.com/9Px8M49/TEKNologi-santuy.png" alt="Teknologi Santuy Discord Community" />
                 </div>
-                <p className="caption">Suasana pusat riset kecerdasan buatan di Jakarta Selatan. (Foto: Teknologi Santuy/Arsip)</p>
+                <p className="caption">Komunitas gaming & teknologi terbesar di Indonesia. Join sekarang dan akses unlimited benefits. (Sumber: Teknologi Santuy Official)</p>
               </div>
               <div style={{ minHeight: '320px', background: 'white', borderRadius: '1rem', border: '1px solid rgba(194, 198, 210, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                 <div>
@@ -328,8 +328,13 @@ function DownloadContent() {
             </div>
 
             <div className="article-body" style={{ padding: '0 2rem 2rem' }}>
-              <p className="drop-cap">Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital.</p>
-              <p>Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design. Setiap pemain kini mendapatkan cerita yang unik dan pengalaman yang personal.</p>
+              <p className="drop-cap">Server Discord Teknologi Santuy bukan sekadar tempat download game biasa. Ini adalah ekosistem digital yang dirancang khusus untuk gamer dan tech-enthusiast yang ingin hidup santai, jelas, dan tanpa ribet. Dengan lebih dari 1.000 member aktif, kami menciptakan komunitas yang solid di mana setiap pertanyaan dijawab dalam hitungan menit.</p>
+              <p>Bergabung berarti mendapatkan akses ke ratusan game PC/Android gratis, launcher eksklusif, troubleshooting real-time, dan networking dengan sesama gamer profesional. Jangan tergesa, ambil keputusan yang tepat. Scroll dan lihat sendiri mengapa ribuan orang memilih Teknologi Santuy.</p>
+
+              <h2>Akses Game Unlimited dan Launcher Eksklusif</h2>
+              <p>Semuanya dimulai dengan koleksi game terlengkap tanpa iklan jebakan. Member Discord mendapatkan akses early-bird ke koleksi game terbaru, beserta launcher custom eksklusif seperti EA FC 26 ULTIMATE—modifikasi PES 2017 yang terlihat seperti game next-gen. Download langsung, install 1-klik, langsung main tanpa drama setup rumit.</p>
+
+              <p>Tidak hanya itu. Setiap minggu ada update game baru, skin eksklusif, dan tools gratis yang tidak dipublikasikan di channel utama. Member VIP bahkan dapat early access 48 jam sebelum public release.</p>
 
               <div className="inline-ad" style={{ background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="ad-label">⭐ Rekomendasi Partner</div>
@@ -341,57 +346,63 @@ function DownloadContent() {
                 </div>
               </div>
 
-              <h2>Kedaulatan Data dan Model Lokal</h2>
-              <p>Salah satu tren utama yang diamati adalah pergeseran menuju model AI yang berdaulat. Startup seperti TechNusa dan IndoBot kini sedang mengembangkan infrastruktur yang memungkinkan pemrosesan data sensitif tetap berada di dalam server lokal, mematuhi regulasi perlindungan data pribadi yang semakin ketat.</p>
+              <h2>Support 24/7 dari Expert dan Tech Enthusiast</h2>
+              <p>PC kamu crash? Game lag berlebihan? DLL error yang bikin pusing? Jangan cari di Google lagi. Cukup post di channel support Discord kami, dalam 5-15 menit admin dan puluhan member expert akan membantu troubleshoot langsung—dengan screenshot, video tutorial, dan solusi step-by-step yang mudah diikuti.</p>
+
+              <p>Yang biasanya butuh 3-4 jam searching di forum kompleks, atau malah uang untuk beli solusi berbayar, di sini gratis dan jauh lebih cepat. Komunitas kami terdiri dari IT profesional, game developer, dan tech-enthusiast yang passionate membantu sesama member.</p>
 
               <div className="blockquote-wrapper">
                 <div className="blockquote-border"></div>
-                <blockquote className="blockquote-text">"Kita tidak bisa hanya mengandalkan API dari luar negeri. Untuk benar-benar memenangkan hati pengguna Indonesia, AI kita harus mengerti nuansa bahasa daerah dan etika komunikasi kita."</blockquote>
-                <cite style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#737782' }}>— Ahmad Rizki, CEO TechNusa</cite>
+                <blockquote className="blockquote-text">"Sebelumnya saya habiskan 2 minggu cari solusi error yang aneh. Setelah join Discord Teknologi Santuy, dalam 10 menit sudah solved. Support nya real human, bukan bot!"</blockquote>
+                <cite style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#737782' }}>— Rafa T., Member Discord (3+ bulan)</cite>
               </div>
 
-              <h2>Strategi Adaptasi Startup 2024</h2>
+              <h2>Keuntungan Eksklusif Member Discord</h2>
               <ul className="check-list">
-                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Optimalisasi biaya komputasi melalui teknik pruning dan quantization.</span></li>
-                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Fokus pada vertikal industri spesifik seperti agrikultur dan logistik maritim.</span></li>
-                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Kolaborasi strategis dengan penyedia layanan awan lokal untuk mengurangi latensi.</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Early access game terbaru dan launcher eksklusif sebelum public release</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Troubleshooting gratis 24/7 dari expert—PC crash, lag, driver, semuanya dibantu</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Komunitas 1000+ member aktif untuk networking, tips, dan diskusi teknologi real-time</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Tutorial premium dan cara setup optimal dari install OS hingga overclock GPU</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Giveaway eksklusif dan rewards untuk member setia termasuk game key dan donasi hardware</span></li>
               </ul>
+
+              <h2>Mengapa Ribuan Orang Sudah Bergabung</h2>
+              <p>Karena Teknologi Santuy tidak hanya menjual produk. Kami membangun ekosistem untuk orang-orang yang lelah dengan kompleksitas. Download game tanpa khawatir malware, fix error tanpa modal besar, dan punya support system yang nyata dan responsif.</p>
+
+              <p style={{ background: '#fff8f0', border: '1px solid #fed7aa', borderRadius: '0.75rem', padding: '1rem', marginTop: '1.5rem' }}>
+                <strong style={{ color: '#92400e' }}>Penawaran Terbatas:</strong> Bergabung sekarang dan dapatkan akses unlimited ke semua konten eksklusif. Link diaktifkan setelah verifikasi dalam waktu kurang dari 5 menit.
+              </p>
             </div>
 
             <div style={{ padding: '0 2rem 2rem', borderTop: '1px solid #e8e8ea' }}>
-              <div className="section-title"><span style={{ width: '4px', height: '24px', background: '#bc0000', display: 'inline-block' }}></span> ARTIKEL TERKAIT</div>
+              <div className="section-title"><span style={{ width: '4px', height: '24px', background: '#bc0000', display: 'inline-block' }}></span> KONTEN TERKAIT</div>
               <div className="related-grid">
-                <a href="#" className="related-card">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHDAv18iJQlGoxLYjvR5O174ERtgu4p5OsQXy2TRHNk0ZvTOAvbIUcRPYbXMzqtzuvOdFflqa1L1XQP0isKdd9yOU6PCtj4GjiY4ti-eEWl88NCLNScR3PhZwvrLeAetL6mEEqpmrsfdPqsV1leqL8XBogsthg1rxoGLFvlOnrTV5o8Nqw5BX9KT2tM8IR94aH63duOzpxe2RZaArSZLcTqH7uy0Lvsxu-snKF-WXTBN-ZpCM1LhC2g-dbs7AwY_t6RKsQ3ywFBthj" alt="Keamanan Siber" />
-                  <h5>Keamanan Siber di Tengah Gempuran Bot AI</h5>
+                <a href="https://discord.gg/adMaSMC4sc" target="_blank" rel="noopener noreferrer" className="related-card" style={{ textDecoration: 'none' }}>
+                  <div style={{ background: '#7289da', color: 'white', borderRadius: '0.5rem', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>→</div>
+                  <h5 style={{ color: '#003063' }}>Bergabung Discord Server Sekarang</h5>
                 </a>
                 <a href="#" className="related-card">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHHyPu8lhUeMQ-VC47nl53akNxieLtdWEWTD2yx1iubo2J72QpQCs71eJ8k9BbfgSCmcbjI-qiDNX0AYe9UGdbH-UHQB54TSqT-mZLqocs9KRlLccKPDd1q1pf50kOMiliSDzm2uiliCLfkWKE6NlpEiF-GIIqgp20sYL2ImTXb2KgQn_YxZp652AYkhFaP_tThKMiFhnKb046yW3oe6FDpTZ9DW_oD_A33Y8dAYdRA2OBvAmIS9d25sGFWH4hSb_P-ZKXimCfTNy" alt="Data Center" />
-                  <h5>Mengapa Investasi Data Center di Indonesia Melonjak</h5>
+                  <div style={{ background: '#f3f4f6', borderRadius: '0.5rem', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>∴</div>
+                  <h5>Game Gratis Terbaru Setiap Minggu</h5>
                 </a>
                 <a href="#" className="related-card">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hP-sSk7qCCtt_U05H4YVSFeEi6EjZLKkh4U6_olIyEtgveiIODAlv8QWwpY_3Qf4K0yP7YP8RpeksOcdV7FuZscbSc46fHT4w__WTTOg0G_iXfIfMFEnBgO3QegZMPsVLBLrEwm7h-XnbvFFeHvaWS9nHIN2Hvqt0qcEIyE8ICvsI4m0iraT4BpYFYKvDsf3ZgV8zpj-7-p2muYXv9DRxv_6cgcMFBPB9uMKEtJ-7Pe-ZJYDrHOY70G1fcDbm1k2r-D7iKAs5JCF5" alt="Gen-AI" />
-                  <h5>Nasib Pekerja Kreatif Pasca Ledakan Gen-AI</h5>
+                  <div style={{ background: '#f3f4f6', borderRadius: '0.5rem', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>?</div>
+                  <h5>Support PC Error dan Troubleshooting Gratis</h5>
                 </a>
               </div>
             </div>
 
-            <div className="comment-area" style={{ padding: '2rem' }}>
-              <h4 style={{ fontWeight: 800, color: '#003063', marginBottom: '1rem' }}>Komentar (14)</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-                <textarea id="commentInput" className="comment-input" rows={3} placeholder="Tulis komentar..." />
-                <button id="submitCommentBtn" className="btn-primary" style={{ width: 'fit-content' }}>Kirim Komentar</button>
-              </div>
-              <div id="commentsList">
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-                  <div style={{ width: '2rem', height: '2rem', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden' }} />
-                  <div>
-                    <strong style={{ fontSize: '0.75rem' }}>Andhika Wijaya</strong>
-                    <span style={{ fontSize: '0.65rem', color: '#737782', marginLeft: '0.5rem' }}>baru saja</span>
-                    <p style={{ fontSize: '0.875rem' }}>Artikel yang sangat mencerahkan. Benar sekali bahwa kedaulatan data harus jadi prioritas utama bagi startup kita.</p>
-                  </div>
-                </div>
-              </div>
+            <div className="comment-area" style={{ padding: '2rem', background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%)', border: '2px solid #d6e3ff' }}>
+              <h4 style={{ fontWeight: 800, color: '#003063', marginBottom: '1rem' }}>Siap Bergabung dengan Komunitas Kami?</h4>
+              <p style={{ marginBottom: '1.5rem', color: '#424751', lineHeight: 1.6 }}>
+                Jangan tunda lagi. Bergabung sekarang dan rasakan sendiri mengapa 1000+ member memilih Teknologi Santuy. Gratis, aman, dan support responsif 24/7.
+              </p>
+              <a href="https://discord.gg/adMaSMC4sc" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', background: '#7289da', color: 'white', fontWeight: 700, padding: '0.95rem 1.5rem', borderRadius: '0.75rem', textDecoration: 'none', fontSize: '0.95rem' }}>
+                Buka Discord dan Bergabung Sekarang
+              </a>
+              <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1rem', fontStyle: 'italic' }}>
+                Verifikasi instant • Chat dengan expert • Download unlimited konten
+              </p>
             </div>
           </article>
 
