@@ -39,17 +39,17 @@ function DownloadContent() {
   const [gameName, setGameName] = useState('Memuat Game...');
   const [targetUrl, setTargetUrl] = useState('');
   const [gameGenre, setGameGenre] = useState('');
-  
   const [countdown, setCountdown] = useState(10);
   const [isReady, setIsReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('Mengamankan koneksi...');
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const token = searchParams.get('to');
     const name = searchParams.get('name');
-    const genre = searchParams.get('genre') || 'Action RPG';
-    
+    const genre = searchParams.get('genre') || 'Gaming';
+
     if (token) {
       setTargetUrl(decodeDownloadUrl(token));
       if (name) setGameName(name);
@@ -66,7 +66,7 @@ function DownloadContent() {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
         setProgress(((10 - (countdown - 1)) / 10) * 100);
-        
+
         if (countdown === 8) setStatusText('Mengecek integritas file...');
         if (countdown === 6) setStatusText('Menghubungkan ke Mirror Server...');
         if (countdown === 4) setStatusText('Bypass proteksi link...');
@@ -80,95 +80,169 @@ function DownloadContent() {
     }
   }, [countdown]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const winScroll = window.document.documentElement.scrollTop;
+      const height = window.document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(height > 0 ? (winScroll / height) * 100 : 0);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="download-page">
       <style>{`
-        .material-symbols-outlined {
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+          --on-background: #1a1c1e;
+          --background: #f9f9fc;
+          --surface-dim: #dadadc;
+          --surface-container: #eeeef0;
+          --primary: #003063;
+          --secondary: #bc0000;
+          --surface: #f9f9fc;
+          --surface-container-lowest: #ffffff;
+          --on-surface: #1a1c1e;
+          --outline: #737782;
+          --surface-container-low: #f3f3f6;
+          --surface-container-high: #e8e8ea;
+          --on-primary: #ffffff;
+          --primary-fixed: #d6e3ff;
+          --outline-variant: #c2c6d2;
+          --surface-variant: #e2e2e5;
+          --on-surface-variant: #424751;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        @media (max-width: 768px) {
-          .fixed-widget { position: static !important; margin-bottom: 20px; }
-        }
+        html, body, #__next { min-height: 100%; }
+        body { background-color: var(--background); color: var(--on-background); font-family: 'Inter', sans-serif; line-height: 1.5; }
+        img { max-width: 100%; display: block; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+        @media (min-width: 768px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+        .fixed-header { position: fixed; top: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 50; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; height: 64px; }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.025em; color: var(--primary); }
+        .nav-links { display: none; }
+        @media (min-width: 768px) { .nav-links { display: flex; align-items: center; gap: 2rem; } .nav-link { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; } .nav-link-active { color: var(--secondary); font-weight: 700; border-bottom: 2px solid var(--secondary); padding-bottom: 0.25rem; } }
+        .icon-group { display: flex; align-items: center; gap: 0.5rem; }
+        .icon-btn { font-size: 1.5rem; color: var(--primary); background: transparent; border: none; cursor: pointer; padding: 0.5rem; border-radius: 9999px; transition: opacity 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .progress-bar-container { position: fixed; top: 64px; left: 0; width: 100%; height: 4px; background-color: var(--surface-container); z-index: 50; }
+        .progress-fill { height: 100%; width: 0%; background-color: var(--secondary); transition: width 0.2s ease; }
+        .two-columns { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 1024px) { .two-columns { grid-template-columns: 1fr 320px; gap: 3rem; } }
+        .article-card { background: var(--surface-container-lowest); border-radius: 0.75rem; overflow: hidden; }
+        .tag { display: inline-block; background: rgba(188, 0, 0, 0.1); color: var(--secondary); font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.125rem 0.5rem; border-radius: 0.25rem; margin-bottom: 1rem; }
+        .article-title { font-size: 1.875rem; font-weight: 900; color: var(--primary); line-height: 1.2; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .article-title { font-size: 3rem; } }
+        .author-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid rgba(194, 198, 210, 0.15); border-bottom: 1px solid rgba(194, 198, 210, 0.15); }
+        .author-info { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar { width: 2.5rem; height: 2.5rem; background-color: var(--primary-fixed); border-radius: 9999px; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .share-buttons { display: flex; gap: 0.5rem; }
+        .icon-round { width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center; background-color: var(--surface); border-radius: 0.5rem; transition: all 0.2s; cursor: pointer; color: var(--primary); }
+        .icon-round:hover { background-color: var(--primary); color: white; }
+        .featured-img { width: 100%; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .featured-img img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .caption { margin-top: 0.5rem; font-size: 0.75rem; color: var(--outline); font-style: italic; text-align: center; }
+        @media (min-width: 768px) { .caption { text-align: left; } }
+        .article-body { font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.625; color: var(--on-background); }
+        @media (min-width: 768px) { .article-body { font-size: 1.125rem; } }
+        .drop-cap::first-letter { float: left; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 4rem; line-height: 1; padding-right: 0.75rem; color: var(--primary); }
+        .article-body h2 { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--primary); margin: 2rem 0 1rem; }
+        .article-body h3 { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--primary); margin: 1.5rem 0 0.75rem; }
+        .blockquote-wrapper { position: relative; margin: 2rem 0; padding-left: 1.5rem; }
+        @media (min-width: 768px) { .blockquote-wrapper { padding-left: 2rem; } }
+        .blockquote-border { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--secondary); border-radius: 2px; }
+        .blockquote-text { font-size: 1.25rem; font-style: italic; color: var(--primary); line-height: 1.35; font-weight: 500; }
+        @media (min-width: 768px) { .blockquote-text { font-size: 1.5rem; } }
+        .check-list { list-style: none; margin-top: 1rem; margin-bottom: 1rem; }
+        .check-list li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .section-title { font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .related-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 768px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+        .related-card img { border-radius: 0.5rem; transition: transform 0.3s; }
+        .related-card h5 { font-weight: 700; font-size: 0.875rem; margin-top: 0.5rem; }
+        .comment-area { background-color: var(--surface); border-radius: 0.75rem; padding: 1.5rem; }
+        .comment-input { width: 100%; background: white; border: none; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; resize: vertical; }
+        .btn-primary { background-color: var(--primary); color: white; font-weight: 700; font-size: 0.75rem; padding: 0.5rem 1.5rem; border-radius: 0.375rem; border: none; cursor: pointer; }
+        .sidebar-ad { background: white; border: 1px solid rgba(194, 198, 210, 0.3); border-radius: 0.5rem; padding: 0.5rem; text-align: center; }
+        .popular-list a { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+        .popular-number { font-size: 1.875rem; font-weight: 900; color: #c2c6d2; transition: color 0.2s; }
+        .footer { background-color: #e8e8ea; margin-top: 3rem; padding: 2.5rem 1.5rem; }
+        @media (min-width: 768px) { .footer { padding: 3rem 2rem; } }
+        .footer-content { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        @media (min-width: 768px) { .footer-content { flex-direction: row; justify-content: space-between; } }
+        .newsletter { background-color: var(--primary); color: white; border-radius: 0.75rem; padding: 2rem; position: relative; overflow: hidden; }
+        .newsletter-input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 0.5rem; padding: 0.5rem 1rem; width: 100%; color: white; }
+        .newsletter-btn { background-color: var(--secondary); font-weight: 900; font-size: 0.7rem; letter-spacing: 0.1em; border: none; border-radius: 0.5rem; padding: 0.625rem; color: white; width: 100%; cursor: pointer; }
+        @media (min-width: 768px) { .sidebar-sticky { position: sticky; top: 90px; } }
+        .inline-ad { display: flex; justify-content: center; margin: 2rem 0; }
+        .related-card { display: block; }
+        .fixed-widget { display: none; }
+        @media (min-width: 1024px) { .fixed-widget { display: block; } }
       `}</style>
 
-      {/* HEADER */}
-      <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200">
-        <nav className="flex flex-col md:flex-row justify-between items-center h-20 px-6 max-w-7xl mx-auto gap-4">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl font-black tracking-tighter text-blue-600">TEKNOLOGI SANTUY</div>
-            <span className="text-xs uppercase tracking-[0.25em] text-slate-500">Download Mandiri</span>
+      <header className="fixed-header">
+        <div className="container">
+          <div className="nav-bar">
+            <div className="logo">TEKNOLOGI SANTUY</div>
+            <div className="nav-links">
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/" className="nav-link nav-link-active">Download</Link>
+              <Link href="/game" className="nav-link">Game</Link>
+              <Link href="/" className="nav-link">Tutorial</Link>
+              <Link href="/" className="nav-link">Tips</Link>
+            </div>
+            <div className="icon-group">
+              <button className="icon-btn material-symbols-outlined">search</button>
+              <button className="icon-btn material-symbols-outlined" style={{ display: 'none' }}>account_circle</button>
+              <button className="icon-btn material-symbols-outlined">menu</button>
+            </div>
           </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/" className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Beranda</Link>
-            <Link href="/game" className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors">Game</Link>
-            <Link href="/download" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm">Download</Link>
-          </div>
-        </nav>
+        </div>
       </header>
 
-      {/* PROGRESS BAR */}
-      <div className="fixed top-16 left-0 w-full h-1 bg-slate-200 z-40">
-        <div className="h-full bg-blue-600 transition-all" style={{ width: `${progress * 3.33}%` }}></div>
+      <div className="progress-bar-container">
+        <div className="progress-fill" style={{ width: `${scrollProgress}%` }}></div>
       </div>
 
-      {/* Fixed Download Widget */}
-      <div className={`fixed right-6 top-24 z-40 max-w-sm fixed-widget transition-all duration-300 ${isReady ? 'scale-95 opacity-70' : 'scale-100 opacity-100'}`}>
-        <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-          
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-5 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <Gamepad2 className="w-5 h-5" />
-              <span className="text-xs font-bold tracking-widest uppercase">Verifikasi Download</span>
+      <div className="download-widget" style={{ position: 'fixed', right: '1.5rem', top: '6rem', zIndex: 40, width: '320px', display: 'none' }}>
+        <div style={{ background: '#ffffff', borderRadius: '1rem', overflow: 'hidden', border: '1px solid rgba(194, 198, 210, 0.3)' }}>
+          <div style={{ background: '#003063', color: 'white', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Gamepad2 className="w-5 h-5" />
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>Verifikasi Download</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 700 }}>{gameName}</div>
             </div>
-            <h3 className="font-bold text-sm line-clamp-1">{gameName}</h3>
           </div>
-
-          {/* Content */}
-          <div className="p-5 space-y-4">
+          <div style={{ padding: '1rem' }}>
             {!isReady ? (
               <>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-semibold text-slate-600">{statusText}</span>
-                    <span className="text-lg font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">{countdown}S</span>
-                  </div>
-                  <div className="relative h-6 bg-slate-200 rounded-lg overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-1000 ease-linear flex items-center justify-end pr-1"
-                      style={{ width: `${progress}%` }}
-                    >
-                      {progress > 5 && <span className="text-[10px] font-bold text-white">{Math.round(progress)}%</span>}
-                    </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{statusText}</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#003063', background: '#d6e3ff', padding: '0.5rem 0.75rem', borderRadius: '999px' }}>{countdown}s</span>
+                </div>
+                <div style={{ height: '0.75rem', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', marginBottom: '1rem' }}>
+                  <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg, #0ea5e9, #06b6d4)', transition: 'width 0.3s ease' }} />
+                </div>
+                <div style={{ background: '#ecfdf5', border: '1px solid #d1fae5', borderRadius: '0.75rem', padding: '0.75rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', color: '#166534', fontSize: '0.825rem', fontWeight: 700 }}>
+                    <Shield className="w-4 h-4" /> Aman & Terpercaya
                   </div>
                 </div>
-
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <div className="flex gap-2 text-xs text-green-700">
-                    <Shield className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium">Aman & Terpercaya</span>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-500 text-center italic">Baca artikel sementara kami memproses...</p>
+                <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.75rem', textAlign: 'center', fontStyle: 'italic' }}>Baca artikel sementara kami memproses...</p>
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <span className="text-sm font-semibold text-green-700">Siap di-download!</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ecfdf5', border: '1px solid #d1fae5', borderRadius: '0.75rem', padding: '0.75rem', marginBottom: '1rem' }}>
+                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#166534' }}>Siap di-download!</span>
                 </div>
-                <a 
-                  href={targetUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition-all"
-                >
-                  <Download className="w-5 h-5" />
-                  UNDUH SEKARANG
+                <a href={targetUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', width: '100%', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: '#003063', color: 'white', fontWeight: 700, padding: '0.95rem 1rem', borderRadius: '0.75rem' }}>
+                  <Download className="w-5 h-5" /> UNDUH SEKARANG
                 </a>
               </>
             )}
@@ -176,238 +250,193 @@ function DownloadContent() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-20">
-        
-        {/* TOP AD */}
-        <div className="w-full flex justify-center mb-8 overflow-x-auto">
-          <div className="bg-white border border-slate-300 rounded-lg p-2 flex items-center justify-center">
-            <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-top" />
+      <main className="container" style={{ marginTop: '5rem', paddingBottom: '3rem' }}>
+        <div className="inline-ad">
+          <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center' }}>
+            <Script id="ad-top" strategy="afterInteractive">
+              {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
+            </Script>
+            <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-          
-          {/* ARTICLE */}
-          <article className="bg-white rounded-lg">
-            
-            {/* Header */}
-            <div className="px-6 md:px-10 pt-8 pb-6 border-b border-slate-200">
-              <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full uppercase mb-4">{gameGenre}</span>
-              <h1 className="text-4xl md:text-5xl font-black leading-tight mb-5">
-                {gameGenre === 'Action RPG' ? 'Evolusi Gaming 2024: Bagaimana Game Modern Mengubah Industri' : `Panduan Lengkap: Cara Memilih Game ${gameGenre} Terbaik`}
-              </h1>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 border-t border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400" />
+        <div className="two-columns">
+          <article className="article-card">
+            <header style={{ padding: '2rem', borderBottom: '1px solid #e8e8ea' }}>
+              <span className="tag">TEKNOLOGI</span>
+              <h1 className="article-title">Evolusi Gaming 2024: Bagaimana Game Modern Mengubah Industri</h1>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem', paddingTop: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '9999px', background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }} />
                   <div>
-                    <p className="font-bold text-sm">Tim Teknologi Santuy</p>
-                    <p className="text-xs text-slate-500">25 Agustus 2024 • 8 min</p>
+                    <p style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Tim Teknologi Santuy</p>
+                    <p style={{ color: '#64748b', fontSize: '0.875rem' }}>25 Agustus 2024 • 8 min</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button className="p-2 hover:bg-slate-100 rounded-lg">
-                    <Share2 className="w-5 h-5 text-slate-600" />
-                  </button>
-                  <button className="p-2 hover:bg-slate-100 rounded-lg">
-                    <Bookmark className="w-5 h-5 text-slate-600" />
-                  </button>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button className="icon-round"><Share2 className="w-5 h-5" /></button>
+                  <button className="icon-round"><Bookmark className="w-5 h-5" /></button>
+                </div>
+              </div>
+            </header>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', padding: '2rem' }}>
+              <div>
+                <div className="featured-img">
+                  <img src="https://images.unsplash.com/photo-1538481527238-41badf67c289?w=800&q=80" alt="Gaming" />
+                </div>
+                <p className="caption">Suasana pusat riset kecerdasan buatan di Jakarta Selatan. (Foto: Teknologi Santuy/Arsip)</p>
+              </div>
+              <div style={{ minHeight: '300px', background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div>
+                  <Script id="ad-sidebar-top" strategy="afterInteractive">
+                    {`atOptions = { 'key' : '136aa22e44a04ff3d80d1888c11e7ecd', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };`}
+                  </Script>
+                  <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/136aa22e44a04ff3d80d1888c11e7ecd/invoke.js" />
                 </div>
               </div>
             </div>
 
-            {/* Featured Image */}
-            <div className="grid grid-cols-3 gap-6 p-6 md:p-10">
-              <div className="col-span-2">
-                <img 
-                  src="https://images.unsplash.com/photo-1538481527238-41badf67c289?w=800&q=80" 
-                  alt="Gaming"
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
-                />
-              </div>
-              <div className="bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center min-h-[300px] overflow-hidden">
-                <AdsterraAd id="136aa22e44a04ff3d80d1888c11e7ecd" width={300} height={250} slotId="ad-sidebar" />
-              </div>
-            </div>
+            <div className="article-body" style={{ padding: '0 2rem 2rem' }}>
+              <p className="drop-cap">Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital.</p>
+              <p>Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design. Setiap pemain kini mendapatkan cerita yang unik dan pengalaman yang personal.</p>
 
-            {/* Article Body */}
-            <div className="px-6 md:px-10 pb-10 space-y-6 text-slate-700 leading-relaxed">
-              
-              <p className="text-lg font-semibold text-slate-900">
-                Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital.
-              </p>
-
-              <p>
-                Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design. Setiap pemain kini mendapatkan cerita yang unik dan pengalaman yang personal.
-              </p>
-
-              {/* MID AD */}
-              <div className="my-8 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center py-8 overflow-hidden">
-                <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-mid-1" />
+              <div className="inline-ad" style={{ background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div>
+                  <Script id="ad-mid" strategy="afterInteractive">
+                    {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
+                  </Script>
+                  <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
+                </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900 mt-8">Dampak Ekonomis Gaming Global</h2>
-              
-              <p>
-                Market gaming global diproyeksikan mencapai $220 miliar pada 2024, tumbuh 11.2% year-over-year. Pertumbuhan ini didorong oleh ekspansi di Asia Tenggara, di mana Indonesia memainkan peran krusial sebagai salah satu pasar dengan penetrasi mobile gaming tertinggi.
-              </p>
+              <h2>Kedaulatan Data dan Model Lokal</h2>
+              <p>Salah satu tren utama yang diamati adalah pergeseran menuju model AI yang berdaulat. Startup seperti TechNusa dan IndoBot kini sedang mengembangkan infrastruktur yang memungkinkan pemrosesan data sensitif tetap berada di dalam server lokal, mematuhi regulasi perlindungan data pribadi yang semakin ketat.</p>
 
-              <div className="bg-blue-50 border-l-4 border-blue-600 pl-6 py-4 my-6">
-                <p className="font-semibold text-slate-900 italic text-lg mb-2">
-                  "Gaming adalah ekosistem yang menciptakan lapangan kerja, mendorong inovasi teknologi, dan mengubah cara kita bersosialisasi."
-                </p>
-                <p className="text-sm text-slate-600">— Dr. Andi Sutrisno, Gaming Analyst</p>
+              <div className="blockquote-wrapper">
+                <div className="blockquote-border"></div>
+                <blockquote className="blockquote-text">"Kita tidak bisa hanya mengandalkan API dari luar negeri. Untuk benar-benar memenangkan hati pengguna Indonesia, AI kita harus mengerti nuansa bahasa daerah dan etika komunikasi kita."</blockquote>
+                <cite style={{ display: 'block', marginTop: '0.75rem', fontSize: '0.75rem', fontWeight: 700, color: '#737782' }}>— Ahmad Rizki, CEO TechNusa</cite>
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900 mt-8">Tren Teknologi Mendominasi 2024</h2>
-
-              <ul className="space-y-3 list-none">
-                <li className="flex gap-3">
-                  <Zap className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Cloud Gaming:</strong> Streaming game dengan latensi ultra-rendah.</span>
-                </li>
-                <li className="flex gap-3">
-                  <Cpu className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>AI & Procedural:</strong> Konten yang dihasilkan secara prosedural.</span>
-                </li>
-                <li className="flex gap-3">
-                  <Gamepad2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Cross-platform:</strong> Ekosistem yang seamless antar device.</span>
-                </li>
+              <h2>Strategi Adaptasi Startup 2024</h2>
+              <ul className="check-list">
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Optimalisasi biaya komputasi melalui teknik pruning dan quantization.</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Fokus pada vertikal industri spesifik seperti agrikultur dan logistik maritim.</span></li>
+                <li><span className="material-symbols-outlined" style={{ color: '#bc0000' }}>check_circle</span><span>Kolaborasi strategis dengan penyedia layanan awan lokal untuk mengurangi latensi.</span></li>
               </ul>
-
-              {/* ANOTHER AD */}
-              <div className="my-8 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center py-8 overflow-hidden">
-                <AdsterraAd id="9e3cd57d75a7607bfbb8eb212e8b0ee3" width={468} height={60} slotId="ad-mid-2" />
-              </div>
-
-              <p>
-                Indonesia mengalami pertumbuhan tercepat dalam adopsi teknologi gaming. Startup lokal seperti Agate Games telah mengembangkan teknologi kompetitif secara global.
-              </p>
-
             </div>
 
-            {/* Related */}
-            <div className="px-6 md:px-10 py-10 border-t border-slate-200">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-blue-600"></span> Artikel Terkait
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Tips</span>
-                  <h4 className="font-bold text-sm leading-snug">Cara Optimasi Performa PC Gaming</h4>
+            <div style={{ padding: '0 2rem 2rem', borderTop: '1px solid #e8e8ea' }}>
+              <div className="section-title"><span style={{ width: '4px', height: '24px', background: '#bc0000', display: 'inline-block' }}></span> ARTIKEL TERKAIT</div>
+              <div className="related-grid">
+                <a href="#" className="related-card">
+                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHDAv18iJQlGoxLYjvR5O174ERtgu4p5OsQXy2TRHNk0ZvTOAvbIUcRPYbXMzqtzuvOdFflqa1L1XQP0isKdd9yOU6PCtj4GjiY4ti-eEWl88NCLNScR3PhZwvrLeAetL6mEEqpmrsfdPqsV1leqL8XBogsthg1rxoGLFvlOnrTV5o8Nqw5BX9KT2tM8IR94aH63duOzpxe2RZaArSZLcTqH7uy0Lvsxu-snKF-WXTBN-ZpCM1LhC2g-dbs7AwY_t6RKsQ3ywFBthj" alt="Keamanan Siber" />
+                  <h5>Keamanan Siber di Tengah Gempuran Bot AI</h5>
                 </a>
-                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Hardware</span>
-                  <h4 className="font-bold text-sm leading-snug">GPU Terbaru 2024: Comparison</h4>
+                <a href="#" className="related-card">
+                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHHyPu8lhUeMQ-VC47nl53akNxieLtdWEWTD2yx1iubo2J72QpQCs71eJ8k9BbfgSCmcbjI-qiDNX0AYe9UGdbH-UHQB54TSqT-mZLqocs9KRlLccKPDd1q1pf50kOMiliSDzm2uiliCLfkWKE6NlpEiF-GIIqgp20sYL2ImTXb2KgQn_YxZp652AYkhFaP_tThKMiFhnKb046yW3oe6FDpTZ9DW_oD_A33Y8dAYdRA2OBvAmIS9d25sGFWH4hSb_P-ZKXimCfTNy" alt="Data Center" />
+                  <h5>Mengapa Investasi Data Center di Indonesia Melonjak</h5>
                 </a>
-                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Esports</span>
-                  <h4 className="font-bold text-sm leading-snug">Turnamen E-Sports Indonesia</h4>
+                <a href="#" className="related-card">
+                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hP-sSk7qCCtt_U05H4YVSFeEi6EjZLKkh4U6_olIyEtgveiIODAlv8QWwpY_3Qf4K0yP7YP8RpeksOcdV7FuZscbSc46fHT4w__WTTOg0G_iXfIfMFEnBgO3QegZMPsVLBLrEwm7h-XnbvFFeHvaWS9nHIN2Hvqt0qcEIyE8ICvsI4m0iraT4BpYFYKvDsf3ZgV8zpj-7-p2muYXv9DRxv_6cgcMFBPB9uMKEtJ-7Pe-ZJYDrHOY70G1fcDbm1k2r-D7iKAs5JCF5" alt="Gen-AI" />
+                  <h5>Nasib Pekerja Kreatif Pasca Ledakan Gen-AI</h5>
                 </a>
               </div>
             </div>
 
-            {/* Comments */}
-            <div className="px-6 md:px-10 py-10 bg-slate-50 rounded-b-lg">
-              <h4 className="font-bold text-lg mb-6">Komentar (14)</h4>
-              <div className="flex gap-4 mb-10">
-                <div className="flex-1">
-                  <textarea 
-                    placeholder="Tulis komentar..."
-                    className="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
-                    rows={3}
-                  />
-                  <button className="mt-3 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
-                    Kirim
-                  </button>
-                </div>
+            <div className="comment-area" style={{ padding: '2rem' }}>
+              <h4 style={{ fontWeight: 800, color: '#003063', marginBottom: '1rem' }}>Komentar (14)</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+                <textarea id="commentInput" className="comment-input" rows={3} placeholder="Tulis komentar..." />
+                <button id="submitCommentBtn" className="btn-primary" style={{ width: 'fit-content' }}>Kirim Komentar</button>
               </div>
-              <div className="space-y-5">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400" />
+              <div id="commentsList">
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                  <div style={{ width: '2rem', height: '2rem', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden' }} />
                   <div>
-                    <p className="font-bold text-sm">Rudi Hermawan <span className="text-xs text-slate-500 font-normal">2 jam</span></p>
-                    <p className="text-sm text-slate-700">Sangat setuju! Gaming di Indonesia berkembang pesat.</p>
+                    <strong style={{ fontSize: '0.75rem' }}>Andhika Wijaya</strong>
+                    <span style={{ fontSize: '0.65rem', color: '#737782', marginLeft: '0.5rem' }}>baru saja</span>
+                    <p style={{ fontSize: '0.875rem' }}>Artikel yang sangat mencerahkan. Benar sekali bahwa kedaulatan data harus jadi prioritas utama bagi startup kita.</p>
                   </div>
                 </div>
               </div>
             </div>
-
           </article>
 
-          {/* SIDEBAR */}
-          <aside className="space-y-8">
-            
-            <div className="bg-white rounded-lg overflow-hidden shadow">
-              <div className="bg-blue-600 text-white p-4">
-                <h3 className="font-black text-sm">POPULER</h3>
-              </div>
-              <div className="p-6 space-y-6">
-                <a href="#" className="flex gap-4 group">
-                  <span className="text-3xl font-black text-slate-300 group-hover:text-blue-600">01</span>
-                  <h4 className="font-bold text-sm leading-tight">Bitcoin Tembus Rekor Baru</h4>
-                </a>
-                <a href="#" className="flex gap-4 group">
-                  <span className="text-3xl font-black text-slate-300 group-hover:text-blue-600">02</span>
-                  <h4 className="font-bold text-sm leading-tight">Fitur AI di Smartphone</h4>
-                </a>
+          <aside className="sidebar-sticky" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="sidebar-ad">
+              <div>
+                <Script id="ad-sidebar-2" strategy="afterInteractive">
+                  {`atOptions = { 'key' : '136aa22e44a04ff3d80d1888c11e7ecd', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };`}
+                </Script>
+                <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/136aa22e44a04ff3d80d1888c11e7ecd/invoke.js" />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg overflow-hidden shadow">
-              <div className="bg-blue-600 text-white p-4">
-                <h3 className="font-black text-sm">KATEGORI</h3>
-              </div>
-              <div className="p-6 flex flex-wrap gap-2">
-                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Teknologi</a>
-                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Gaming</a>
-                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Tutorial</a>
+            <div>
+              <div className="section-title"><span style={{ width: '4px', height: '20px', background: '#bc0000', display: 'inline-block' }}></span> POPULER</div>
+              <div className="popular-list">
+                <a href="#"><span className="popular-number">01</span><h4 style={{ fontWeight: 700, fontSize: '0.875rem' }}>Bitcoin Tembus Rekor Baru, Investor Lokal Mulai Agresif</h4></a>
+                <a href="#"><span className="popular-number">02</span><h4 style={{ fontWeight: 700, fontSize: '0.875rem' }}>Cara Mengaktifkan Fitur AI Baru di Smartphone Anda</h4></a>
+                <a href="#"><span className="popular-number">03</span><h4 style={{ fontWeight: 700, fontSize: '0.875rem' }}>Elon Musk Kunjungi Jakarta, Bahas Investasi Starlink</h4></a>
+                <a href="#"><span className="popular-number">04</span><h4 style={{ fontWeight: 700, fontSize: '0.875rem' }}>Kementerian Kominfo Siapkan Regulasi Baru Konten AI</h4></a>
               </div>
             </div>
 
-            <div className="p-6 bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-lg">
-              <h3 className="font-black text-lg mb-3">Newsletter</h3>
-              <p className="text-xs mb-4 opacity-90">Update gaming mingguan di inbox Anda.</p>
-              <input placeholder="Email" type="email" className="w-full p-2 rounded text-slate-900 text-xs mb-3 focus:outline-none" />
-              <button className="w-full py-2 bg-blue-700 font-bold text-xs rounded hover:bg-blue-800 transition-all">SUBSCRIBE</button>
+            <div style={{ background: 'white', border: '1px solid rgba(194, 198, 210, 0.3)', borderRadius: '0.5rem', padding: '1rem' }}>
+              <h3 style={{ fontWeight: 800, color: '#003063', fontSize: '0.85rem' }}>REKOMENDASI SPONSOR</h3>
+              <div id="container-48133abeb7c91d73ea045430da0d0442"></div>
+              <Script async data-cfasync="false" src="https://pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js" />
             </div>
 
+            <div style={{ background: '#f3f3f6', borderRadius: '12px', padding: '1.5rem' }}>
+              <h3 style={{ fontWeight: 800, color: '#003063' }}>KATEGORI</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
+                <a style={{ background: 'white', padding: '0.375rem 0.75rem', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} href="#">Teknologi</a>
+                <a style={{ background: 'white', padding: '0.375rem 0.75rem', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} href="#">Bisnis</a>
+                <a style={{ background: 'white', padding: '0.375rem 0.75rem', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} href="#">Gaya Hidup</a>
+                <a style={{ background: 'white', padding: '0.375rem 0.75rem', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 'bold' }} href="#">Otomotif</a>
+              </div>
+            </div>
+
+            <div className="newsletter">
+              <h3 style={{ fontWeight: 800, fontSize: '1.25rem' }}>Intisari Digital</h3>
+              <p style={{ fontSize: '0.75rem', margin: '0.5rem 0' }}>Dapatkan update teknologi mingguan langsung di inbox Anda.</p>
+              <input type="email" id="newsEmail" placeholder="Email Anda" className="newsletter-input" style={{ marginBottom: '0.75rem' }} />
+              <button id="subscribeBtn" className="newsletter-btn">LANGGANAN</button>
+            </div>
           </aside>
-
         </div>
 
-        {/* BOTTOM AD */}
-        <div className="w-full flex justify-center mt-12 overflow-x-auto">
-          <div className="bg-white border border-slate-300 rounded-lg p-2 flex items-center justify-center">
-            <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-bottom" />
+        <div className="inline-ad" style={{ marginTop: '2rem' }}>
+          <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center' }}>
+            <Script id="ad-bottom" strategy="afterInteractive">
+              {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
+            </Script>
+            <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
           </div>
         </div>
-
       </main>
 
-      {/* FOOTER */}
-      <footer className="mt-12 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto py-12 px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+      <footer className="footer">
+        <div className="footer-content">
           <div>
-            <div className="text-xl font-black mb-2">TEKNOLOGI SANTUY</div>
-            <p className="text-slate-400 text-xs">© 2024 Portal Game & Teknologi Indonesia</p>
+            <div style={{ fontWeight: 800, color: '#003063' }}>TEKNOLOGI SANTUY</div>
+            <p style={{ color: '#64748b', fontSize: '0.7rem' }}>© 2024 Portal Game & Teknologi Indonesia</p>
           </div>
-          
-          <div className="flex gap-8">
-            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">About</a>
-            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">Privacy</a>
-            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">Contact</a>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <a href="#" style={{ fontSize: '0.7rem' }}>About</a>
+            <a href="#" style={{ fontSize: '0.7rem' }}>Privacy</a>
+            <a href="#" style={{ fontSize: '0.7rem' }}>Contact</a>
           </div>
-
-          <div className="flex gap-4 text-slate-400">
-            <span className="hover:text-white cursor-pointer">f</span>
-            <span className="hover:text-white cursor-pointer">𝕏</span>
-            <span className="hover:text-white cursor-pointer">▶</span>
+          <div style={{ display: 'flex', gap: '0.75rem', color: '#64748b' }}>
+            <span style={{ cursor: 'pointer' }}>f</span>
+            <span style={{ cursor: 'pointer' }}>𝕏</span>
+            <span style={{ cursor: 'pointer' }}>▶</span>
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
