@@ -1,427 +1,357 @@
 <!DOCTYPE html>
-<html lang="id">
+<html class="light" lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mengunduh File... | Neo-Brutalism Download</title>
-    
-    <style>
-        /* ================= CSS RESET & VARIABEL ================= */
-        :root {
-            --bg-color: #f4f0ea; /* Warna latar krem/putih tulang */
-            --dark: #111820;     /* Hitam tegas */
-            --primary: #2EC4B6;  /* Hijau Teal */
-            --primary-hover: #20A39E;
-            --secondary: #FFD166; /* Kuning Peringatan */
-            --white: #FFFFFF;
-            
-            /* Konfigurasi Neo-Brutalism */
-            --border-thick: 4px solid var(--dark);
-            --border-thin: 2px solid var(--dark);
-            --shadow-hard: 8px 8px 0px 0px var(--dark);
-            --shadow-hard-sm: 4px 4px 0px 0px var(--dark);
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 8px;
-            --transition: all 0.2s ease-in-out;
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Warta Digital</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-background": "#1a1c1e",
+            "background": "#f9f9fc",
+            "surface-dim": "#dadadc",
+            "surface-container": "#eeeef0",
+            "primary": "#003063",
+            "secondary": "#bc0000",
+            "surface": "#f9f9fc",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#1a1c1e",
+            "outline": "#737782",
+            "surface-container-low": "#f3f3f6",
+            "surface-container-high": "#e8e8ea",
+            "on-primary": "#ffffff",
+            "primary-fixed": "#d6e3ff",
+            "outline-variant": "#c2c6d2",
+            "surface-variant": "#e2e2e5",
+            "on-surface-variant": "#424751"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            body: ["Newsreader", "serif"],
+            label: ["Inter", "sans-serif"]
+          }
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(var(--dark) 1px, transparent 1px);
-            background-size: 24px 24px;
-            background-position: 0 0;
-            color: var(--dark);
-            line-height: 1.5;
-            padding: 2rem 1rem;
-            overflow-x: hidden;
-        }
-
-        /* ================= LAYOUT SYSTEM (2 KOLOM) ================= */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr; /* 2 Kolom: Kiri lebih lebar */
-            gap: 2rem;
-            align-items: start;
-        }
-
-        /* Responsive Layout */
-        @media (max-width: 992px) {
-            .grid-layout {
-                grid-template-columns: 1fr; /* Jadi 1 kolom di HP/Tablet */
-            }
-        }
-
-        /* ================= NEO-BRUTALISM COMPONENTS ================= */
-        .neo-card {
-            background-color: var(--white);
-            border: var(--border-thick);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-hard);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .neo-card-yellow { background-color: var(--secondary); }
-        .neo-card-teal { background-color: var(--primary); }
-
-        .ad-container {
-            background-color: var(--white);
-            border: var(--border-thick);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-hard-sm);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            padding: 0.5rem;
-            margin: 0 auto;
-        }
-
-        .neo-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--white);
-            border: var(--border-thick);
-            border-radius: 50px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            box-shadow: var(--shadow-hard-sm);
-            margin-bottom: 2rem;
-        }
-
-        /* ================= ICONS & TYPOGRAPHY ================= */
-        .icon-box {
-            width: 80px;
-            height: 80px;
-            border: var(--border-thick);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-hard-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem auto;
-            transition: var(--transition);
-        }
-
-        .icon-box.loading { background-color: var(--white); animation: pulse 2s infinite; }
-        .icon-box.ready { background-color: var(--primary); animation: none; }
-
-        .title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
-        }
-
-        /* ================= PROGRESS BAR ================= */
-        .progress-wrapper {
-            max-width: 500px;
-            margin: 0 auto 1.5rem auto;
-            text-align: left;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-weight: 800;
-        }
-
-        .status-badge {
-            background: var(--dark);
-            color: var(--primary);
-            padding: 0.2rem 0.8rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        .countdown-text {
-            font-size: 1.5rem;
-            font-weight: 900;
-        }
-
-        .progress-track {
-            height: 24px;
-            background-color: var(--white);
-            border: var(--border-thick);
-            border-radius: var(--radius-md);
-            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background-color: var(--primary);
-            width: 0%;
-            border-right: var(--border-thick);
-            transition: width 1s linear;
-        }
-
-        /* ================= TOMBOL DOWNLOAD ================= */
-        .neo-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            background-color: var(--primary);
-            color: var(--dark);
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            padding: 1.2rem 3rem;
-            border: var(--border-thick);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-hard);
-            cursor: pointer;
-            transition: var(--transition);
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .neo-btn:hover {
-            background-color: var(--primary-hover);
-            transform: translate(6px, 6px);
-            box-shadow: 2px 2px 0px 0px var(--dark);
-        }
-
-        /* Utility Classes */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-    </style>
+      }
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body { font-family: 'Inter', sans-serif; }
+    .article-body { font-family: 'Newsreader', serif; }
+    .drop-cap::first-letter {
+      float: left;
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      line-height: 1;
+      padding-right: 0.75rem;
+      color: #003063;
+    }
+  </style>
 </head>
-<body>
 
-    <script type='text/javascript' src='//pl29153603.profitablecpmratenetwork.com/ac/dd/97/acdd97eeb1fbbcd3524c8515b27438ee.js'></script>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed">
+  <header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none">
+    <nav class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+      <div class="text-2xl font-black tracking-tighter text-[#003063] dark:text-white">WARTA DIGITAL</div>
+      
+      <div class="hidden md:flex items-center space-x-8">
+        <a class="text-[#1a1c1e] dark:text-slate-300 hover:text-[#003063] font-semibold text-sm transition-opacity duration-200" href="#">Home</a>
+        <a class="text-[#bc0000] dark:text-red-500 font-bold border-b-2 border-[#bc0000] pb-1 text-sm transition-opacity duration-200" href="#">News</a>
+        <a class="text-[#1a1c1e] dark:text-slate-300 hover:text-[#003063] font-semibold text-sm transition-opacity duration-200" href="#">Game</a>
+        <a class="text-[#1a1c1e] dark:text-slate-300 hover:text-[#003063] font-semibold text-sm transition-opacity duration-200" href="#">Tutorial</a>
+        <a class="text-[#1a1c1e] dark:text-slate-300 hover:text-[#003063] font-semibold text-sm transition-opacity duration-200" href="#">Tips</a>
+      </div>
+      
+      <div class="flex items-center gap-2 md:gap-4">
+        <button class="material-symbols-outlined text-[#003063] dark:text-blue-400 p-2 hover:opacity-80 transition-opacity">search</button>
+        <button class="material-symbols-outlined text-[#003063] dark:text-blue-400 p-2 hover:opacity-80 transition-opacity hidden md:block" data-icon="account_circle">account_circle</button>
+        <button class="material-symbols-outlined text-[#003063] dark:text-blue-400 p-2 hover:opacity-80 transition-opacity md:hidden">menu</button>
+      </div>
+    </nav>
+  </header>
 
-    <div class="container">
-        
-        <div class="ad-container" style="min-height: 100px; max-width: 740px;">
-            <div id="ad-top-728"></div>
-        </div>
+  <div class="fixed top-16 left-0 w-full h-0.5 bg-surface-container-high z-50">
+    <div class="h-full bg-secondary w-1/3"></div>
+  </div>
 
-        <div class="grid-layout">
-            
-            <div class="main-column">
-                
-                <div class="neo-card text-center">
-                    
-                    <div id="icon-box" class="icon-box loading">
-                        <svg id="icon-shield" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <svg id="icon-check" class="hidden" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-
-                    <h1 id="main-title" class="title">MENYIAPKAN DATA</h1>
-                    
-                    <div class="neo-tag">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M14 12h.01"/><path d="M18 12h.01"/></svg>
-                        <span id="game-name">Memuat Game...</span>
-                    </div>
-
-                    <div id="progress-section" class="progress-wrapper">
-                        <div class="progress-header">
-                            <span id="status-text" class="status-badge">Mengamankan koneksi...</span>
-                            <span id="countdown-number" class="countdown-text">10s</span>
-                        </div>
-                        <div class="progress-track">
-                            <div id="progress-bar" class="progress-fill"></div>
-                        </div>
-                        <p style="text-align: center; margin-top: 1rem; font-weight: 600; font-size: 0.9rem;">Tunggu sebentar, sistem sedang meracik link untukmu.</p>
-                    </div>
-
-                    <div id="download-section" class="hidden">
-                        <a id="download-link" href="#" class="neo-btn">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            UNDUH SEKARANG
-                        </a>
-                    </div>
-                </div>
-
-                <div id="ad-mid-wrapper" class="ad-container" style="min-height: 80px; margin-bottom: 2rem;">
-                    <div id="ad-mid-468"></div>
-                </div>
-
-                <div class="neo-card" style="display: flex; gap: 1.5rem; align-items: center;">
-                    <div style="background: var(--dark); color: var(--primary); padding: 1rem; border-radius: var(--radius-md); border: var(--border-thin);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                    </div>
-                    <div>
-                        <h3 style="font-weight: 900; font-size: 1.2rem; margin-bottom: 0.5rem; text-transform: uppercase;">BEBAS VIRUS & MALWARE</h3>
-                        <p style="font-weight: 600; font-size: 0.95rem;">Link ini telah divalidasi. File yang kamu unduh aman dari ancaman berbahaya. Gas terus santuyers!</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="sidebar-column">
-                
-                <div class="ad-container" style="min-height: 270px; margin-bottom: 2rem;">
-                    <div id="ad-rect-300"></div>
-                </div>
-
-                <div class="neo-card neo-card-yellow">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                        <h4 style="font-weight: 900; font-size: 1.2rem; text-transform: uppercase;">PENTING BANGET!</h4>
-                    </div>
-                    <p style="font-weight: 600; font-size: 0.95rem;">
-                        Kalau tombol download tidak muncul, tolong <strong>MATIKAN AD-BLOCKER</strong> kamu. Iklan adalah satu-satunya cara kami patungan bayar server ngebut ini.
-                    </p>
-                </div>
-
-                <div class="neo-card" style="padding: 1.5rem;">
-                    <h4 style="font-weight: 900; font-size: 1rem; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="display: block; width: 12px; height: 12px; background: var(--primary); border: 2px solid var(--dark); border-radius: 50%;"></span>
-                        Rekomendasi
-                    </h4>
-                    <div style="min-height: 200px; border: var(--border-thin); border-radius: var(--radius-sm); overflow: hidden;" id="ad-native"></div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="ad-container" style="min-height: 100px; max-width: 740px;">
-            <div id="ad-bottom-728"></div>
-        </div>
-
+  <main class="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-20">
+    
+    <div class="w-full flex justify-center mb-8 overflow-x-auto">
+      <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm p-2 flex items-center justify-center min-w-[320px]">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'dc9dac060d8897a73c73d316590a3e03',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js"></script>
+      </div>
     </div>
 
-    <script>
-        // DOM Elements
-        const statusText = document.getElementById('status-text');
-        const countdownNumber = document.getElementById('countdown-number');
-        const progressBar = document.getElementById('progress-bar');
-        const progressSection = document.getElementById('progress-section');
-        const downloadSection = document.getElementById('download-section');
-        const downloadLink = document.getElementById('download-link');
-        const mainTitle = document.getElementById('main-title');
-        const gameNameDisplay = document.getElementById('game-name');
-        const iconBox = document.getElementById('icon-box');
-        const iconShield = document.getElementById('icon-shield');
-        const iconCheck = document.getElementById('icon-check');
-        const adMidWrapper = document.getElementById('ad-mid-wrapper');
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+      
+      <article class="bg-surface-container-lowest rounded-lg p-0 md:p-2">
+        <header class="mb-8">
+          <span class="inline-block px-2 py-0.5 bg-secondary/10 text-secondary font-bold text-xs tracking-widest uppercase mb-4">TEKNOLOGI</span>
+          <h1 class="text-3xl md:text-5xl font-black text-primary leading-[1.2] md:leading-[1.1] mb-6 font-headline tracking-tight">
+            Revolusi AI di Indonesia: Bagaimana Startup Lokal Beradaptasi di Era Digital 2024
+          </h1>
+          <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-y border-outline-variant/15">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden">
+                <img alt="Budi Santoso" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNoV9A-yJyP0qYR8zjF23ETdLWzSisdeJakmPz6K-Ijh8cjtD4SF2Wb4MA8f6joN3ZoOxHPDmqBtVfCljuFsRDw7pQ5NUhXszfy8UnSQr51HKQ8BmkNRez5Sq9DcwhGAg63bd1C9P4ilx-fsz-QXZSNPpbthOxG3dhZ9ira4mj_RZnkOgjh4uJgIYw01pGLZtxIcNriw-Sem2Rkm5X4Wz7jIwV2tJd89HVPWTskC6fTbVCBCCQOeA8D6T7gPKcof3IjT19W7ycjMTQ"/>
+              </div>
+              <div>
+                <p class="text-on-surface font-bold text-sm">Budi Santoso</p>
+                <p class="text-outline text-xs">22 Mei 2024 • 5 min read</p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-container-low text-primary hover:bg-primary hover:text-on-primary transition-all duration-200">
+                <span class="material-symbols-outlined text-lg">share</span>
+              </button>
+              <button class="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-container-low text-primary hover:bg-primary hover:text-on-primary transition-all duration-200">
+                <span class="material-symbols-outlined text-lg">bookmark</span>
+              </button>
+            </div>
+          </div>
+        </header>
 
-        // State Variables
-        let countdown = 10;
-        let targetUrl = '#';
+        <figure class="mb-10">
+          <img alt="High-tech office space" class="w-full aspect-video object-cover rounded-lg shadow-xl shadow-on-surface/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK_LB-QfXp0Z-po83e2D0y3TzETMvdFNXnBmQwjNf-UIXETewI3eJ-JdY7lZYrmm_hz6RQyUQgMC4kA6WwyPcvSfbFsb-LujC-8sM2dx_9t4yCsodYMR-lt48z4UDQ4YiztyONgHJQ79n30rKxLMhB6Z7ah_4cmOaOSuPjUVndt9jyId7_vQIvoA3QSdHpFE8v8E2MckefFXl7DRIwt5-_caF-L57fJ-aAqf2fy614M-O31nrm21maR_WT7zTiCCdjCi5W0cGQya9F"/>
+          <figcaption class="mt-3 text-sm text-outline italic text-center md:text-left">Suasana pusat riset kecerdasan buatan di Jakarta Selatan. (Foto: Warta Digital/Arsip)</figcaption>
+        </figure>
 
-        // URL Parameters Logic
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('to');
-        const name = urlParams.get('name');
+        <div class="article-body text-on-surface text-base md:text-lg leading-relaxed space-y-6">
+          <p class="drop-cap">Perkembangan kecerdasan buatan (AI) di Indonesia telah mencapai titik balik yang signifikan pada kuartal pertama 2024. Tidak lagi sekadar menjadi konsumen teknologi global, ekosistem startup tanah air mulai menunjukkan taji dengan mengintegrasikan solusi berbasis model bahasa besar (LLM) yang telah disesuaikan dengan konteks budaya dan bahasa lokal.</p>
+          <p>Fenomena ini bukan tanpa tantangan. Infrastruktur digital dan ketersediaan talenta ahli data science masih menjadi ganjalan utama bagi banyak perusahaan rintisan untuk melakukan lompatan besar. Namun, dorongan dari sektor perbankan dan e-commerce yang haus akan efisiensi operasional telah menciptakan pasar yang sangat menggiurkan bagi para inovator lokal.</p>
+          
+          <h2 class="font-headline font-bold text-2xl text-primary mt-12 mb-4 tracking-tight">Kedaulatan Data dan Model Lokal</h2>
+          <p>Salah satu tren utama yang diamati adalah pergeseran menuju model AI yang berdaulat. Startup seperti TechNusa dan IndoBot kini sedang mengembangkan infrastruktur yang memungkinkan pemrosesan data sensitif tetap berada di dalam server lokal, mematuhi regulasi perlindungan data pribadi yang semakin ketat.</p>
+          
+          <div class="relative pl-6 md:pl-8 my-8 md:my-10 py-2">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary rounded-full"></div>
+            <blockquote class="text-xl md:text-2xl font-body italic text-primary leading-snug">
+              "Kita tidak bisa hanya mengandalkan API dari luar negeri. Untuk benar-benar memenangkan hati pengguna Indonesia, AI kita harus mengerti nuansa bahasa daerah dan etika komunikasi kita."
+            </blockquote>
+            <cite class="block mt-4 text-sm font-bold font-headline not-italic text-outline">— Ahmad Rizki, CEO TechNusa</cite>
+          </div>
 
-        if (name) gameNameDisplay.innerText = name;
+          <div class="w-full flex justify-center my-10 overflow-x-auto">
+            <div class="bg-surface-container-low border border-outline-variant/30 rounded-lg p-2 flex items-center justify-center">
+              <script type="text/javascript">
+                atOptions = {
+                  'key' : '9e3cd57d75a7607bfbb8eb212e8b0ee3',
+                  'format' : 'iframe',
+                  'height' : 60,
+                  'width' : 468,
+                  'params' : {}
+                };
+              </script>
+              <script type="text/javascript" src="https://www.highperformanceformat.com/9e3cd57d75a7607bfbb8eb212e8b0ee3/invoke.js"></script>
+            </div>
+          </div>
+          
+          <h3 class="font-headline font-bold text-xl text-primary mt-10 mb-4 tracking-tight">Strategi Adaptasi Startup 2024</h3>
+          <p>Dalam menghadapi persaingan global, beberapa strategi kunci diterapkan oleh pemimpin industri lokal:</p>
+          <ul class="space-y-3 list-none">
+            <li class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-secondary text-xl mt-0.5">check_circle</span>
+              <span>Optimalisasi biaya komputasi melalui teknik <em>pruning</em> dan <em>quantization</em>.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-secondary text-xl mt-0.5">check_circle</span>
+              <span>Fokus pada vertikal industri spesifik seperti agrikultur dan logistik maritim.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-secondary text-xl mt-0.5">check_circle</span>
+              <span>Kolaborasi strategis dengan penyedia layanan awan lokal untuk mengurangi latensi.</span>
+            </li>
+          </ul>
+        </div>
 
-        if (token) {
-            try {
-                targetUrl = atob(token); // Base64 Decode
-            } catch (e) {
-                targetUrl = token;
-            }
-            // Hapus parameter URL agar bersih
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+        <section class="mt-16 md:mt-20 pt-10 border-t border-surface-container-high">
+          <h4 class="font-headline font-extrabold text-primary text-xl mb-6 md:mb-8 flex items-center gap-2">
+            <span class="w-1 h-6 bg-secondary"></span> ARTIKEL TERKAIT
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <a class="group block" href="#">
+              <div class="aspect-video bg-surface-container-low rounded-md overflow-hidden mb-3">
+                <img alt="Cybersecurity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHDAv18iJQlGoxLYjvR5O174ERtgu4p5OsQXy2TRHNk0ZvTOAvbIUcRPYbXMzqtzuvOdFflqa1L1XQP0isKdd9yOU6PCtj4GjiY4ti-eEWl88NCLNScR3PhZwvrLeAetL6mEEqpmrsfdPqsV1leqL8XBogsthg1rxoGLFvlOnrTV5o8Nqw5BX9KT2tM8IR94aH63duOzpxe2RZaArSZLcTqH7uy0Lvsxu-snKF-WXTBN-ZpCM1LhC2g-dbs7AwY_t6RKsQ3ywFBthj"/>
+              </div>
+              <h5 class="font-headline font-bold text-sm leading-snug text-on-surface group-hover:text-secondary transition-colors">Keamanan Siber di Tengah Gempuran Bot AI</h5>
+            </a>
+            <a class="group block" href="#">
+              <div class="aspect-video bg-surface-container-low rounded-md overflow-hidden mb-3">
+                <img alt="Cloud computing" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXHHyPu8lhUeMQ-VC47nl53akNxieLtdWEWTD2yx1iubo2J72QpQCs71eJ8k9BbfgSCmcbjI-qiDNX0AYe9UGdbH-UHQB54TSqT-mZLqocs9KRlLccKPDd1q1pf50kOMiliSDzm2uiliCLfkWKE6NlpEiF-GIIqgp20sYL2ImTXb2KgQn_YxZp652AYkhFaP_tThKMiFhnKb046yW3oe6FDpTZ9DW_oD_A33Y8dAYdRA2OBvAmIS9d25sGFWH4hSb_P-ZKXimCfTNy"/>
+              </div>
+              <h5 class="font-headline font-bold text-sm leading-snug text-on-surface group-hover:text-secondary transition-colors">Mengapa Investasi Data Center di Indonesia Melonjak</h5>
+            </a>
+            <a class="group block" href="#">
+              <div class="aspect-video bg-surface-container-low rounded-md overflow-hidden mb-3">
+                <img alt="Remote work" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hP-sSk7qCCtt_U05H4YVSFeEi6EjZLKkh4U6_olIyEtgveiIODAlv8QXwpY_3Qf4K0P7YP8RpeksOcdV7FuZscbSc46fHT4w__WTTOg0G_iXfIfMFEnBgO3QegZMPsVLBLrEwm7h-XnbvFFeHvaWS9nHIN2Hvqt0qcEIyE8ICvsI4m0iraT4BpYFYKvDsf3ZgV8zpj-7-p2muYXv9DRxv_6cgcMFBPB9uMKEtJ-7Pe-ZJYDrHOY70G1fcDbm1k2r-D7iKAs5JCF5"/>
+              </div>
+              <h5 class="font-headline font-bold text-sm leading-snug text-on-surface group-hover:text-secondary transition-colors">Nasib Pekerja Kreatif Pasca Ledakan Gen-AI</h5>
+            </a>
+          </div>
+        </section>
 
-        // Timer Logic
-        const timerInterval = setInterval(() => {
-            countdown--;
-            progressBar.style.width = `${((10 - countdown) / 10) * 100}%`;
-            countdownNumber.innerText = `${countdown}s`;
+        <section class="mt-12 md:mt-16 p-6 md:p-8 bg-surface-container-low rounded-lg">
+          <h4 class="font-headline font-bold text-primary mb-6">Komentar (14)</h4>
+          <div class="flex flex-col sm:flex-row gap-4 mb-10">
+            <div class="w-10 h-10 rounded-full bg-surface-container-high hidden sm:flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-outline">person</span>
+            </div>
+            <div class="flex-1">
+              <textarea class="w-full p-4 bg-surface-container-lowest border-none rounded-lg focus:ring-1 focus:ring-primary h-24 text-sm" placeholder="Tulis komentar Anda..."></textarea>
+              <button class="mt-3 w-full sm:w-auto px-6 py-2 bg-primary text-on-primary font-bold text-xs rounded hover:opacity-90 transition-opacity">Kirim Komentar</button>
+            </div>
+          </div>
+          <div class="space-y-8">
+            <div class="flex gap-4">
+              <div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden shrink-0">
+                <img alt="Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXk1_ezeU1T2RFui6-OXNw9CrJxo5VK_vJVBGU4q-vGZd-j_QCpOv--r2-aOl7nwcokzbCliZf2t6H3w6VcU40gnqc2kG-XP3dU8FtFhcAyLY89AYfxrS4tMmxJcZkLcVQZeYPovA1KXvpC0uRjyBaa9kJFJOhgC9I-u3_pSC8N8CkcQFzabEd-JeJv_cxCBCZ1UN0mGnjZF9Qi646gifSUL8ZpDnzDEWR6exyOQ6GSNpa5_iJ4Wm1zqCrjWMDLoXY0XayVpm1ngV4"/>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="font-bold text-xs font-headline">Andhika Wijaya</span>
+                  <span class="text-[10px] text-outline">2 jam yang lalu</span>
+                </div>
+                <p class="text-sm font-body leading-relaxed text-on-surface-variant">Artikel yang sangat mencerahkan. Benar sekali bahwa kedaulatan data harus jadi prioritas utama bagi startup kita.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </article>
 
-            if (countdown === 8) statusText.innerText = 'Mengecek integritas file...';
-            if (countdown === 6) statusText.innerText = 'Menghubungkan Mirror...';
-            if (countdown === 4) statusText.innerText = 'Bypass proteksi link...';
-            if (countdown === 2) statusText.innerText = 'Menyiapkan file...';
+      <aside class="space-y-12">
+        
+        <div class="flex justify-center bg-surface-container-lowest border border-outline-variant/30 p-2 rounded-lg shadow-sm">
+          <script type="text/javascript">
+            atOptions = {
+              'key' : '136aa22e44a04ff3d80d1888c11e7ecd',
+              'format' : 'iframe',
+              'height' : 250,
+              'width' : 300,
+              'params' : {}
+            };
+          </script>
+          <script type="text/javascript" src="https://www.highperformanceformat.com/136aa22e44a04ff3d80d1888c11e7ecd/invoke.js"></script>
+        </div>
 
-            if (countdown <= 0) {
-                clearInterval(timerInterval);
-                finishLoading();
-            }
-        }, 1000);
+        <section>
+          <h3 class="font-headline font-black text-primary text-lg mb-6 flex items-center gap-2">
+            <span class="w-1 h-5 bg-secondary"></span> POPULER
+          </h3>
+          <div class="space-y-6">
+            <a class="flex gap-4 group" href="#">
+              <span class="text-3xl font-black text-surface-container-highest group-hover:text-secondary transition-colors">01</span>
+              <h4 class="font-headline font-bold text-sm leading-tight group-hover:underline">Bitcoin Tembus Rekor Baru, Investor Lokal Mulai Agresif</h4>
+            </a>
+            <a class="flex gap-4 group" href="#">
+              <span class="text-3xl font-black text-surface-container-highest group-hover:text-secondary transition-colors">02</span>
+              <h4 class="font-headline font-bold text-sm leading-tight group-hover:underline">Cara Mengaktifkan Fitur AI Baru di Smartphone Anda</h4>
+            </a>
+            <a class="flex gap-4 group" href="#">
+              <span class="text-3xl font-black text-surface-container-highest group-hover:text-secondary transition-colors">03</span>
+              <h4 class="font-headline font-bold text-sm leading-tight group-hover:underline">Elon Musk Kunjungi Jakarta, Bahas Investasi Starlink</h4>
+            </a>
+            <a class="flex gap-4 group" href="#">
+              <span class="text-3xl font-black text-surface-container-highest group-hover:text-secondary transition-colors">04</span>
+              <h4 class="font-headline font-bold text-sm leading-tight group-hover:underline">Kementerian Kominfo Siapkan Regulasi Baru Konten AI</h4>
+            </a>
+          </div>
+        </section>
 
-        function finishLoading() {
-            progressBar.style.width = '100%';
-            mainTitle.innerText = 'LINK SUDAH SIAP!';
-            
-            // Ubah Ikon Neo-Brutalism
-            iconBox.classList.remove('loading');
-            iconBox.classList.add('ready');
-            iconShield.classList.add('hidden');
-            iconCheck.classList.remove('hidden');
+        <section class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm p-4">
+          <h3 class="font-headline font-black text-primary text-sm mb-4 uppercase flex items-center gap-2">
+            <span class="w-2 h-2 bg-secondary rounded-full"></span> REKOMENDASI SPONSOR
+          </h3>
+          <div class="w-full overflow-hidden rounded-md">
+            <div id="container-48133abeb7c91d73ea045430da0d0442"></div>
+            <script async="async" data-cfasync="false" src="https://pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js"></script>
+          </div>
+        </section>
 
-            // Ganti Tampilan
-            progressSection.classList.add('hidden');
-            adMidWrapper.classList.add('hidden'); // Sembunyikan iklan tengah agar fokus ke tombol
-            downloadSection.classList.remove('hidden');
-            downloadLink.href = targetUrl;
-        }
+        <section class="p-6 bg-surface-container-low rounded-lg">
+          <h3 class="font-headline font-black text-primary text-lg mb-6">KATEGORI</h3>
+          <div class="flex flex-wrap gap-2">
+            <a class="px-3 py-1.5 bg-surface-container-lowest text-primary text-[11px] font-bold rounded uppercase hover:bg-primary hover:text-on-primary transition-all" href="#">Teknologi</a>
+            <a class="px-3 py-1.5 bg-surface-container-lowest text-primary text-[11px] font-bold rounded uppercase hover:bg-primary hover:text-on-primary transition-all" href="#">Bisnis</a>
+            <a class="px-3 py-1.5 bg-surface-container-lowest text-primary text-[11px] font-bold rounded uppercase hover:bg-primary hover:text-on-primary transition-all" href="#">Gaya Hidup</a>
+            <a class="px-3 py-1.5 bg-surface-container-lowest text-primary text-[11px] font-bold rounded uppercase hover:bg-primary hover:text-on-primary transition-all" href="#">Otomotif</a>
+            <a class="px-3 py-1.5 bg-surface-container-lowest text-primary text-[11px] font-bold rounded uppercase hover:bg-primary hover:text-on-primary transition-all" href="#">Kesehatan</a>
+          </div>
+        </section>
 
-        // Adsterra Injector Function
-        function injectAdsterra(slotId, adId, width, height) {
-            const container = document.getElementById(slotId);
-            if (container && !container.hasChildNodes()) {
-                const scriptOptions = document.createElement('script');
-                scriptOptions.type = 'text/javascript';
-                scriptOptions.innerHTML = `atOptions = {'key' : '${adId}', 'format' : 'iframe', 'height' : ${height}, 'width' : ${width}, 'params' : {}};`;
-                
-                const scriptInvoke = document.createElement('script');
-                scriptInvoke.type = 'text/javascript';
-                scriptInvoke.src = `//www.highperformanceformat.com/${adId}/invoke.js`;
-                
-                container.appendChild(scriptOptions);
-                container.appendChild(scriptInvoke);
-            }
-        }
+        <section class="p-8 bg-primary text-on-primary rounded-xl overflow-hidden relative group">
+          <div class="absolute -right-8 -top-8 w-32 h-32 bg-secondary/20 rounded-full blur-3xl group-hover:bg-secondary/40 transition-all"></div>
+          <h3 class="font-headline font-black text-xl mb-3 relative z-10">Intisari Digital</h3>
+          <p class="text-xs font-body mb-6 text-on-primary/80 relative z-10 leading-relaxed">Dapatkan update teknologi mingguan langsung di inbox Anda.</p>
+          <div class="space-y-3 relative z-10">
+            <input class="w-full bg-white/10 border-white/20 rounded-lg py-2 px-4 text-xs focus:ring-1 focus:ring-secondary placeholder:text-on-primary/40" placeholder="Email Anda" type="email"/>
+            <button class="w-full py-2.5 bg-secondary text-white font-black text-[11px] tracking-widest uppercase rounded-lg hover:brightness-110 transition-all">LANGGANAN</button>
+          </div>
+        </section>
+      </aside>
+    </div>
 
-        // Load Ads on Window Load
-        window.onload = () => {
-            injectAdsterra('ad-top-728', 'dc9dac060d8897a73c73d316590a3e03', 728, 90);
-            injectAdsterra('ad-mid-468', '9e3cd57d75a7607bfbb8eb212e8b0ee3', 468, 60);
-            injectAdsterra('ad-rect-300', '136aa22e44a04ff3d80d1888c11e7ecd', 300, 250);
-            injectAdsterra('ad-bottom-728', 'dc9dac060d8897a73c73d316590a3e03', 728, 90);
+    <div class="w-full flex justify-center mt-12 overflow-x-auto">
+      <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm p-2 flex items-center justify-center min-w-[320px]">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'dc9dac060d8897a73c73d316590a3e03',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js"></script>
+      </div>
+    </div>
 
-            // Native Ad
-            const nativeContainer = document.getElementById('ad-native');
-            if(nativeContainer) {
-                const nativeInvoke = document.createElement('script');
-                nativeInvoke.async = true;
-                nativeInvoke.dataset.cfasync = "false";
-                nativeInvoke.src = "//pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js";
-                nativeContainer.appendChild(nativeInvoke);
-                
-                const nativeDiv = document.createElement('div');
-                nativeDiv.id = "container-48133abeb7c91d73ea045430da0d0442";
-                nativeContainer.appendChild(nativeDiv);
-            }
-        };
-    </script>
+  </main>
+
+  <footer class="w-full border-t-0 mt-12 md:mt-20 bg-[#e8e8ea] dark:bg-slate-950">
+    <div class="max-w-7xl mx-auto py-10 md:py-12 px-6 md:px-8 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
+      <div class="flex flex-col items-center md:items-start gap-2 text-center md:text-left">
+        <div class="text-lg font-bold text-[#003063] dark:text-blue-200">WARTA DIGITAL</div>
+        <p class="text-slate-500 dark:text-slate-400 font-medium text-xs">© 2024 Warta Digital Indonesia. The Modern Broadsheet.</p>
+      </div>
+      
+      <div class="flex flex-wrap justify-center gap-4 md:gap-8">
+        <a class="text-slate-500 dark:text-slate-400 hover:text-[#bc0000] dark:hover:text-red-400 transition-colors font-medium text-xs" href="#">About Us</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-[#bc0000] dark:hover:text-red-400 transition-colors font-medium text-xs" href="#">Editorial Policy</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-[#bc0000] dark:hover:text-red-400 transition-colors font-medium text-xs" href="#">Contact</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-[#bc0000] dark:hover:text-red-400 transition-colors font-medium text-xs" href="#">Privacy</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-[#bc0000] dark:hover:text-red-400 transition-colors font-medium text-xs" href="#">Terms</a>
+      </div>
+      
+      <div class="flex gap-4">
+        <span class="material-symbols-outlined text-slate-400 hover:text-primary cursor-pointer transition-colors">social_leaderboard</span>
+        <span class="material-symbols-outlined text-slate-400 hover:text-primary cursor-pointer transition-colors">alternate_email</span>
+        <span class="material-symbols-outlined text-slate-400 hover:text-primary cursor-pointer transition-colors">rss_feed</span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="text/javascript" src="https://pl29153603.profitablecpmratenetwork.com/ac/dd/97/acdd97eeb1fbbcd3524c8515b27438ee.js"></script>
+
 </body>
 </html>
