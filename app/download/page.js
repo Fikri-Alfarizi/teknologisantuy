@@ -179,10 +179,14 @@ function DownloadContent() {
         .newsletter-input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 0.5rem; padding: 0.5rem 1rem; width: 100%; color: white; }
         .newsletter-btn { background-color: var(--secondary); font-weight: 900; font-size: 0.7rem; letter-spacing: 0.1em; border: none; border-radius: 0.5rem; padding: 0.625rem; color: white; width: 100%; cursor: pointer; }
         @media (min-width: 768px) { .sidebar-sticky { position: sticky; top: 90px; } }
-        .inline-ad { display: flex; justify-content: center; margin: 2rem 0; }
-        .related-card { display: block; }
+        .inline-ad { display: flex; justify-content: center; margin: 2.5rem 0; padding: 1.5rem 0; border-top: 1px solid #e8e8ea; border-bottom: 1px solid #e8e8ea; background: linear-gradient(135deg, #f3f4f6 0%, #f9f9fc 100%); border-radius: 0.75rem; }
+        .ad-label { text-align: center; font-size: 0.65rem; color: #999; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
         .fixed-widget { display: none; }
         @media (min-width: 1024px) { .fixed-widget { display: block; } }
+        .download-widget { animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @media (max-width: 1024px) { .download-widget { position: static; width: 100% !important; margin: 1.5rem 0; right: auto !important; top: auto !important; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
       `}</style>
 
       <header className="fixed-header">
@@ -209,41 +213,65 @@ function DownloadContent() {
         <div className="progress-fill" style={{ width: `${scrollProgress}%` }}></div>
       </div>
 
-      <div className="download-widget" style={{ position: 'fixed', right: '1.5rem', top: '6rem', zIndex: 40, width: '320px', display: 'none' }}>
-        <div style={{ background: '#ffffff', borderRadius: '1rem', overflow: 'hidden', border: '1px solid rgba(194, 198, 210, 0.3)' }}>
-          <div style={{ background: '#003063', color: 'white', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Gamepad2 className="w-5 h-5" />
+      <div className="download-widget" style={{ position: 'fixed', right: '1.5rem', top: '6rem', zIndex: 40, width: '340px', display: 'block' }}>
+        <div style={{ background: '#ffffff', borderRadius: '1.25rem', overflow: 'hidden', border: '2px solid #003063', boxShadow: '0 10px 40px rgba(0, 48, 99, 0.2)' }}>
+          <div style={{ background: 'linear-gradient(135deg, #003063 0%, #004080 100%)', color: 'white', padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Gamepad2 className="w-6 h-6 animate-bounce" style={{ animationDuration: '2s' }} />
             <div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>Verifikasi Download</div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 700 }}>{gameName}</div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.9 }}>🔒 Verifikasi Aman</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, marginTop: '0.25rem' }}>{gameName}</div>
             </div>
           </div>
-          <div style={{ padding: '1rem' }}>
+          <div style={{ padding: '1.5rem' }}>
             {!isReady ? (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{statusText}</span>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#003063', background: '#d6e3ff', padding: '0.5rem 0.75rem', borderRadius: '999px' }}>{countdown}s</span>
-                </div>
-                <div style={{ height: '0.75rem', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', marginBottom: '1rem' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg, #0ea5e9, #06b6d4)', transition: 'width 0.3s ease' }} />
-                </div>
-                <div style={{ background: '#ecfdf5', border: '1px solid #d1fae5', borderRadius: '0.75rem', padding: '0.75rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', color: '#166534', fontSize: '0.825rem', fontWeight: 700 }}>
-                    <Shield className="w-4 h-4" /> Aman & Terpercaya
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto', marginBottom: '1rem' }}>
+                    <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="#003063" strokeWidth="8" strokeDasharray={`${(progress / 100) * 282.7} 282.7`} style={{ transition: 'stroke-dasharray 0.3s ease' }} />
+                    </svg>
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '2rem', fontWeight: 800, color: '#003063' }}>{countdown}</div>
+                      <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 600 }}>detik</div>
+                    </div>
                   </div>
                 </div>
-                <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.75rem', textAlign: 'center', fontStyle: 'italic' }}>Baca artikel sementara kami memproses...</p>
+
+                <div style={{ background: '#f0f4ff', border: '1px solid #d6e3ff', borderRadius: '0.75rem', padding: '0.85rem', marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#003063', fontWeight: 600, marginBottom: '0.5rem' }}>📖 Tip Sementara Menunggu:</div>
+                  <div style={{ fontSize: '0.8rem', color: '#1a1c1e', lineHeight: 1.4 }}>
+                    {countdown > 7 && "💡 Gunakan bandwidth stabil untuk download optimal"}
+                    {countdown <= 7 && countdown > 4 && "⚡ File sudah compressed untuk kecepatan maksimal"}
+                    {countdown <= 4 && countdown > 1 && "✅ Hampir siap! Pastikan storage cukup"}
+                    {countdown <= 1 && "🎮 Sebentar lagi link download aktif..."}
+                  </div>
+                </div>
+
+                <div style={{ background: '#ecfdf5', border: '1px solid #d1fae5', borderRadius: '0.75rem', padding: '0.75rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', color: '#166534', fontSize: '0.75rem', fontWeight: 700 }}>
+                    <Shield className="w-4 h-4" /> Proses Verifikasi Keamanan...
+                  </div>
+                </div>
+
+                <p style={{ fontSize: '0.7rem', color: '#64748b', textAlign: 'center', fontStyle: 'italic' }}>"{statusText}"</p>
               </>
             ) : (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ecfdf5', border: '1px solid #d1fae5', borderRadius: '0.75rem', padding: '0.75rem', marginBottom: '1rem' }}>
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#166534' }}>Siap di-download!</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ecfdf5', border: '2px solid #d1fae5', borderRadius: '0.85rem', padding: '0.85rem', marginBottom: '1.25rem' }}>
+                  <CheckCircle2 className="w-6 h-6 text-green-600" style={{ animation: 'pulse 2s infinite' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#166534' }}>✅ Verifikasi Berhasil!</span>
                 </div>
-                <a href={targetUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', width: '100%', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: '#003063', color: 'white', fontWeight: 700, padding: '0.95rem 1rem', borderRadius: '0.75rem' }}>
-                  <Download className="w-5 h-5" /> UNDUH SEKARANG
+
+                <div style={{ background: '#fff8f0', border: '1px solid #fed7aa', borderRadius: '0.75rem', padding: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#92400e', fontWeight: 600 }}>⏱️ Link berlaku 30 menit</div>
+                </div>
+
+                <a href={targetUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', width: '100%', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #003063 0%, #004080 100%)', color: 'white', fontWeight: 700, padding: '1.1rem 1rem', borderRadius: '0.85rem', fontSize: '0.95rem', transition: 'all 0.3s', boxShadow: '0 4px 12px rgba(0, 48, 99, 0.3)', textDecoration: 'none' }} onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}>
+                  <Download className="w-5 h-5" /> MULAI DOWNLOAD
                 </a>
+
+                <p style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.75rem', textAlign: 'center' }}>Klik untuk menuju ke server download</p>
               </>
             )}
           </div>
@@ -252,11 +280,14 @@ function DownloadContent() {
 
       <main className="container" style={{ marginTop: '5rem', paddingBottom: '3rem' }}>
         <div className="inline-ad">
-          <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center' }}>
-            <Script id="ad-top" strategy="afterInteractive">
-              {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
-            </Script>
-            <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <div className="ad-label">— Iklan —</div>
+            <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center', display: 'inline-block' }}>
+              <Script id="ad-top" strategy="afterInteractive">
+                {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
+              </Script>
+              <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
+            </div>
           </div>
         </div>
 
@@ -301,7 +332,8 @@ function DownloadContent() {
               <p className="drop-cap">Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital.</p>
               <p>Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design. Setiap pemain kini mendapatkan cerita yang unik dan pengalaman yang personal.</p>
 
-              <div className="inline-ad" style={{ background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div className="inline-ad" style={{ background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="ad-label">⭐ Rekomendasi Partner</div>
                 <div>
                   <Script id="ad-mid" strategy="afterInteractive">
                     {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
@@ -410,11 +442,14 @@ function DownloadContent() {
         </div>
 
         <div className="inline-ad" style={{ marginTop: '2rem' }}>
-          <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center' }}>
-            <Script id="ad-bottom" strategy="afterInteractive">
-              {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
-            </Script>
-            <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <div className="ad-label">— Iklan —</div>
+            <div style={{ background: '#ffffff', border: '1px solid #c2c6d2', borderRadius: '0.5rem', padding: '0.75rem', minWidth: '300px', textAlign: 'center', display: 'inline-block' }}>
+              <Script id="ad-bottom" strategy="afterInteractive">
+                {`atOptions = { 'key' : 'dc9dac060d8897a73c73d316590a3e03', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };`}
+              </Script>
+              <Script strategy="afterInteractive" src="https://www.highperformanceformat.com/dc9dac060d8897a73c73d316590a3e03/invoke.js" />
+            </div>
           </div>
         </div>
       </main>
