@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { decodeDownloadUrl } from '../../lib/url-obfuscator';
-import { Shield, Download, AlertTriangle, CheckCircle2, Loader2, Gamepad2, Share2, Bookmark, Zap, Cpu, Eye, MessageCircle } from 'lucide-react';
+import { Shield, Download, AlertTriangle, CheckCircle2, Loader2, Gamepad2, Share2, Bookmark, Zap, Cpu, MessageCircle, TrendingUp, Eye, Heart, MessageSquare } from 'lucide-react';
 import Script from 'next/script';
 
 // Component for Adsterra Ads
@@ -44,7 +44,6 @@ function DownloadContent() {
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('Mengamankan koneksi...');
 
-  // Capture parameters and CLEAN URL immediately
   useEffect(() => {
     const token = searchParams.get('to');
     const name = searchParams.get('name');
@@ -81,21 +80,45 @@ function DownloadContent() {
   }, [countdown]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <style>{`
-        .digital-grid {
-          background-image: 
-            linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-          background-size: 20px 20px;
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
         @media (max-width: 768px) {
-          .fixed-widget { position: static !important; margin-bottom: 20px; max-width: 100% !important; }
+          .fixed-widget { position: static !important; margin-bottom: 20px; }
         }
       `}</style>
-      
+
+      {/* HEADER */}
+      <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <nav className="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+          <div className="text-2xl font-black tracking-tighter text-blue-600">TEKNOLOGI SANTUY</div>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Home</a>
+            <a className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm" href="#">Download</a>
+            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Game</a>
+            <a className="text-slate-700 hover:text-blue-600 font-semibold text-sm transition-colors" href="#">Tutorial</a>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600">🔍</button>
+            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 hidden md:block">👤</button>
+            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 md:hidden">☰</button>
+          </div>
+        </nav>
+      </header>
+
+      {/* PROGRESS BAR */}
+      <div className="fixed top-16 left-0 w-full h-1 bg-slate-200 z-40">
+        <div className="h-full bg-blue-600 transition-all" style={{ width: `${progress * 3.33}%` }}></div>
+      </div>
+
       {/* Fixed Download Widget */}
-      <div className={`fixed right-6 top-20 z-40 max-w-sm fixed-widget transition-all duration-300 ${isReady ? 'scale-95 opacity-75' : 'scale-100 opacity-100'}`}>
+      <div className={`fixed right-6 top-24 z-40 max-w-sm fixed-widget transition-all duration-300 ${isReady ? 'scale-95 opacity-70' : 'scale-100 opacity-100'}`}>
         <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
           
           {/* Header */}
@@ -111,7 +134,6 @@ function DownloadContent() {
           <div className="p-5 space-y-4">
             {!isReady ? (
               <>
-                {/* Progress Bar */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-semibold text-slate-600">{statusText}</span>
@@ -127,15 +149,13 @@ function DownloadContent() {
                   </div>
                 </div>
 
-                {/* Security Info */}
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                   <div className="flex gap-2 text-xs text-green-700">
                     <Shield className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium">Link aman & terpercaya</span>
+                    <span className="font-medium">Aman & Terpercaya</span>
                   </div>
                 </div>
 
-                {/* Tips */}
                 <p className="text-xs text-slate-500 text-center italic">Baca artikel sementara kami memproses...</p>
               </>
             ) : (
@@ -146,79 +166,83 @@ function DownloadContent() {
                 </div>
                 <a 
                   href={targetUrl}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition-all duration-200 active:scale-95"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition-all"
                 >
                   <Download className="w-5 h-5" />
                   UNDUH SEKARANG
                 </a>
-                <p className="text-xs text-slate-500 text-center">Klik untuk memulai download</p>
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="min-h-screen digital-grid pt-6 pb-20">
-        <div className="max-w-4xl mx-auto px-6">
+      {/* MAIN CONTENT */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-20">
+        
+        {/* TOP AD */}
+        <div className="w-full flex justify-center mb-8 overflow-x-auto">
+          <div className="bg-white border border-slate-300 rounded-lg p-2 flex items-center justify-center">
+            <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-top" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
           
-          {/* Article Header */}
-          <article className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          {/* ARTICLE */}
+          <article className="bg-white rounded-lg">
             
-            {/* Article Metadata */}
+            {/* Header */}
             <div className="px-6 md:px-10 pt-8 pb-6 border-b border-slate-200">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full uppercase">{gameGenre}</span>
-                <span className="text-xs text-slate-500">Teknologi Gaming</span>
-              </div>
+              <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full uppercase mb-4">{gameGenre}</span>
               <h1 className="text-4xl md:text-5xl font-black leading-tight mb-5">
-                Evolusi Gaming 2024: Bagaimana Game Modern Mengubah Industri Hiburan Digital
+                {gameGenre === 'Action RPG' ? 'Evolusi Gaming 2024: Bagaimana Game Modern Mengubah Industri' : `Panduan Lengkap: Cara Memilih Game ${gameGenre} Terbaik`}
               </h1>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 border-t border-slate-100">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400" />
                   <div>
                     <p className="font-bold text-sm">Tim Teknologi Santuy</p>
-                    <p className="text-xs text-slate-500">25 Agustus 2024 • 8 min baca</p>
+                    <p className="text-xs text-slate-500">25 Agustus 2024 • 8 min</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-slate-100 rounded-lg">
                     <Share2 className="w-5 h-5 text-slate-600" />
                   </button>
-                  <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-slate-100 rounded-lg">
                     <Bookmark className="w-5 h-5 text-slate-600" />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Featured Image with Ad */}
+            {/* Featured Image */}
             <div className="grid grid-cols-3 gap-6 p-6 md:p-10">
               <div className="col-span-2">
                 <img 
                   src="https://images.unsplash.com/photo-1538481527238-41badf67c289?w=800&q=80" 
-                  alt="Gaming Scene"
-                  className="w-full h-64 object-cover rounded-xl shadow-md"
+                  alt="Gaming"
+                  className="w-full h-64 object-cover rounded-xl shadow-lg"
                 />
               </div>
               <div className="bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center min-h-[300px] overflow-hidden">
-                <AdsterraAd id="136aa22e44a04ff3d80d1888c11e7ecd" width={300} height={250} slotId="ad-rect-1" />
+                <AdsterraAd id="136aa22e44a04ff3d80d1888c11e7ecd" width={300} height={250} slotId="ad-sidebar" />
               </div>
             </div>
 
             {/* Article Body */}
             <div className="px-6 md:px-10 pb-10 space-y-6 text-slate-700 leading-relaxed">
               
-              <p className="text-lg first-letter:text-5xl first-letter:font-black first-letter:text-blue-600 first-letter:float-left first-letter:pr-3 first-letter:leading-none">
-                Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau atau mekanik gameplay yang kompleks, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital secara fundamental.
+              <p className="text-lg font-semibold text-slate-900">
+                Perkembangan industri gaming telah mencapai titik infleksi yang signifikan pada tahun 2024. Tidak hanya tentang grafis yang memukau, melainkan tentang bagaimana teknologi gaming mengubah cara kita berinteraksi dengan media digital.
               </p>
 
               <p>
-                Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design yang membuat pengalaman bermain semakin personal dan dinamis. Setiap pemain kini mendapatkan cerita yang unik, lingkungan yang responsif, dan tantangan yang disesuaikan dengan gaya bermain mereka.
+                Revolusi ini dimulai dengan akselerasi pengadopsian ray tracing real-time, teknologi neural rendering, dan AI-driven game design. Setiap pemain kini mendapatkan cerita yang unik dan pengalaman yang personal.
               </p>
 
-              {/* Mid-article Ad */}
+              {/* MID AD */}
               <div className="my-8 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center py-8 overflow-hidden">
                 <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-mid-1" />
               </div>
@@ -226,116 +250,165 @@ function DownloadContent() {
               <h2 className="text-2xl font-bold text-slate-900 mt-8">Dampak Ekonomis Gaming Global</h2>
               
               <p>
-                Market gaming global diproyeksikan mencapai $220 miliar pada 2024, tumbuh 11.2% year-over-year. Pertumbuhan ini didorong oleh ekspansi di Asia Tenggara, di mana Indonesia memainkan peran krusial sebagai salah satu pasar dengan penetrasi mobile gaming tertinggi di dunia.
+                Market gaming global diproyeksikan mencapai $220 miliar pada 2024, tumbuh 11.2% year-over-year. Pertumbuhan ini didorong oleh ekspansi di Asia Tenggara, di mana Indonesia memainkan peran krusial sebagai salah satu pasar dengan penetrasi mobile gaming tertinggi.
               </p>
 
-              <div className="bg-blue-50 border-l-4 border-blue-600 pl-6 py-4">
+              <div className="bg-blue-50 border-l-4 border-blue-600 pl-6 py-4 my-6">
                 <p className="font-semibold text-slate-900 italic text-lg mb-2">
-                  "Gaming bukan lagi sekadar hiburan. Ini adalah ekosistem yang menciptakan lapangan kerja, mendorong inovasi teknologi, dan mengubah cara kita bersosialisasi."
+                  "Gaming adalah ekosistem yang menciptakan lapangan kerja, mendorong inovasi teknologi, dan mengubah cara kita bersosialisasi."
                 </p>
-                <p className="text-sm text-slate-600">— Dr. Andi Sutrisno, Gaming Analyst Indonesia</p>
+                <p className="text-sm text-slate-600">— Dr. Andi Sutrisno, Gaming Analyst</p>
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900 mt-8">Tren Teknologi yang Mendominasi</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mt-8">Tren Teknologi Mendominasi 2024</h2>
 
               <ul className="space-y-3 list-none">
                 <li className="flex gap-3">
                   <Zap className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Cloud Gaming:</strong> Streaming game dengan latensi ultra-rendah memungkinkan akses instan ke library ribuan game tanpa download.</span>
+                  <span><strong>Cloud Gaming:</strong> Streaming game dengan latensi ultra-rendah.</span>
                 </li>
                 <li className="flex gap-3">
                   <Cpu className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>AI & Procedural Generation:</strong> Konten yang dihasilkan secara prosedural menciptakan dunia game yang tak terbatas dan selalu segar.</span>
+                  <span><strong>AI & Procedural:</strong> Konten yang dihasilkan secara prosedural.</span>
                 </li>
                 <li className="flex gap-3">
                   <Gamepad2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span><strong>Cross-platform Play:</strong> Ekosistem yang seamless memungkinkan pemain bermain bersama regardless of device mereka.</span>
+                  <span><strong>Cross-platform:</strong> Ekosistem yang seamless antar device.</span>
                 </li>
               </ul>
 
-              {/* Another Ad */}
+              {/* ANOTHER AD */}
               <div className="my-8 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center py-8 overflow-hidden">
                 <AdsterraAd id="9e3cd57d75a7607bfbb8eb212e8b0ee3" width={468} height={60} slotId="ad-mid-2" />
               </div>
 
               <p>
-                Indonesia mengalami pertumbuhan tercepat dalam adopsi teknologi gaming ini. Startup lokal seperti Nodeflux dan Agate Games telah mengembangkan teknologi yang kompetitif secara global, menunjukkan bahwa inovasi gaming tidak hanya datang dari Silicon Valley atau Tokyo.
-              </p>
-
-              <p>
-                Dengan investasi besar dari venture capital, dukungan pemerintah melalui berbagai insentif, dan talenta muda yang antusias, Indonesia berpotensi menjadi pusat pengembangan game global dalam dekade mendatang. Komunitas gaming lokal yang vibrant menjadi testing ground sempurna untuk game-game baru sebelum launching global.
+                Indonesia mengalami pertumbuhan tercepat dalam adopsi teknologi gaming. Startup lokal seperti Agate Games telah mengembangkan teknologi kompetitif secara global.
               </p>
 
             </div>
 
-            {/* Related Articles */}
+            {/* Related */}
             <div className="px-6 md:px-10 py-10 border-t border-slate-200">
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-blue-600"></span>
-                Artikel Terkait
+                <span className="w-1 h-6 bg-blue-600"></span> Artikel Terkait
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                <a href="#" className="group block bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 hover:shadow-md transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">TIPS</span>
-                  <h4 className="font-bold text-sm leading-snug group-hover:text-blue-600 transition-colors">Cara Optimasi Performa PC Gaming</h4>
+                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Tips</span>
+                  <h4 className="font-bold text-sm leading-snug">Cara Optimasi Performa PC Gaming</h4>
                 </a>
-                <a href="#" className="group block bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 hover:shadow-md transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">HARDWARE</span>
-                  <h4 className="font-bold text-sm leading-snug group-hover:text-blue-600 transition-colors">GPU Terbaru 2024: Comparison & Review</h4>
+                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Hardware</span>
+                  <h4 className="font-bold text-sm leading-snug">GPU Terbaru 2024: Comparison</h4>
                 </a>
-                <a href="#" className="group block bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 hover:shadow-md transition-all">
-                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">ESPORTS</span>
-                  <h4 className="font-bold text-sm leading-snug group-hover:text-blue-600 transition-colors">Turnamen E-Sports Indonesia Meledak</h4>
+                <a href="#" className="group block bg-slate-50 rounded-lg p-4 hover:shadow-lg transition-all">
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded mb-3 uppercase">Esports</span>
+                  <h4 className="font-bold text-sm leading-snug">Turnamen E-Sports Indonesia</h4>
                 </a>
+              </div>
+            </div>
+
+            {/* Comments */}
+            <div className="px-6 md:px-10 py-10 bg-slate-50 rounded-b-lg">
+              <h4 className="font-bold text-lg mb-6">Komentar (14)</h4>
+              <div className="flex gap-4 mb-10">
+                <div className="flex-1">
+                  <textarea 
+                    placeholder="Tulis komentar..."
+                    className="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+                    rows={3}
+                  />
+                  <button className="mt-3 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
+                    Kirim
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-5">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400" />
+                  <div>
+                    <p className="font-bold text-sm">Rudi Hermawan <span className="text-xs text-slate-500 font-normal">2 jam</span></p>
+                    <p className="text-sm text-slate-700">Sangat setuju! Gaming di Indonesia berkembang pesat.</p>
+                  </div>
+                </div>
               </div>
             </div>
 
           </article>
 
-          {/* Comments Section */}
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 md:p-10">
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <MessageCircle className="w-6 h-6" />
-              Diskusi ({12})
-            </h3>
+          {/* SIDEBAR */}
+          <aside className="space-y-8">
             
-            <div className="space-y-4 mb-6">
-              <textarea 
-                placeholder="Bagikan pendapat Anda tentang gaming di Indonesia..."
-                className="w-full p-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={4}
-              />
-              <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
-                Kirim Komentar
-              </button>
+            <div className="bg-white rounded-lg overflow-hidden shadow">
+              <div className="bg-blue-600 text-white p-4">
+                <h3 className="font-black text-sm">POPULER</h3>
+              </div>
+              <div className="p-6 space-y-6">
+                <a href="#" className="flex gap-4 group">
+                  <span className="text-3xl font-black text-slate-300 group-hover:text-blue-600">01</span>
+                  <h4 className="font-bold text-sm leading-tight">Bitcoin Tembus Rekor Baru</h4>
+                </a>
+                <a href="#" className="flex gap-4 group">
+                  <span className="text-3xl font-black text-slate-300 group-hover:text-blue-600">02</span>
+                  <h4 className="font-bold text-sm leading-tight">Fitur AI di Smartphone</h4>
+                </a>
+              </div>
             </div>
 
-            <div className="space-y-5 border-t pt-6">
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex-shrink-0" />
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-sm">Rudi Hermawan</span>
-                    <span className="text-xs text-slate-500">2 jam lalu</span>
-                  </div>
-                  <p className="text-sm text-slate-700">Sangat setuju dengan artikel ini. Gaming di Indonesia memang berkembang pesat!</p>
-                </div>
+            <div className="bg-white rounded-lg overflow-hidden shadow">
+              <div className="bg-blue-600 text-white p-4">
+                <h3 className="font-black text-sm">KATEGORI</h3>
               </div>
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex-shrink-0" />
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-sm">Eka Putri</span>
-                    <span className="text-xs text-slate-500">1 jam lalu</span>
-                  </div>
-                  <p className="text-sm text-slate-700">Pengen lihat lebih banyak startup gaming lokal. Potensinya sangat besar!</p>
-                </div>
+              <div className="p-6 flex flex-wrap gap-2">
+                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Teknologi</a>
+                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Gaming</a>
+                <a href="#" className="px-3 py-2 bg-slate-100 text-blue-600 text-xs font-bold rounded hover:bg-blue-600 hover:text-white transition-all">Tutorial</a>
               </div>
             </div>
-          </div>
+
+            <div className="p-6 bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-lg">
+              <h3 className="font-black text-lg mb-3">Newsletter</h3>
+              <p className="text-xs mb-4 opacity-90">Update gaming mingguan di inbox Anda.</p>
+              <input placeholder="Email" type="email" className="w-full p-2 rounded text-slate-900 text-xs mb-3 focus:outline-none" />
+              <button className="w-full py-2 bg-blue-700 font-bold text-xs rounded hover:bg-blue-800 transition-all">SUBSCRIBE</button>
+            </div>
+
+          </aside>
 
         </div>
-      </div>
+
+        {/* BOTTOM AD */}
+        <div className="w-full flex justify-center mt-12 overflow-x-auto">
+          <div className="bg-white border border-slate-300 rounded-lg p-2 flex items-center justify-center">
+            <AdsterraAd id="dc9dac060d8897a73c73d316590a3e03" width={728} height={90} slotId="ad-bottom" />
+          </div>
+        </div>
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="mt-12 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto py-12 px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div>
+            <div className="text-xl font-black mb-2">TEKNOLOGI SANTUY</div>
+            <p className="text-slate-400 text-xs">© 2024 Portal Game & Teknologi Indonesia</p>
+          </div>
+          
+          <div className="flex gap-8">
+            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">About</a>
+            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">Privacy</a>
+            <a href="#" className="text-slate-400 hover:text-white text-xs transition-colors">Contact</a>
+          </div>
+
+          <div className="flex gap-4 text-slate-400">
+            <span className="hover:text-white cursor-pointer">f</span>
+            <span className="hover:text-white cursor-pointer">𝕏</span>
+            <span className="hover:text-white cursor-pointer">▶</span>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }
