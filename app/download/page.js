@@ -55,9 +55,8 @@ function DownloadContent() {
       if (name) setGameName(name);
       setGameGenre(genre);
 
-      if (typeof window !== 'undefined') {
-        window.history.replaceState({}, '', '/download');
-      }
+      // Keep URL params intact for security - countdown resets on refresh
+      // User can't share this link productively since countdown restarts
     }
   }, [searchParams]);
 
@@ -168,7 +167,7 @@ function DownloadContent() {
         .comment-area { background-color: var(--surface); border-radius: 0.75rem; padding: 1.5rem; }
         .comment-input { width: 100%; background: white; border: none; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; resize: vertical; }
         .btn-primary { background-color: var(--primary); color: white; font-weight: 700; font-size: 0.75rem; padding: 0.5rem 1.5rem; border-radius: 0.375rem; border: none; cursor: pointer; }
-        .sidebar-ad { background: white; border: 1px solid rgba(194, 198, 210, 0.3); border-radius: 0.5rem; padding: 0.5rem; text-align: center; }
+        .sidebar-ad { background: white; border: 1px solid rgba(194, 198, 210, 0.3); border-radius: 0.5rem; padding: 0.5rem; text-align: center; min-height: 280px; display: flex; align-items: center; justify-content: center; }
         .popular-list a { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
         .popular-number { font-size: 1.875rem; font-weight: 900; color: #c2c6d2; transition: color 0.2s; }
         .footer { background-color: #e8e8ea; margin-top: 3rem; padding: 2.5rem 1.5rem; }
@@ -318,7 +317,7 @@ function DownloadContent() {
                 </div>
                 <p className="caption">Suasana pusat riset kecerdasan buatan di Jakarta Selatan. (Foto: Teknologi Santuy/Arsip)</p>
               </div>
-              <div style={{ minHeight: '300px', background: '#f3f4f6', borderRadius: '1rem', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ minHeight: '320px', background: 'white', borderRadius: '1rem', border: '1px solid rgba(194, 198, 210, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                 <div>
                   <Script id="ad-sidebar-top" strategy="afterInteractive">
                     {`atOptions = { 'key' : '136aa22e44a04ff3d80d1888c11e7ecd', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };`}
@@ -416,9 +415,9 @@ function DownloadContent() {
               </div>
             </div>
 
-            <div style={{ background: 'white', border: '1px solid rgba(194, 198, 210, 0.3)', borderRadius: '0.5rem', padding: '1rem' }}>
-              <h3 style={{ fontWeight: 800, color: '#003063', fontSize: '0.85rem' }}>REKOMENDASI SPONSOR</h3>
-              <div id="container-48133abeb7c91d73ea045430da0d0442"></div>
+            <div style={{ background: 'white', border: '1px solid rgba(194, 198, 210, 0.3)', borderRadius: '0.5rem', padding: '1rem', minHeight: '300px', display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ fontWeight: 800, color: '#003063', fontSize: '0.85rem', marginBottom: '1rem' }}>REKOMENDASI SPONSOR</h3>
+              <div id="container-48133abeb7c91d73ea045430da0d0442" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}></div>
               <Script async data-cfasync="false" src="https://pl29153574.profitablecpmratenetwork.com/48133abeb7c91d73ea045430da0d0442/invoke.js" />
             </div>
 
