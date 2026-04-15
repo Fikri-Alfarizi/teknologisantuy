@@ -14,18 +14,61 @@ export default function AdsterraBalanceWidget({ theme, accent }) {
     let data = payload;
     if (payload.data) data = payload.data;
 
+    // Adsterra specific balance fields
     const candidates = [
+      // Direct balance fields
       data.balance,
+      data.balance_usd,
+      data.balance_amount,
       data.available_balance,
       data.account_balance,
       data.usd_balance,
       data.amount,
       data.total_balance,
       data.sum,
+      data.available,
+      data.total,
+
+      // Stats object
+      data.stats?.balance,
+      data.stats?.balance_usd,
+      data.stats?.available_balance,
+      data.stats?.account_balance,
+
+      // Publisher object
+      data.publisher?.balance,
+      data.publisher?.balance_usd,
+      data.publisher?.available_balance,
+
+      // Account object
+      data.account?.balance,
+      data.account?.balance_usd,
+      data.account?.available_balance,
+
+      // Wallet object
+      data.wallet?.balance,
+      data.wallet?.balance_usd,
+      data.wallet?.available_balance,
+
+      // Profile object
+      data.profile?.balance,
+      data.profile?.balance_usd,
+      data.profile?.available_balance,
+
+      // Items array (if balance is in first item)
+      data.items?.[0]?.balance,
+      data.items?.[0]?.balance_usd,
+      data.items?.[0]?.available_balance,
+
+      // Check if the entire response is a number
+      typeof data === 'number' ? data : null,
+
+      // Check for string values that might contain numbers
+      typeof data === 'string' ? parseFloat(data.replace(/[^0-9.-]+/g, '')) : null
     ];
 
     for (const value of candidates) {
-      if (typeof value === 'number') return value;
+      if (typeof value === 'number' && !Number.isNaN(value)) return value;
       if (typeof value === 'string' && value.trim() !== '') {
         const parsed = parseFloat(value.replace(/[^0-9.-]+/g, ''));
         if (!Number.isNaN(parsed)) return parsed;
@@ -44,7 +87,8 @@ export default function AdsterraBalanceWidget({ theme, accent }) {
       const payload = await response.json();
 
       if (!response.ok) {
-        throw new Error(payload?.error || 'Failed to fetch Adsterra balance');
+        const errorMessage = payload?.error || payload?.message || `Adsterra HTTP ${payload?.status || response.status}`;
+        throw new Error(errorMessage);
       }
 
       const extracted = extractBalance(payload.data || payload);
