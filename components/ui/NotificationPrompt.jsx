@@ -13,17 +13,54 @@ export default function NotificationPrompt() {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'granted') {
         setIsSubscribed(true);
-        return;
+        checkForNewGames(); // Cek langsung saat login
       }
 
-      // Jangan munculkan jika user baru saja menolak (dismiss) sebelumnya
+      // Jangan munculkan prompt jika user baru saja menolak (dismiss) sebelumnya
       const dismissed = localStorage.getItem('notif_dismissed');
-      if (!dismissed) {
+      if (!dismissed && Notification.permission === 'default') {
         const timer = setTimeout(() => setIsVisible(true), 5000); // Muncul setelah 5 detik
         return () => clearTimeout(timer);
       }
     }
+
+    // Interval cek game baru setiap 2 menit jika tab tetap terbuka
+    const interval = setInterval(checkForNewGames, 120000);
+    return () => clearInterval(interval);
   }, []);
+
+  const checkForNewGames = async () => {
+    if (Notification.permission !== 'granted') return;
+
+    try {
+      const res = await fetch('/api/game/all');
+      const data = await res.json();
+      const latestGames = data.games || [];
+
+      if (latestGames.length > 0) {
+        const newestGame = latestGames[0]; // Game terbaru biasanya di paling atas
+        const lastSeenId = localStorage.getItem('last_seen_game_id');
+
+        // Jika ID berbeda dengan yang terakhir dilihat, munculkan notifikasi!
+        if (lastSeenId && lastSeenId !== newestGame.id) {
+          new Notification("🕹️ Game Baru Santuy!", {
+            body: `Baru rilis: ${newestGame.title}. Klik untuk download sekarang!`,
+            icon: newestGame.image || "/logo.png",
+            badge: "/favicon/favicon-96x96.png",
+            tag: "new-game-notif" // Menghindari notif dobel untuk game sama
+          });
+
+          // Saat notif diklik, buka halaman game
+          // Note: event handling ini lebih baik di sw.js, tapi untuk notif aktif bisa langsung di sini
+        }
+
+        // Update ID terakhir yang dilihat agar tidak muncul terus menerus
+        localStorage.setItem('last_seen_game_id', newestGame.id);
+      }
+    } catch (error) {
+      console.error("Gagal mengecek game baru:", error);
+    }
+  };
 
   const requestPermission = async () => {
     try {
@@ -32,7 +69,13 @@ export default function NotificationPrompt() {
         setIsSubscribed(true);
         setIsVisible(false);
         
-        // Tampilkan feedback sukses premium
+        // Simpan ID game saat ini sebagai 'sudah dilihat' saat pertama kali aktifkan
+        const res = await fetch('/api/game/all');
+        const data = await res.json();
+        if (data.games?.length > 0) {
+            localStorage.setItem('last_seen_game_id', data.games[0].id);
+        }
+
         new Notification("Teknologi Santuy", {
           body: "Yash! Notifikasi Berhasil Diaktifkan. Kamu akan dapet info game terbaru!",
           icon: "/logo.png"
