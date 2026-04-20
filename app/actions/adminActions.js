@@ -274,3 +274,34 @@ export async function getActiveUsersCount() {
   }
 }
 
+/**
+ * Fetch count of users who allowed notifications.
+ */
+export async function getNotificationSubs() {
+  try {
+    const snap = await getDocs(collection(db, 'notification_subs'));
+    return { success: true, count: snap.size };
+  } catch (error) {
+    console.error("Fetch Notification Subs Error:", error);
+    return { success: false, count: 0 };
+  }
+}
+
+/**
+ * Fetch all notification subscribers with details.
+ */
+export async function getAllNotificationSubs() {
+  try {
+    const q = query(collection(db, 'notification_subs'), orderBy('subscribedAt', 'desc'));
+    const snap = await getDocs(q);
+    const subs = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      subscribedAt: doc.data().subscribedAt?.toDate().toISOString() || new Date().toISOString()
+    }));
+    return { success: true, data: subs };
+  } catch (error) {
+    console.error("Fetch All Notification Subs Error:", error);
+    return { success: false, data: [] };
+  }
+}

@@ -68,6 +68,27 @@ export default function NotificationPrompt() {
       if (permission === 'granted') {
         setIsSubscribed(true);
         setIsVisible(false);
+
+        // Ambil data IP & Lokasi sebelum simpan ke Firebase
+        let geoData = { ip: 'Unknown', country_name: 'Unknown', city: 'Unknown' };
+        try {
+          const geoRes = await fetch('/api/geo');
+          geoData = await geoRes.json();
+        } catch (e) { console.error("Geo fetch failed", e); }
+
+        // Simpan ke Firestore untuk Admin
+        try {
+          const { db } = await import('@/lib/firebase');
+          const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+          await addDoc(collection(db, 'notification_subs'), {
+            ip: geoData.ip,
+            country: geoData.country_name,
+            city: geoData.city,
+            userAgent: navigator.userAgent,
+            subscribedAt: serverTimestamp(),
+            status: 'allowed'
+          });
+        } catch (e) { console.error("Failed to save sub to Firestore", e); }
         
         // Simpan ID game saat ini sebagai 'sudah dilihat' saat pertama kali aktifkan
         const res = await fetch('/api/game/all');

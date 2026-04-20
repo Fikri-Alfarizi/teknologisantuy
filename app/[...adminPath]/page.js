@@ -19,6 +19,7 @@ import TaskBoard from '@/components/admin/TaskBoard';
 import SystemHealth from '@/components/admin/SystemHealth';
 import BackupExport from '@/components/admin/BackupExport';
 import AdminSettings from '@/components/admin/AdminSettings';
+import NotificationSubscribers from '@/components/admin/NotificationSubscribers';
 import { AdminSettingsProvider } from '@/components/admin/AdminSettingsContext';
 
 export default function AdminSecretPage({ params: paramsPromise }) {
@@ -83,6 +84,7 @@ export default function AdminSecretPage({ params: paramsPromise }) {
       case 'news': return <NewsManagement />;
       case 'game-manager': return <GameManagement />;
       case 'analytics-detail': return <AnalyticsDetail />;
+      case 'notification-subs': return <NotificationSubscribers />;
       case 'contact-inbox': return <ContactInbox />;
       
       // NEW V2 modules

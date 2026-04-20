@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getDashboardStats, getAnalyticsStats, getGamePopularity } from '@/app/actions/adminActions';
+import { getDashboardStats, getAnalyticsStats, getGamePopularity, getNotificationSubs } from '@/app/actions/adminActions';
 import { getAnalyticsTimeSeries, getSystemHealth } from '@/app/actions/adminActionsV2';
-import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine, FaRobot, FaToggleOn, FaToggleOff, FaHeartbeat, FaArrowUp, FaArrowDown, FaEye, FaDesktop, FaMobileAlt } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaUsers, FaCommentDots, FaRocket, FaGlobe, FaFacebook, FaInstagram, FaLink, FaGamepad, FaChartLine, FaRobot, FaToggleOn, FaToggleOff, FaHeartbeat, FaArrowUp, FaArrowDown, FaEye, FaDesktop, FaMobileAlt, FaBell } from 'react-icons/fa';
 import RealtimeActiveUsers from './RealtimeActiveUsers';
 import { useAdminSettings } from '@/components/admin/AdminSettingsContext';
 
@@ -35,6 +35,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [botSettings, setBotSettings] = useState(null);
   const [botLoading, setBotLoading] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
   const { settings, theme } = useAdminSettings() || {};
   
   const accent = settings?.accentColor || '#ffe600';
@@ -53,6 +54,9 @@ export default function AdminDashboard() {
         if (analyticsRes.success) setAnalytics(analyticsRes.data);
         if (timeSeriesRes.success) setTimeSeries(timeSeriesRes.data);
         if (healthRes.success) setSystemHealth(healthRes.data);
+        
+        const notifRes = await getNotificationSubs();
+        if (notifRes.success) setNotifCount(notifRes.count);
       } catch (err) {
         console.error("Dashboard Load Error:", err);
       } finally {
@@ -141,7 +145,10 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-        {(settings?.showActiveUsers !== false) && <RealtimeActiveUsers />}
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <StatCardSmall title="Subscriber Notif" count={notifCount} icon={<FaBell />} color="#ff6b6b" />
+          {(settings?.showActiveUsers !== false) && <RealtimeActiveUsers />}
+        </div>
       </div>
 
       {/* Row 2: Stats Cards */}
@@ -403,6 +410,24 @@ export default function AdminDashboard() {
 }
 
 // ── Sub Components ──
+
+function StatCardSmall({ title, count, icon, color }) {
+  return (
+    <div style={{
+      background: '#fff', border: '3px solid #000', borderRadius: '8px',
+      padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '12px',
+      boxShadow: '4px 4px 0 rgba(0,0,0,0.1)'
+    }}>
+      <div style={{ background: color, color: '#fff', padding: '6px', borderRadius: '6px', display: 'flex' }}>
+        {icon}
+      </div>
+      <div>
+        <div style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: 900, color: '#888' }}>{title}</div>
+        <div style={{ fontSize: '16px', fontWeight: 950 }}>{count}</div>
+      </div>
+    </div>
+  );
+}
 
 function StatCard({ title, count, icon, gradient, trend }) {
   const { theme, settings } = useAdminSettings() || {};

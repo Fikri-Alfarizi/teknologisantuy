@@ -55,6 +55,7 @@ export default function AdminLayout({ children, activeTab = 'dashboard' }) {
       items: [
         { id: 'users', label: 'Manajemen User', icon: <FaUsers />, href: `/${adminPath}/users` },
         { id: 'feedback', label: 'Feedback & Suara', icon: <FaCommentAlt />, href: `/${adminPath}/feedback` },
+        { id: 'notification-subs', label: 'Subscriber Notif', icon: <FaBell />, href: `/${adminPath}/notification-subs` },
         { id: 'contact-inbox', label: 'Kontak Masuk', icon: <FaEnvelope />, href: `/${adminPath}/contact-inbox` },
       ]
     },
