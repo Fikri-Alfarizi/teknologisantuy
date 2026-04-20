@@ -7,7 +7,10 @@ import { collection, getDocs } from 'firebase/firestore';
 
 async function getDiscordGames(beforeCursor) {
   const token = process.env.DISCORD_BOT_TOKEN;
-  if (!token) return { games: [], nextCursor: null };
+  if (!token) {
+    console.error("DISCORD_BOT_TOKEN is missing!");
+    return { games: [], nextCursor: null };
+  }
   
   try {
     const limit = 30;
@@ -16,37 +19,44 @@ async function getDiscordGames(beforeCursor) {
       url += `&before=${beforeCursor}`;
     }
 
+    const cleanToken = token.trim().replace(/"/g, '');
+    
     const res = await fetch(url, {
       headers: {
-        Authorization: `Bot ${token.replace(/"/g, '')}`
+        Authorization: `Bot ${cleanToken}`
       },
       next: { revalidate: 60 } // Cache updates every 60 seconds
     });
     
     if (!res.ok) {
-      console.error("Failed to fetch games from Discord:", await res.text());
+      const errorText = await res.text();
+      console.error("Failed to fetch games from Discord:", errorText);
       return { games: [], nextCursor: null };
     }
     
     const messages = await res.json();
-    if (!messages || messages.length === 0) return { games: [], nextCursor: null };
+    if (!messages || !Array.isArray(messages) || messages.length === 0) return { games: [], nextCursor: null };
     
-    // Fetch overrides from Firestore
-    const overridesSnap = await getDocs(collection(db, 'game_overrides'));
-    const overrides = {};
-    overridesSnap.forEach(doc => {
-      overrides[doc.id] = doc.data();
-    });
+    // Fetch overrides from Firestore - GRACEFUL FAILURE
+    let overrides = {};
+    try {
+      const overridesSnap = await getDocs(collection(db, 'game_overrides'));
+      overridesSnap.forEach(doc => {
+        overrides[doc.id] = doc.data();
+      });
+    } catch (fbErr) {
+      console.warn("Firestore overrides failed:", fbErr.message);
+    }
 
     // Parse messages
     const games = messages.map(msg => {
-      const content = msg.content;
-      const gameMatch = content.match(/GAME\s*:\s*(.+)/i);
-      const sizeMatch = content.match(/SIZE\s*:\s*(.+)/i);
-      const passMatch = content.match(/PASSWORD\s*:\s*(.+)/i);
+      const content = msg.content || "";
+      const gameMatch = content.match(/GAME\s*[:\-]\s*(.+)/i);
+      const sizeMatch = content.match(/SIZE\s*[:\-]\s*(.+)/i);
+      const passMatch = content.match(/PASSWORD\s*[:\-]\s*(.+)/i);
       const linkMatch = content.match(/https?:\/\/[^\s]+/i);
       
-      const imageAttachment = msg.attachments.find(att => att.url && (att.content_type?.startsWith('image/') || att.url.match(/\.(jpeg|jpg|gif|png)$/i)));
+      const imageAttachment = msg.attachments?.find(att => att.url && (att.content_type?.startsWith('image/') || att.url.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
       const embedImage = msg.embeds ? msg.embeds.find(e => e.type === 'image' || e.image || e.thumbnail) : null;
       let imgUrl = '/logo.png';
       if (imageAttachment) imgUrl = imageAttachment.url;
@@ -67,12 +77,11 @@ async function getDiscordGames(beforeCursor) {
         timestamp: new Date(msg.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
       };
 
-      // Merge with overrides
       if (overrides[msg.id]) {
         return { ...baseData, ...overrides[msg.id] };
       }
       return baseData;
-    }).filter(g => g.title !== 'Unknown Game');
+    }).filter(g => g.title !== 'Unknown Game' && g.link !== '#');
     
     const nextCursor = messages.length === limit ? messages[messages.length - 1].id : null;
     
@@ -91,17 +100,18 @@ async function searchDiscordGames(query) {
   let before = null;
   let hasMore = true;
   let calls = 0;
+  const cleanToken = token.trim().replace(/"/g, '');
   
   try {
-    // recursively fetch up to 5 pages (500 messages max) to search locally since bot tokens cannot use Discord /search API
+    // recursively fetch up to 5 pages (500 messages max)
     while (hasMore && calls < 5) {
       calls++;
       let url = `https://discord.com/api/v10/channels/1391274558514004019/messages?limit=100`;
       if (before) url += `&before=${before}`;
       
       const res = await fetch(url, {
-        headers: { Authorization: `Bot ${token.replace(/"/g, '')}` },
-        next: { revalidate: 300 } // cache history for 5 mins
+        headers: { Authorization: `Bot ${cleanToken}` },
+        next: { revalidate: 300 } 
       });
       
       if (!res.ok) break;
@@ -109,13 +119,13 @@ async function searchDiscordGames(query) {
       if (!messages || messages.length === 0) break;
       
       const parsed = messages.map(msg => {
-        const content = msg.content;
-        const gameMatch = content.match(/GAME\s*:\s*(.+)/i);
-        const sizeMatch = content.match(/SIZE\s*:\s*(.+)/i);
-        const passMatch = content.match(/PASSWORD\s*:\s*(.+)/i);
+        const content = msg.content || "";
+        const gameMatch = content.match(/GAME\s*[:\-]\s*(.+)/i);
+        const sizeMatch = content.match(/SIZE\s*[:\-]\s*(.+)/i);
+        const passMatch = content.match(/PASSWORD\s*[:\-]\s*(.+)/i);
         const linkMatch = content.match(/https?:\/\/[^\s]+/i);
         
-        const imageAttachment = msg.attachments.find(att => att.url && (att.content_type?.startsWith('image/') || att.url.match(/\.(jpeg|jpg|gif|png)$/i)));
+        const imageAttachment = msg.attachments?.find(att => att.url && (att.content_type?.startsWith('image/') || att.url.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
         const embedImage = msg.embeds ? msg.embeds.find(e => e.type === 'image' || e.image || e.thumbnail) : null;
         let imgUrl = '/logo.png';
         if (imageAttachment) imgUrl = imageAttachment.url;
@@ -134,19 +144,23 @@ async function searchDiscordGames(query) {
           image: imgUrl,
           timestamp: new Date(msg.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
         };
-      }).filter(g => g.title !== 'Unknown Game');
+      }).filter(g => g.title !== 'Unknown Game' && g.link !== '#');
       
       allGames = allGames.concat(parsed);
       before = messages[messages.length - 1].id;
       if (messages.length < 100) hasMore = false;
     }
     
-    // Fetch overrides from Firestore
-    const overridesSnap = await getDocs(collection(db, 'game_overrides'));
-    const overrides = {};
-    overridesSnap.forEach(doc => {
-      overrides[doc.id] = doc.data();
-    });
+    // Fetch overrides from Firestore - GRACEFUL FAILURE
+    let overrides = {};
+    try {
+      const overridesSnap = await getDocs(collection(db, 'game_overrides'));
+      overridesSnap.forEach(doc => {
+        overrides[doc.id] = doc.data();
+      });
+    } catch (fErr) {
+      console.warn("Firestore search overrides failed:", fErr.message);
+    }
 
     // Perform local JSON text search
     const lowerQuery = query.toLowerCase();
