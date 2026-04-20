@@ -1,3 +1,7 @@
+
+
+
+
 import Link from 'next/link';
 import GameSearchBar from '@/app/components/GameSearchBar';
 import GameDownloadButton from './GameDownloadButton';

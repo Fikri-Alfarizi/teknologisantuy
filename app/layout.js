@@ -4,6 +4,7 @@ import GlobalEffects from './components/GlobalEffects';
 import ConsoleWatermark from './components/ConsoleWatermark';
 import Providers from './providers';
 import NextTopLoader from 'nextjs-toploader';
+import NotificationPrompt from '@/components/ui/NotificationPrompt';
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -114,6 +115,7 @@ export default function RootLayout({ children }) {
         />
         <Providers>
           <GlobalEffects />
+          <NotificationPrompt />
           {children}
         </Providers>
       </body>
