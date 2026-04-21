@@ -65,7 +65,7 @@ export default function DonasiPage() {
   const [loading, setLoading] = useState(true);
   const [seedStatus, setSeedStatus] = useState(null);
   
-  const targetGoal = 150000;
+  const targetGoal = 500000; // Target goal disesuaikan lebih besar
   
   const audioRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -76,7 +76,7 @@ export default function DonasiPage() {
   const progressPercent = Math.min((totalAmount / targetGoal) * 100, 100);
   
   const videoDonations = displaySupporters.filter(s => s.videoId);
-  const topSupporters = [...displaySupporters].sort((a,b) => b.amount - a.amount).slice(0, 3);
+  const topSupporters = [...displaySupporters].sort((a,b) => b.amount - a.amount).slice(0, 5);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -186,37 +186,35 @@ export default function DonasiPage() {
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
         .donation-dashboard {
-            --don-bg: #f5f6ff;
-            --don-on-surf: #282f3f;
+            --don-bg: #f8f9ff;
+            --don-on-surf: #1a1e2e;
             --don-primary: #0057bd;
             --don-primary-dim: #004ca6;
-            --don-on-primary: #f0f2ff;
-            --don-pri-cont: #6e9fff;
-            --don-on-pri-cont: #002150;
+            --don-on-primary: #ffffff;
+            --don-pri-cont: #e0ebff;
+            --don-on-pri-cont: #001a41;
             --don-sec: #3a53b7;
             --don-sec-dim: #2c47ab;
-            --don-on-sec: #f2f1ff;
-            --don-sec-cont: #c7cfff;
-            --don-on-sec-cont: #223ea2;
-            --don-ter: #893c92;
-            --don-ter-cont: #f199f7;
-            --don-on-ter-cont: #5e106a;
-            --don-surf: #f5f6ff;
-            --don-surf-var: #d3dcf9;
-            --don-surf-low: #edf0ff;
-            --don-surf-high: #d3dcf9;
+            --don-surf: #ffffff;
+            --don-surf-low: #f5f7ff;
+            --don-surf-high: #eef2ff;
             --don-surf-lowest: #ffffff;
-            --don-err: #b31b25;
-            --don-out: #707789;
-            --don-out-var: #a6adc1;
+            --don-err: #df2c3a;
+            --don-out: #5a6175;
+            --don-out-var: #94a3b8;
+            --don-gold: #fbbf24;
+            --don-silver: #94a3b8;
+            --don-bronze: #d97706;
 
             --don-headline: 'Space Grotesk', sans-serif;
             --don-body: 'Manrope', sans-serif;
             
             --don-border: 2px solid var(--don-on-surf);
-            --don-rd-md: 0.5rem;
-            --don-rd-lg: 1rem;
-            --don-rd-xl: 1.5rem;
+            --don-shadow: 4px 4px 0px 0px var(--don-on-surf);
+            --don-shadow-sm: 2px 2px 0px 0px var(--don-on-surf);
+            --don-rd-md: 0.75rem;
+            --don-rd-lg: 1.25rem;
+            --don-rd-xl: 2rem;
             --don-rd-full: 9999px;
 
             background-color: var(--don-bg);
@@ -225,6 +223,7 @@ export default function DonasiPage() {
             display: flex;
             flex-direction: column;
             position: relative;
+            padding-top: 0;
             isolation: isolate;
         }
 
@@ -239,52 +238,64 @@ export default function DonasiPage() {
             font-family: 'Material Symbols Outlined' !important;
             font-weight: normal !important;
             font-style: normal !important;
+            font-size: 24px;
             display: inline-block;
             line-height: 1;
-            text-transform: none;
-            letter-spacing: normal;
-            word-wrap: normal;
-            white-space: nowrap;
-            direction: ltr;
         }
 
         .donation-dashboard i[class*="fa-"] {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
             font-weight: 900 !important;
             font-style: normal !important;
-            display: inline-block;
         }
 
-        .donation-dashboard a { text-decoration: none; color: inherit; }
-        .donation-dashboard button { cursor: pointer; border: none; background: none; color: inherit; }
-        
         .donation-dashboard .font-headline { font-family: var(--don-headline) !important; }
-        .donation-dashboard .text-primary { color: var(--don-primary); }
-        .donation-dashboard .text-outline { color: var(--don-out); }
         .donation-dashboard .font-bold { font-weight: 700; }
         .donation-dashboard .font-extrabold { font-weight: 800; }
-        .donation-dashboard .text-xs { font-size: 0.75rem; }
-        .donation-dashboard .text-sm { font-size: 0.875rem; }
-        .donation-dashboard .text-lg { font-size: 1.125rem; }
-        .donation-dashboard .text-xl { font-size: 1.25rem; }
-        .donation-dashboard .text-2xl { font-size: 1.5rem; }
-        .donation-dashboard .text-3xl { font-size: 1.875rem; }
 
         .sticky-progress {
             position: sticky;
             top: 0; 
-            z-index: 30;
-            background-color: var(--don-surf-low);
-            border: var(--don-border);
-            border-left: none; border-right: none;
+            z-index: 50;
+            background-color: var(--don-surf);
+            border-bottom: var(--don-border);
             padding: 0.75rem 1rem;
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            align-items: center;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            max-width: 60rem;
+            margin: 0 auto;
+        }
+        .progress-header {
+            display: flex;
             justify-content: space-between;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .progress-track {
+            width: 100%;
+            background-color: var(--don-surf-low);
+            border: var(--don-border);
+            border-radius: var(--don-rd-full);
+            height: 1.25rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--don-primary),
+                var(--don-primary) 10px,
+                var(--don-primary-dim) 10px,
+                var(--don-primary-dim) 20px
+            );
+            height: 100%;
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .donasi-main-content {
@@ -303,61 +314,19 @@ export default function DonasiPage() {
             border-radius: var(--don-rd-lg);
             padding: 1.25rem;
             background-color: var(--don-surf);
-            box-shadow: 4px 4px 0px 0px var(--don-on-surf);
+            box-shadow: var(--don-shadow);
         }
 
-        .donasi-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 700;
-            transition: all 0.2s;
-            border: var(--don-border);
-        }
-
-        .donasi-btn-primary {
-            background-color: var(--don-primary);
-            color: var(--don-on-primary) !important;
-            border-radius: var(--don-rd-full);
-            padding: 0.5rem 1.5rem;
-        }
-
-        .donasi-avatar {
-            border-radius: var(--don-rd-full);
-            border: var(--don-border);
-            object-fit: cover;
-        }
-
-        .progress-wrapper {
-            width: 100%;
-            flex: 1;
-        }
-        .progress-header {
+        .section-title {
+            font-family: var(--don-headline) !important;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .progress-track {
-            width: 100%;
-            background-color: var(--don-surf-lowest);
-            border: var(--don-border);
-            border-radius: var(--don-rd-full);
-            height: 1rem;
-            overflow: hidden;
-        }
-        .progress-fill {
-            background: linear-gradient(to right, var(--don-primary), var(--don-primary-dim));
-            height: 100%;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 0.75rem;
         }
 
-        .feed-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
         .feed-list {
             display: flex;
             flex-direction: column;
@@ -368,11 +337,11 @@ export default function DonasiPage() {
             background-color: var(--don-surf-lowest);
             border: var(--don-border);
             border-radius: var(--don-rd-md);
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            padding: 1.25rem;
+            transition: transform 0.2s;
         }
+        .donation-item:hover { transform: translateY(-3px); }
+
         .donor-header {
             display: flex;
             justify-content: space-between;
@@ -383,275 +352,319 @@ export default function DonasiPage() {
             align-items: center;
             gap: 0.75rem;
         }
-        
-        .interaction-row {
+        .donor-avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--don-rd-full);
+            border: var(--don-border);
+            background-color: var(--don-pri-cont);
+            color: var(--don-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+        .donor-badge {
+            background-color: #fef08a;
+            color: #854d0e;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--don-rd-full);
+            border: 1px solid currentColor;
+            text-transform: uppercase;
+        }
+
+        .donation-message {
+            margin-top: 1rem;
+            background-color: var(--don-surf-low);
+            border: 1px solid var(--don-on-surf);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .supporter-card {
             display: flex;
             align-items: center;
             gap: 1rem;
-            border-top: 1px solid var(--don-surf-var);
-            padding-top: 0.75rem;
+            background-color: var(--don-surf-lowest);
+            padding: 0.75rem;
+            border-radius: var(--don-rd-md);
+            border: var(--don-border);
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
+        .supporter-card:hover { transform: scale(1.02); z-index: 5; }
         
-        .social-grid {
+        .rank-badge {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.5rem;
+            border: var(--don-border);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-family: var(--don-headline) !important;
+            background-color: #fff;
+        }
+        .rank-gold { background-color: var(--don-gold); }
+        .rank-silver { background-color: var(--don-silver); }
+        .rank-bronze { background-color: var(--don-bronze); color: white; }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
-            margin-top: 1rem;
         }
         .social-btn {
             border: var(--don-border);
             border-radius: var(--don-rd-md);
-            padding: 0.75rem 1.25rem;
+            padding: 1rem 0.5rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: 0.5rem;
             color: white !important;
-            transition: all 0.2s;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: 700;
+            box-shadow: 3px 3px 0px 0px var(--don-on-surf);
+            transition: all 0.1s;
         }
-        .social-btn i { font-size: 1.5rem; }
-        .social-btn:active { transform: scale(0.95); }
-        .social-youtube { background-color: #FF0000; box-shadow: 4px 4px 0px 0px #8B0000; }
-        .social-discord { background-color: #5865F2; box-shadow: 4px 4px 0px 0px #2D348F; }
-        
-        .fab-mobile {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1rem;
-            left: 1rem;
-            z-index: 50;
-        }
-        .fab-btn {
-            background-color: var(--don-primary);
-            color: var(--don-on-primary) !important;
-            border-radius: var(--don-rd-md);
-            padding: 1rem;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border: var(--don-border);
-            box-shadow: 4px 4px 0px 0px var(--don-on-surf);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            width: 100%;
-        }
+        .social-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px 0px var(--don-on-surf); }
+        .social-youtube { background-color: #FF0000; }
+        .social-discord { background-color: #5865F2; }
 
-        @media (min-width: 640px) {
-            .social-grid { flex-direction: row; }
-            .social-btn { flex: 1; }
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 767px) {
+            .donation-dashboard { padding-top: 0; }
+            .section-title { font-size: 1.5rem; }
+            .sticky-progress { padding: 0.5rem 0.75rem; }
+            .progress-header h1 { font-size: 1rem; }
+            .progress-header span { font-size: 0.85rem; }
+            
+            .donasi-main-content { gap: 1rem; padding: 0.75rem; }
+            .donasi-card { padding: 1rem; border-radius: 0.75rem; }
+            .donation-item { padding: 0.85rem; }
+            
+            .donor-avatar-circle { width: 36px; height: 36px; font-size: 1rem; }
+            .rank-badge { width: 1.75rem; height: 1.75rem; font-size: 0.85rem; }
+            
+            .donor-header { flex-direction: column; gap: 0.5rem; }
+            .donation-date { font-size: 0.65rem; }
+
+            .fab-mobile { bottom: 1.5rem; right: 1rem; }
+            .fab-btn { padding: 0.75rem 1.25rem; font-size: 0.875rem; }
         }
 
         @media (min-width: 768px) {
-            .sticky-progress { flex-direction: row; padding: 1rem 1.5rem; }
-            .progress-track { height: 1.5rem; }
-            .donasi-main-content { padding: 1.5rem; }
-            .fab-mobile { display: none; }
+            .sticky-progress { flex-direction: row; align-items: center; padding: 1rem 2rem; }
+            .progress-wrapper { flex: 1; margin: 0; }
+            .donasi-main-content { padding: 2rem; }
         }
 
         @media (min-width: 1024px) {
             .donasi-main-content { flex-direction: row; align-items: flex-start; }
-            .column-left { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
-            .column-right { width: 350px; display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 6rem; }
+            .column-left { width: 68%; }
+            .column-right { width: 32%; position: sticky; top: 100px; }
         }
-      `}} />
 
-      {seedStatus && (
-          <div style={{ backgroundColor: 'var(--don-primary)', color: 'white', padding: '0.75rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', zIndex: 100, borderBottom: 'var(--don-border)' }}>
-              ℹ️ {seedStatus}
-          </div>
-      )}
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(223, 44, 58, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(223, 44, 58, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(223, 44, 58, 0); }
+        }
+        .ping-active { animation: pulse-red 2s infinite; }
+      `}} />
 
       <div className="sticky-progress">
           <div className="progress-wrapper">
               <div className="progress-header">
-                  <h1 className="font-headline text-lg md:text-xl font-bold">Target Server</h1>
-                  <span className="font-bold text-primary text-sm md:text-base">Rp {totalAmount.toLocaleString()} / Rp {targetGoal.toLocaleString()}</span>
+                  <h1 className="font-headline font-extrabold text-lg md:text-xl">Target Server Maintenance</h1>
+                  <span className="font-bold text-primary text-sm md:text-base">
+                    Rp {totalAmount.toLocaleString()} <span className="text-outline">/ Rp {targetGoal.toLocaleString()}</span>
+                  </span>
               </div>
               <div className="progress-track">
                   <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
               </div>
           </div>
-          <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="donasi-btn donasi-btn-primary font-bold hidden md:flex">
-              <span className="material-symbols-outlined">volunteer_activism</span> Donasi Sekarang
-          </a>
+          <div className="hidden md:flex gap-2">
+            <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="donasi-btn donasi-btn-primary">
+                <span className="material-symbols-outlined">volunteer_activism</span> Dukung Kami
+            </a>
+          </div>
       </div>
 
       <main className="donasi-main-content">
-          <div className="column-left">
-              {/* VIDEO SECTION */}
-              {videoDonations.length > 0 && (
-                <section className="donasi-card bg-surface-low" style={{ padding: '1rem' }}>
-                    <div className="video-header" style={{ marginBottom: '1rem' }}>
-                        <h2 className="font-headline text-xl md:text-2xl font-extrabold">Video Donatur</h2>
-                    </div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-                        {videoDonations.slice(0, 4).map(v => (
-                          <div key={`vid-${v.id}`} style={{ border: 'var(--don-border)', borderRadius: 'var(--don-rd-md)', overflow: 'hidden', backgroundColor: 'white' }}>
-                              <div style={{ aspectRatio: '16/9', backgroundColor: '#000' }}>
-                                  <iframe src={`https://www.youtube.com/embed/${v.videoId}`} width="100%" height="100%" frameBorder="0" allowFullScreen title={v.name}></iframe>
-                              </div>
-                              <div style={{ padding: '0.75rem' }}>
-                                  <h3 className="font-bold text-sm">Sawer dari {v.name}</h3>
-                                  <p className="text-xs text-outline">{v.formattedDate}</p>
-                              </div>
-                          </div>
-                        ))}
-                    </div>
-                </section>
-              )}
-
-              {/* LIVE FEED SECTION */}
-              <section className="donasi-card bg-surface-low feed-container">
-                  <div className="video-header">
-                      <h2 className="font-headline text-xl md:text-2xl font-extrabold" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="ping-dot"><span className="ping-dot-inner"></span></span>
-                          Live Feed
+          <div className="column-left flex flex-col gap-6">
+              {/* FEED SECTION */}
+              <section className="donasi-card">
+                  <div className="flex justify-between items-center mb-6">
+                      <h2 className="section-title mb-0">
+                          <span className="ping-dot ping-active" style={{ width: '12px', height: '12px', backgroundColor: 'var(--don-err)', borderRadius: '50%' }}></span>
+                          Live Feed Donasi
                       </h2>
+                      <div className="text-xs font-bold text-outline uppercase tracking-wider hidden sm:block">Update Otomatis</div>
                   </div>
 
                   <div className="feed-list">
                       {loading ? (
-                        <div className="text-center py-10 text-outline animate-pulse font-bold">Memuat data donasi...</div>
-                      ) : supporters.length === 0 ? (
-                        <div className="text-center py-10 text-outline font-bold bg-don-surf-low rounded-xl border-dashed border-2 border-don-out-var">Belum ada donasi. Jadi yang pertama! 😊</div>
+                        <div className="text-center py-12 text-outline animate-pulse font-bold">Menghubungkan ke server...</div>
+                      ) : displaySupporters.length === 0 ? (
+                        <div className="text-center py-12 bg-don-surf-low rounded-xl border-2 border-dashed border-don-out-var">
+                          <span className="material-symbols-outlined text-4xl mb-2 opacity-30">pending</span>
+                          <p className="font-bold opacity-60">Belum ada donasi hari ini.</p>
+                        </div>
                       ) : (
                         displaySupporters.map(s => (
-                          <div className="donation-item" key={s.id}>
+                          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="donation-item" key={s.id}>
                               <div className="donor-header">
                                   <div className="donor-info">
-                                      <div className="donasi-avatar" style={{ width: '42px', height: '42px', backgroundColor: 'var(--don-pri-cont)', color: 'var(--don-on-pri-cont)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                          {s.name.charAt(0).toUpperCase()}
-                                      </div>
+                                      <div className="donor-avatar-circle">{s.name.charAt(0).toUpperCase()}</div>
                                       <div>
-                                          <h4 className="font-bold text-base">{s.name}</h4>
-                                          <p className="text-xs font-bold text-primary">Rp {s.amount.toLocaleString()}</p>
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                              <h4 className="font-extrabold text-base md:text-lg m-0">{s.name}</h4>
+                                              {s.amount >= 50000 && <span className="donor-badge">⭐ Top Donor</span>}
+                                          </div>
+                                          <p className="text-sm font-bold text-primary m-0">Menyumbang Rp {s.amount.toLocaleString()}</p>
                                       </div>
                                   </div>
-                                  <span className="text-[10px] text-outline font-bold">{s.formattedDate}</span>
+                                  <div className="donation-date text-xs font-bold text-outline">{s.formattedDate}</div>
                               </div>
                               
                               {s.message && (
-                                <div className="donation-message" style={{ margin: 0, padding: '0.5rem 0.75rem' }}>
-                                    <p className="text-sm">"{s.message}"</p>
+                                <div className="donation-message">
+                                    "{s.message}"
                                 </div>
                               )}
   
-                              <div className="interaction-row">
-                                  <button className="interaction-btn" onClick={() => setActiveCommentId(activeCommentId === s.id ? null : s.id)}>
-                                      <span className="material-symbols-outlined text-base">chat_bubble</span> 
-                                      <span className="text-xs font-bold">{comments[s.id]?.length || 0} Balasan</span>
+                              <div className="mt-4 flex items-center gap-4">
+                                  <button onClick={() => setActiveCommentId(activeCommentId === s.id ? null : s.id)} className="flex items-center gap-1.5 text-xs font-bold text-outline hover:text-primary transition-colors">
+                                      <span className="material-symbols-outlined text-sm">chat_bubble</span> 
+                                      {comments[s.id]?.length || 0} Balasan
                                   </button>
+                                  {s.videoId && (
+                                     <button onClick={() => window.open(`https://youtube.com/watch?v=${s.videoId}`)} className="flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+                                        <span className="material-symbols-outlined text-sm">smart_display</span> Video Terlampir
+                                     </button>
+                                  )}
                               </div>
   
                               {activeCommentId === s.id && (
-                                <div className="comment-section" style={{ borderTop: 'none', marginTop: 0 }}>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="comment-section mt-4 pt-4 border-t border-dashed border-don-out-var">
+                                  <div className="flex flex-col gap-3">
                                     {comments[s.id]?.map(c => (
-                                      <div key={c.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                                        <img src={c.photoURL} alt="" className="donasi-avatar" style={{ width: '28px', height: '28px' }} />
-                                        <div style={{ padding: '0.5rem', backgroundColor: 'var(--don-surf-low)', borderRadius: '0.5rem', border: 'var(--don-border)', fontSize: '0.75rem', flex: 1 }}>
+                                      <div key={c.id} className="flex gap-3 items-start">
+                                        <img src={c.photoURL} alt="" className="w-8 h-8 rounded-full border-2 border-don-on-surf" />
+                                        <div className="bg-don-surf-low p-3 rounded-xl border border-don-on-surf text-sm flex-1">
                                           <strong className="text-primary">{c.name}</strong>: {c.text}
                                         </div>
                                       </div>
                                     ))}
                                   </div>
                                   
-                                  <div className="comment-input-row">
+                                  <div className="flex gap-2 mt-4">
                                     <input 
-                                      className="comment-input" 
-                                      placeholder={user ? "Balas..." : "Login untuk membalas"} 
+                                      className="flex-1 bg-white border-2 border-don-on-surf rounded-full px-4 py-2 text-sm outline-none" 
+                                      placeholder={user ? "Balas dukungan ini..." : "Login untuk membalas"} 
                                       value={newComment}
                                       disabled={!user}
                                       onChange={(e) => setNewComment(e.target.value)}
                                       onKeyDown={(e) => e.key === 'Enter' && handleSendComment(s.id)}
                                     />
                                     {user && (
-                                      <button className="donasi-btn donasi-btn-primary" style={{ padding: '0.4rem 0.8rem' }} onClick={() => handleSendComment(s.id)}>
+                                      <button onClick={() => handleSendComment(s.id)} className="w-10 h-10 bg-primary text-white flex items-center justify-center rounded-full border-2 border-don-on-surf">
                                         <span className="material-symbols-outlined text-sm">send</span>
                                       </button>
                                     )}
                                   </div>
-                                </div>
+                                </motion.div>
                               )}
-                          </div>
+                          </motion.div>
                         ))
                       )}
                   </div>
               </section>
           </div>
 
-          <div className="column-right">
-              {/* TOP SUPPORTERS SECTION */}
-              <section className="donasi-card bg-surface-highest">
-                  <h3 className="font-headline text-lg font-bold" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="material-symbols-outlined" style={{ color: 'var(--don-ter)', fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
+          <div className="column-right flex flex-col gap-6">
+              {/* TOP SUPPORTERS leaderboard */}
+              <section className="donasi-card">
+                  <h3 className="section-title text-xl">
+                      <span className="material-symbols-outlined text-don-primary" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
                       Top Supporters
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div className="space-y-3">
                       {topSupporters.map((ts, idx) => (
-                        <div className="supporter-row" style={{ padding: '0.35rem 0.75rem', margin: 0 }} key={`ts-${idx}`}>
-                            <div className="font-bold text-base" style={{ color: 'var(--don-out-var)', width: '20px' }}>{idx + 1}</div>
-                            <div className="donasi-avatar" style={{ width: '32px', height: '32px', backgroundColor: idx === 0 ? 'var(--don-primary)' : 'var(--don-pri-cont)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.75rem' }}>
-                              {ts.name.substring(0, 2).toUpperCase()}
+                        <div key={`ts-${idx}`} className="supporter-card">
+                            <div className={`rank-badge ${idx === 0 ? 'rank-gold' : idx === 1 ? 'rank-silver' : idx === 2 ? 'rank-bronze' : ''}`}>
+                                {idx + 1}
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <h4 className="font-bold text-xs">{ts.name}</h4>
-                                <p className="text-[10px] text-primary font-bold">Rp {ts.amount.toLocaleString()}</p>
+                            <div className="flex-1">
+                                <h4 className="font-extrabold text-sm m-0 leading-tight">{ts.name}</h4>
+                                <p className="text-xs font-bold text-primary m-0">Rp {ts.amount.toLocaleString()}</p>
                             </div>
+                            {idx === 0 && <span className="material-symbols-outlined text-lg" style={{ color: 'var(--don-gold)', fontVariationSettings: "'FILL' 1" }}>stars</span>}
                         </div>
                       ))}
+                      {topSupporters.length === 0 && <p className="text-xs text-outline italic text-center py-4">Menunggu pahlawan pertama...</p>}
                   </div>
               </section>
 
-              {/* SOCIAL SECTION */}
-              <section className="donasi-card bg-surface-low">
-                  <h3 className="font-headline text-lg font-bold">Dukungan Lainnya</h3>
+              {/* DUKUNGAN LAINNYA buttons */}
+              <section className="donasi-card">
+                  <h3 className="section-title text-xl">Lainnya</h3>
                   <div className="social-grid">
                       <a href="https://www.youtube.com/@TeknologiSantuy" target="_blank" rel="noopener noreferrer" className="social-btn social-youtube">
-                          <i className="fa-brands fa-youtube"></i>
-                          <span>Subscribe</span>
+                          <i className="fa-brands fa-youtube text-2xl"></i>
+                          <span className="font-extrabold text-xs">YouTube</span>
                       </a>
                       <a href="https://discord.gg/dJzbq53jXH" target="_blank" rel="noopener noreferrer" className="social-btn social-discord">
-                          <i className="fa-brands fa-discord"></i>
-                          <span>Join Discord</span>
+                          <i className="fa-brands fa-discord text-2xl"></i>
+                          <span className="font-extrabold text-xs">Discord</span>
                       </a>
                   </div>
               </section>
 
-              {/* MEME SECTION */}
-              <section className="donasi-card meme-panel" style={{ padding: '1rem' }}>
-                  <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: 'white', border: 'var(--don-border)', borderRadius: 'var(--don-rd-md)', marginBottom: '0.75rem', overflow: 'hidden' }}>
-                      <img alt="Meme" style={{ width: '100%', height: '100%', objectFit: 'cover' }} src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjZ6NXA2ZzVnbmU0ZzVnbmU0ZzVnbmU0ZzVnbmU0ZzVnbmU0ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif"/>
+              {/* MEME / FUN section */}
+              <section className="donasi-card bg-don-pri-cont text-center !shadow-none" style={{ borderStyle: 'dashed' }}>
+                  <div className="aspect-square bg-white border-2 border-don-on-surf rounded-xl mb-4 overflow-hidden">
+                      <img alt="Meme" className="w-full h-full object-cover" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjZ6NXA2ZzVnbmU0ZzVnbmU0ZzVnbmU0ZzVnbmU0ZzVnbmU0ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif"/>
                   </div>
-                  <h4 className="font-headline font-bold text-base" style={{ color: 'var(--don-on-ter-cont)' }}>"Target Tercapai 100%"</h4>
-                  <p className="text-[10px] mt-1 font-bold" style={{ opacity: 0.8 }}>Terima kasih orang baik! 🐱</p>
+                  <h4 className="font-headline font-extrabold text-base mb-1">Dukung Terus Mimin!</h4>
+                  <p className="text-xs font-bold opacity-70">Donatur senang, server pun tenang. 🐱</p>
               </section>
           </div>
       </main>
 
-      <div className="fab-mobile">
-          <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="fab-btn">
+      {/* MOBILE FAB - FIXED BUTTON */}
+      <div className="fab-mobile md:hidden">
+          <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="fab-btn donasi-btn bg-primary text-white">
               <span className="material-symbols-outlined">volunteer_activism</span>
-              Sawer Sekarang
+              Dukung Sekarang
           </a>
       </div>
 
+      {/* CELEBRATION ALERT */}
       <AnimatePresence>
         {showAlert && currentAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}></div>
-            <motion.div initial={{ scale: 0.8, y: 50 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 1.2, opacity: 0 }} className="donasi-card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center', position: 'relative', zIndex: 10, backgroundColor: 'white' }}>
-              <div style={{ height: '200px', width: '100%', marginBottom: '1rem', borderRadius: 'var(--don-rd-md)', overflow: 'hidden', border: 'var(--don-border)' }}>
-                <img src={currentAlert.meme} alt="Meme" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+            <motion.div initial={{ scale: 0.8, y: 50, rotate: -2 }} animate={{ scale: 1, y: 0, rotate: 0 }} exit={{ scale: 1.2, opacity: 0 }} className="donasi-card max-w-[420px] w-full text-center bg-white relative z-10">
+              <div className="h-48 w-full mb-4 rounded-xl overflow-hidden border-4 border-don-on-surf">
+                <img src={currentAlert.meme} alt="Meme Selebrasi" className="w-full h-full object-cover" />
               </div>
-              <h2 className="font-headline text-xl font-extrabold text-primary mb-2 uppercase">{currentAlert.name} MANTAP!</h2>
-              <div className="donasi-btn-primary font-bold text-xl mb-4" style={{ display: 'inline-block', borderRadius: 'var(--don-rd-md)', padding: '0.4rem 1.2rem' }}>Rp {currentAlert.amount.toLocaleString()}</div>
-              <p className="font-bold italic text-outline text-sm" style={{ backgroundColor: 'var(--don-surf-low)', padding: '0.75rem', borderRadius: 'var(--don-rd-md)', border: 'var(--don-border)' }}>
+              <h2 className="font-headline text-2xl font-extrabold text-primary mb-2 uppercase italic">{currentAlert.name} IS HERE!</h2>
+              <div className="bg-primary text-white font-extrabold text-2xl mb-6 inline-block rounded-xl border-4 border-don-on-surf px-6 py-2 shadow-[4px_4px_0px_0px_#1a1e2e]">
+                Rp {currentAlert.amount.toLocaleString()}
+              </div>
+              <p className="font-bold italic text-outline bg-don-surf-low p-4 rounded-xl border-2 border-don-on-surf">
                 "{currentAlert.message}"
               </p>
             </motion.div>
