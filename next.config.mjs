@@ -34,6 +34,18 @@ const nextConfig = {
         hostname: 'shared.akamai.steamstatic.com',
         port: '',
         pathname: '/store_item_assets/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blogger.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co.com',
+        port: '',
+        pathname: '/**',
       }
     ],
     minimumCacheTTL: 60,

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -7,11 +8,19 @@ export default function Footer() {
         <div className="footer-top">
           <div>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: 'inherit' }}>
-              <img src="/logo.png" alt="TS Logo" style={{ height: 42, width: 'auto', objectFit: 'contain' }} />
+              <div style={{ position: 'relative', height: 42, width: 42 }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="TS Logo" 
+                  width={42} 
+                  height={42} 
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
               <div className="brand-text" style={{ fontSize: 20 }}>Teknologi<br /><span>Santuy</span></div>
             </Link>
             <p className="footer-brand-desc">
-              Platform digital untuk download game gratis, tutorial teknologi, dan tips santai sehari-hari. Santuy, jelas, anti ribet.
+              Platform digital terlengkap untuk download game gratis, tutorial IT, dan tips gadget harian. Santuy, jelas, anti ribet.
             </p>
             <div className="footer-social" style={{ marginTop: 20 }}>
               <a href="https://www.youtube.com/@TeknologiSantuy" target="_blank" rel="noopener noreferrer" className="social-btn"><i className="fa-brands fa-youtube"></i></a>

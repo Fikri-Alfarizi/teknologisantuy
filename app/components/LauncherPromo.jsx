@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LauncherPromo() {
   return (
@@ -84,9 +85,17 @@ export default function LauncherPromo() {
           <div style={{ 
             flex: '1.2 1 400px', 
             minHeight: '400px',
-            background: 'url("/launcher/cover_launcher_v.2.2.jpg") center/cover no-repeat',
-            position: 'relative'
+            position: 'relative',
+            overflow: 'hidden'
           }}>
+            <Image 
+              src="/launcher/cover_launcher_v.2.2.jpg" 
+              alt="EA FC 26 Launcher Preview"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: 'cover' }}
+              priority={false}
+            />
             {/* Gradient Overlay for seamless blending with text block */}
             <div style={{
               position: 'absolute',

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';
 import { useSession, signOut as nextAuthSignOut } from 'next-auth/react';
 
@@ -48,7 +49,16 @@ export default function Navbar() {
         <div className="container" style={{ padding: 0, maxWidth: '100%' }}>
           <div className="nav-inner">
             <Link href="/" className="nav-brand" style={{ paddingLeft: 24 }}>
-              <img src="/logo.png" alt="TS Logo" style={{ height: 42, width: 'auto', objectFit: 'contain' }} />
+              <div style={{ position: 'relative', height: 42, width: 42, overflow: 'hidden' }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="TS Logo" 
+                  width={42} 
+                  height={42} 
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              </div>
               <div className="brand-text">Teknologi<br /><span>Santuy</span></div>
             </Link>
 
@@ -69,11 +79,14 @@ export default function Navbar() {
               <div className="nav-avatar" tabIndex="0">
                 {isLoggedIn ? (
                   <>
-                    <img 
-                      src={displayPhoto} 
-                      alt="Avatar"
-                      style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
-                    />
+                    <div style={{ position: 'relative', width: 32, height: 32, borderRadius: '50%', overflow: 'hidden' }}>
+                      <Image 
+                        src={displayPhoto} 
+                        alt="Avatar"
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                     <div className="avatar-dropdown">
                       <Link href="/settings" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontSize: 12, display: 'block', textDecoration: 'none' }} className="hover:bg-yellow-500/10 transition-colors group">
                         <div style={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

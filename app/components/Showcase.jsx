@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function Showcase() {
   const [filter, setFilter] = useState('all');
@@ -131,20 +132,27 @@ export default function Showcase() {
               <div 
                 className={`sc-thumb ${item.thumb}`}
                 style={{
-                  backgroundImage: item.image ? `url('${item.image}')` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  position: 'relative',
                   width: '100%',
                   aspectRatio: '16/9',
-                  height: 'auto'
+                  height: 'auto',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                {!item.image && (
-                  <i className={`fa-solid ${item.icon}`} style={{ color: item.color, fontSize: '3em' }}></i>
+                {item.image ? (
+                  <Image 
+                    src={item.image} 
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    style={{ objectFit: 'cover' }}
+                    loading="lazy"
+                  />
+                ) : (
+                  <i className={`fa-solid ${item.icon}`} style={{ color: item.color, fontSize: '3em', position: 'relative', zIndex: 1 }}></i>
                 )}
               </div>
               <div className="sc-body">
