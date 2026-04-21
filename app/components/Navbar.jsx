@@ -68,6 +68,7 @@ export default function Navbar() {
               <li><Link href="/launcher" className={pathname === '/launcher' ? 'active' : ''}>Launcher</Link></li>
               <li><Link href="/game" className={pathname === '/game' ? 'active' : ''}>Game</Link></li>
               <li><Link href="/request-game" className={pathname === '/request-game' ? 'active' : ''}>Request Game</Link></li>
+              <li><Link href="/donasi" className={pathname === '/donasi' ? 'active' : ''}>Donasi</Link></li>
               <li><Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link></li>
               <li><Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Contact</Link></li>
             </ul>
@@ -142,6 +143,7 @@ export default function Navbar() {
           <Link href="/launcher" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-rocket"></i> Launcher</Link>
           <Link href="/game" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-gamepad"></i> Game</Link>
           <Link href="/request-game" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-comments"></i> Request Game</Link>
+          <Link href="/donasi" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-hand-holding-heart"></i> Donasi</Link>
           <Link href="/about" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-info-circle"></i> About</Link>
           <Link href="/contact" onClick={() => setMobileNavOpen(false)}><i className="fa-solid fa-envelope"></i> Contact</Link>
           {isLoggedIn ? (

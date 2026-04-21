@@ -37,6 +37,7 @@ export default function Footer() {
                 <li><Link href="/blog"><i className="fa-solid fa-chevron-right" style={{ fontSize: 10, color: 'var(--yellow)' }}></i> Blog</Link></li>
                 <li><Link href="/launcher"><i className="fa-solid fa-chevron-right" style={{ fontSize: 10, color: 'var(--yellow)' }}></i> Launcher</Link></li>
                 <li><Link href="/game"><i className="fa-solid fa-chevron-right" style={{ fontSize: 10, color: 'var(--yellow)' }}></i> Game</Link></li>
+                <li><Link href="/donasi"><i className="fa-solid fa-chevron-right" style={{ fontSize: 10, color: 'var(--yellow)' }}></i> Donasi</Link></li>
                 <li><Link href="/about"><i className="fa-solid fa-chevron-right" style={{ fontSize: 10, color: 'var(--yellow)' }}></i> About</Link></li>
               </ul>
             </div>
