@@ -65,7 +65,7 @@ export default function DonasiPage() {
   const [loading, setLoading] = useState(true);
   const [seedStatus, setSeedStatus] = useState(null);
   
-  const targetGoal = 150000; // Increased to reflect total history
+  const targetGoal = 150000;
   
   const audioRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -78,7 +78,6 @@ export default function DonasiPage() {
   const videoDonations = displaySupporters.filter(s => s.videoId);
   const topSupporters = [...displaySupporters].sort((a,b) => b.amount - a.amount).slice(0, 3);
 
-  // AUTO-SEEDING LOGIC
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('seed') === 'true' && user) {
@@ -90,7 +89,6 @@ export default function DonasiPage() {
     setSeedStatus("Migrasi data saweran sedang berjalan...");
     let count = 0;
     try {
-      // Check if we already seeded to prevent duplicates
       const q = query(collection(db, 'donations'), where('source', '==', 'migration'), limit(1));
       const existing = await getDocs(q);
       if (!existing.empty) {
@@ -184,6 +182,9 @@ export default function DonasiPage() {
   return (
     <div className="donation-dashboard">
       <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Manrope:wght@200..800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
         .donation-dashboard {
             --don-bg: #f5f6ff;
             --don-on-surf: #282f3f;
@@ -220,34 +221,47 @@ export default function DonasiPage() {
 
             background-color: var(--don-bg);
             color: var(--don-on-surf);
-            font-family: var(--don-body);
             min-height: 80vh;
             display: flex;
             flex-direction: column;
             position: relative;
             padding-top: 2rem;
+            isolation: isolate;
+        }
+
+        /* Scope typography strictly to avoid hitting icons */
+        .donation-dashboard p, 
+        .donation-dashboard span:not(.material-symbols-outlined):not([class*="fa-"]), 
+        .donation-dashboard div:not(.material-symbols-outlined):not([class*="fa-"]),
+        .donation-dashboard h1, .donation-dashboard h2, .donation-dashboard h3, .donation-dashboard h4 {
+            font-family: var(--don-body);
+        }
+
+        .donation-dashboard .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal !important;
+            font-style: normal !important;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        .donation-dashboard i[class*="fa-"] {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+            font-weight: 900 !important;
+            font-style: normal !important;
+            display: inline-block;
         }
 
         .donation-dashboard a { text-decoration: none; color: inherit; }
-        .donation-dashboard button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
-        .donation-dashboard img { max-width: 100%; display: block; }
+        .donation-dashboard button { cursor: pointer; border: none; background: none; color: inherit; }
         
-        .donation-dashboard .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined' !important;
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .donation-dashboard .font-headline { font-family: var(--don-headline); }
+        .donation-dashboard .font-headline { font-family: var(--don-headline) !important; }
         .donation-dashboard .text-primary { color: var(--don-primary); }
         .donation-dashboard .text-outline { color: var(--don-out); }
         .donation-dashboard .font-bold { font-weight: 700; }
@@ -301,7 +315,7 @@ export default function DonasiPage() {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             font-weight: 700;
             transition: all 0.2s;
             border: var(--don-border);
@@ -311,7 +325,7 @@ export default function DonasiPage() {
             background-color: var(--don-primary);
             color: var(--don-on-primary) !important;
             border-radius: var(--don-rd-full);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.5rem;
         }
         .donasi-btn-primary:hover { background-color: var(--don-primary-dim); }
 
@@ -447,7 +461,7 @@ export default function DonasiPage() {
         .interaction-btn {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             font-size: 0.875rem;
             color: var(--don-out);
             font-weight: 600;
@@ -501,10 +515,12 @@ export default function DonasiPage() {
             border: var(--don-border);
             margin-bottom: 0.75rem;
         }
+        
         .social-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            margin-top: 1rem;
         }
         .social-btn {
             border: var(--don-border);
@@ -513,9 +529,13 @@ export default function DonasiPage() {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             color: white !important;
+            transition: transform 0.2s;
+            min-height: 80px;
         }
+        .social-btn:hover { transform: scale(1.05); }
         .social-youtube { background-color: #FF0000; }
         .social-discord { background-color: #5865F2; }
         
@@ -555,7 +575,6 @@ export default function DonasiPage() {
             .donasi-main-content { flex-direction: row; }
             .column-left { width: 70%; display: flex; flex-direction: column; gap: 1.5rem; }
             .column-right { width: 30%; display: flex; flex-direction: column; gap: 1.5rem; }
-            .video-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
         .donation-dashboard ::-webkit-scrollbar { width: 8px; }
@@ -564,7 +583,7 @@ export default function DonasiPage() {
       `}} />
 
       {seedStatus && (
-          <div style={{ backgroundColor: 'var(--don-primary)', color: 'white', padding: '0.5rem 1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}>
+          <div style={{ backgroundColor: 'var(--don-primary)', color: 'white', padding: '0.5rem 1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.8rem', zIndex: 100 }}>
               ℹ️ {seedStatus}
           </div>
       )}
@@ -579,7 +598,7 @@ export default function DonasiPage() {
                   <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
               </div>
           </div>
-          <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="donasi-btn-share donasi-btn font-bold">
+          <a href="https://saweria.co/teknologisantuy" target="_blank" rel="noopener noreferrer" className="donasi-btn donasi-btn-primary font-bold">
               <span className="material-symbols-outlined">volunteer_activism</span> Donasi Sekarang
           </a>
       </div>
@@ -731,11 +750,11 @@ export default function DonasiPage() {
                   <h3 className="font-headline text-lg font-bold" style={{ marginBottom: '1rem' }}>Dukungan Lainnya</h3>
                   <div className="social-grid">
                       <a href="https://www.youtube.com/@TeknologiSantuy" target="_blank" rel="noopener noreferrer" className="social-btn social-youtube">
-                          <i className="fa-brands fa-youtube text-xl"></i>
+                          <i className="fa-brands fa-youtube text-2xl"></i>
                           <span className="font-bold text-xs">Subscribe</span>
                       </a>
                       <a href="https://discord.gg/dJzbq53jXH" target="_blank" rel="noopener noreferrer" className="social-btn social-discord">
-                          <i className="fa-brands fa-discord text-xl"></i>
+                          <i className="fa-brands fa-discord text-2xl"></i>
                           <span className="font-bold text-xs">Join Discord</span>
                       </a>
                   </div>
