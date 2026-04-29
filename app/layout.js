@@ -129,7 +129,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* Material Symbols - use display swap to avoid layout shift and blocking */}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" media="print" onLoad="this.media='all'" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
         
         {/* Structured Data */}
         <script
@@ -174,13 +174,7 @@ export default function RootLayout({ children }) {
           {children}
         </Providers>
 
-        {/* Font Awesome - Load as non-blocking */}
-        <link 
-          rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          media="print" 
-          onLoad="this.media='all'" 
-        />
+
       </body>
     </html>
   );

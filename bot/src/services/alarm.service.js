@@ -6,7 +6,7 @@ import axios from 'axios';
  * - Fallback: Webhook (jika tidak ada channel setting)
  */
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1466353346305589410/n2NTcj7k_kBUBBmY9Bh4H6yLbvtf5EbgOHTBGaEfHpzmX3qhmLuMt4Xz26BbHFOOuetp';
+const WEBHOOK_URL = process.env.DISCORD_ALARM_WEBHOOK;
 const IMAGE_URL = 'https://media.discordapp.net/attachments/1440966497915633725/1466353963572920404/75ee3c714245052e4c8e7ab482bab455.png?ex=697c700c&is=697b1e8c&hm=d5c74299ecc2002dfc1335148e240555dac0e9ed7f03cf4d6c754aca375c9e25&=&format=webp&quality=lossless&width=354&height=354';
 
 /**

@@ -91,13 +91,17 @@ export async function POST(req) {
     }
 
     // 1. Update Firestore (Atomic Increment)
-    await setDoc(logRef, {
-      totalRequests: increment(1),
-      uids: isLoggedIn ? [...new Set([...uids, user.uid])] : uids,
-      lastRequestAt: serverTimestamp(),
-      lastGameRequested: game.name,
-      ip: ip
-    }, { merge: true });
+    try {
+      await setDoc(logRef, {
+        totalRequests: increment(1),
+        uids: isLoggedIn ? [...new Set([...uids, user.uid])] : uids,
+        lastRequestAt: serverTimestamp(),
+        lastGameRequested: game.name,
+        ip: ip
+      }, { merge: true });
+    } catch (fsError) {
+      console.warn('[WARNING] Failed to write request log to Firestore (continuing anyway):', fsError);
+    }
 
     // 2. Kirim ke Discord
     const webhookUrl = process.env.DISCORD_REQUEST_WEBHOOK;
