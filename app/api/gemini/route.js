@@ -101,7 +101,7 @@ ${siteContext}
 RIWAYAT: ${(history || []).map(m => `${m.role}: ${m.text}`).join('\n')}
 `;
 
-    const selectedModel = 'gemini-1.5-flash';
+    const selectedModel = 'gemini-3-flash-preview';
     
     // Prepare parts for multimodal
     const parts = [{ text: systemPrompt + "\n\nPertanyaan User: " + message }];
