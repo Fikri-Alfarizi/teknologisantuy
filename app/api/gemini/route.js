@@ -39,13 +39,25 @@ async function fetchDiscordGames() {
 async function getSiteData() {
   const now = Date.now();
   if (cachedSiteData && (now - cacheTime) < CACHE_DURATION) return cachedSiteData;
-  const [games, blogPosts] = await Promise.all([
-    fetchDiscordGames(),
-    fetchBloggerPosts().catch(() => [])
-  ]);
-  cachedSiteData = { games, blogPosts };
-  cacheTime = now;
-  return cachedSiteData;
+
+  // Add 3-second timeout for external API calls to prevent hanging
+  const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
+  
+  try {
+    const [games, blogPosts] = await Promise.race([
+      Promise.all([
+        fetchDiscordGames().catch(() => []),
+        fetchBloggerPosts().catch(() => [])
+      ]),
+      timeoutPromise
+    ]);
+    cachedSiteData = { games, blogPosts };
+    cacheTime = now;
+    return cachedSiteData;
+  } catch (err) {
+    console.warn("Site data fetch timed out or failed, using empty context");
+    return { games: [], blogPosts: [] };
+  }
 }
 
 function buildSiteContext(siteData) {
@@ -89,7 +101,7 @@ ${siteContext}
 RIWAYAT: ${(history || []).map(m => `${m.role}: ${m.text}`).join('\n')}
 `;
 
-    const selectedModel = 'gemini-3.1-flash-lite-preview';
+    const selectedModel = 'gemini-1.5-flash';
     
     // Prepare parts for multimodal
     const parts = [{ text: systemPrompt + "\n\nPertanyaan User: " + message }];

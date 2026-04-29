@@ -21,7 +21,7 @@ function renderMarkdown(text) {
     .replace(/\n/g, '<br/>');
 }
 
-function useTypingEffect(text, speed = 8, onDone) {
+function useTypingEffect(text, speed = 15, onDone) {
   const [displayed, setDisplayed] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const indexRef = useRef(0);
@@ -36,7 +36,7 @@ function useTypingEffect(text, speed = 8, onDone) {
     indexRef.current = 0;
     setIsTyping(true);
     const interval = setInterval(() => {
-      indexRef.current++;
+      indexRef.current += 3; // Advance by 3 characters to reduce re-renders
       if (indexRef.current >= text.length) {
         setDisplayed(text);
         setIsTyping(false);
