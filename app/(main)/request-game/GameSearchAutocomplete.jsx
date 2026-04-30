@@ -84,9 +84,9 @@ export default function GameSearchAutocomplete({ onGameSelect }) {
                 <div className="ss-item-title">{game.name}</div>
                 {game.price !== undefined && (
                   <div className="ss-item-price" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    {game.price > 0 && (
+                    {(typeof game.price === 'object' ? (game.price.final || game.price.initial) : game.price) > 0 && (
                       <span style={{ textDecoration: 'line-through', color: '#737782', fontSize: '11px' }}>
-                        Rp {(game.price).toLocaleString('id-ID')}
+                        Rp {((typeof game.price === 'object' ? (game.price.final || game.price.initial) : game.price) / 100).toLocaleString('id-ID')}
                       </span>
                     )}
                     <span style={{ color: '#a3ff00' }}>GRATIS</span>

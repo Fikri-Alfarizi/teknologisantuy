@@ -8,9 +8,19 @@ export default function GameCard({ game, onClick }) {
   
   // Handling pricing logic loosely based on Steam API's typical response shape
   // Steam API might return price in cents
-  const formattedPrice = game.price === 0 ? 'Free to Play' 
-                       : game.price ? `Rp ${(game.price).toLocaleString('id-ID')}` 
-                       : game.original_price ? `Rp ${(game.original_price/100).toLocaleString('id-ID')}` 
+  let numericPrice = 0;
+  if (typeof game.price === 'object' && game.price !== null) {
+    numericPrice = game.price.final || game.price.initial || 0;
+  } else if (typeof game.price === 'number') {
+    numericPrice = game.price;
+  } else if (game.original_price) {
+    numericPrice = game.original_price;
+  }
+
+  const isFree = game.is_free || numericPrice === 0;
+  
+  const formattedPrice = isFree ? 'Free to Play' 
+                       : numericPrice > 0 ? `Rp ${(numericPrice / 100).toLocaleString('id-ID')}` 
                        : '';
 
   const discountPercent = game.discount_percent || 0;

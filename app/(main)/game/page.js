@@ -208,10 +208,7 @@ export default async function GamePage({ searchParams }) {
     nextCursor = freshData.nextCursor;
   }
 
-  // Fallback Dummy Data if Discord fetch fails or channel is empty
-  const displayGames = games.length > 0 ? games : (searchQuery ? [] : [
-    { id: '1', title: 'Sea of Thieves (v2.135.8227.0 + Co-op)', size: '117.8 GB', password: '-', link: '#', image: '/logo.png', timestamp: '12 Jan 2026' },
-  ]);
+  const displayGames = games;
 
   let steamGames = [];
   if (searchQuery && games.length === 0) {
@@ -265,18 +262,16 @@ export default async function GamePage({ searchParams }) {
               <div className="section-eyebrow"><i className="fa-solid fa-cloud-arrow-down"></i> Katalog Unduhan</div>
               <h2 className="section-title">Semua <span className="mark">Koleksi Game</span></h2>
             </div>
-            {games.length === 0 && (
-              <div style={{ padding: '12px 24px', background: 'rgba(255,0,0,0.1)', border: '2px dashed red', borderRadius: '12px', color: '#ff6b6b', fontWeight: 'bold' }}>
-                Menampilkan Data Mockup (Gagal menarik API Discord)
-              </div>
-            )}
-            {games.length > 0 && (
-              <div style={{ padding: '12px 24px', background: 'rgba(0,255,0,0.1)', border: '2px dashed #00ff00', borderRadius: '12px', color: '#00ff00', fontWeight: 'bold' }}>
-                <i className="fa-solid fa-check-circle"></i> Live dari Discord
-              </div>
-            )}
           </div>
           
+          {displayGames.length === 0 && !searchQuery && (
+            <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
+              <i className="fa-solid fa-folder-open" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
+              <h3>Katalog masih kosong</h3>
+              <p>Belum ada game yang di-upload ke server Discord.</p>
+            </div>
+          )}
+
           <div className="showcase-grid" style={{ gap: '24px', border: 'none', background: 'transparent' }}>
             {displayGames.map((item) => (
               <div 
