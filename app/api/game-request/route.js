@@ -109,6 +109,21 @@ export async function POST(req) {
         requestCount: increment(1),
         lastRequestedAt: serverTimestamp()
       }, { merge: true });
+
+      // Create individual trackable request for Admin Dashboard
+      const { collection, addDoc } = require('firebase/firestore');
+      await addDoc(collection(db, 'game_requests'), {
+        gameId: game.id,
+        gameName: game.name,
+        gameImage: game.image,
+        userId: isLoggedIn ? user.uid : 'guest',
+        userName: isLoggedIn ? user.displayName : 'Guest',
+        userEmail: isLoggedIn ? user.email : '',
+        ip: ip,
+        status: 'pending', // 'pending', 'in_progress', 'done', 'rejected'
+        timestamp: serverTimestamp()
+      });
+
     } catch (fsError) {
       console.warn('[WARNING] Failed to write request log to Firestore (continuing anyway):', fsError);
     }

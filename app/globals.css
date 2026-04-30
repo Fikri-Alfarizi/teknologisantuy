@@ -1484,3 +1484,18 @@ body::after{
 @media (max-width: 480px) {
   .steam-grid { grid-template-columns: 1fr; }
 }
+ / *   L E V E L   B A D G E   * / 
+ . l e v e l - b a d g e   { 
+     b a c k g r o u n d :   # f f e 6 0 0 ; 
+     c o l o r :   # 0 0 0 ; 
+     f o n t - s i z e :   1 0 p x ; 
+     f o n t - w e i g h t :   9 0 0 ; 
+     p a d d i n g :   2 p x   6 p x ; 
+     b o r d e r - r a d i u s :   4 p x ; 
+     m a r g i n - l e f t :   8 p x ; 
+     b o x - s h a d o w :   2 p x   2 p x   0   r g b a ( 0 , 0 , 0 , 0 . 2 ) ; 
+     v e r t i c a l - a l i g n :   m i d d l e ; 
+     b o r d e r :   1 p x   s o l i d   # 0 0 0 ; 
+ } 
+  
+ 

@@ -91,12 +91,16 @@ export default function Navbar() {
                     <div className="avatar-dropdown">
                       <Link href="/settings" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontSize: 12, display: 'block', textDecoration: 'none' }} className="hover:bg-yellow-500/10 transition-colors group">
                         <div style={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span className="group-hover:text-yellow-400">{displayName}</span>
+                          <span className="group-hover:text-yellow-400">
+                             {displayName} 
+                             {userProfile?.level && <span className="level-badge">LV.{userProfile.level}</span>}
+                          </span>
                           <i className="fa-solid fa-gear text-gray-500 group-hover:text-yellow-400 group-hover:rotate-90 transition-all duration-300"></i>
                         </div>
                         <div style={{ color: 'rgba(255,255,255,0.7)' }}>{displayEmail}</div>
                       </Link>
                       <Link href="/forum"><i className="fa-solid fa-comment-dots"></i> Forum</Link>
+                      <Link href="/my-requests"><i className="fa-solid fa-list-check"></i> Status Request</Link>
                       <a href="#" onClick={(e) => { e.preventDefault(); router.push('/dashboard'); }}><i className="fa-solid fa-chart-pie"></i> Dashboard</a>
                       <a href="#" onClick={handleLogout}><i className="fa-solid fa-right-from-bracket"></i> Logout</a>
                     </div>

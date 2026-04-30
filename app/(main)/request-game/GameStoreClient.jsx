@@ -6,16 +6,24 @@ import GameCard from './GameCard';
 import GameSearchAutocomplete from './GameSearchAutocomplete';
 import GameDetailModal from './GameDetailModal';
 import SteamStoreNav from './SteamStoreNav';
+import MyRequestsModal from './MyRequestsModal';
+import { useAuth } from '@/lib/auth-context';
 
-export default function GameStoreClient() {
+export default function GameStoreClient({ initialLeaderboard }) {
+  const { user, isAuthenticated, signOut, userProfile } = useAuth();
+  
+  // States
   const [featuredData, setFeaturedData] = useState(null);
+  const [activeTab, setActiveTab] = useState('new_releases');
+  const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('top_sellers');
   const [selectedGame, setSelectedGame] = useState(null);
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [isMyRequestsOpen, setMyRequestsOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
 
   const [requestedGames, setRequestedGames] = useState([]);
   const [categoryGames, setCategoryGames] = useState([]);
-  const [categoryName, setCategoryName] = useState('');
 
   useEffect(() => {
     // Fetch Steam Data

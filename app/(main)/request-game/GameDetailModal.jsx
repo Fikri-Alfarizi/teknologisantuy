@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';
 import SteamLoginModal from './SteamLoginModal';
+import CanIRunItChecker from './CanIRunItChecker';
 
 export default function GameDetailModal({ gameData, onClose }) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, addXP } = useAuth();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [requestStatus, setRequestStatus] = useState('idle'); // idle, loading, success, error, limited
@@ -96,6 +97,10 @@ export default function GameDetailModal({ gameData, onClose }) {
         setRequestStatus('success');
         if (data.newCount !== undefined) {
           setRequestCount(data.newCount);
+        }
+        // Reward Gamification XP!
+        if (isAuthenticated && typeof addXP === 'function') {
+          addXP(50); // Give 50 XP for making a request
         }
       } else {
         if (res.status === 403) {
@@ -241,6 +246,9 @@ export default function GameDetailModal({ gameData, onClose }) {
                 {game.pc_requirements && (game.pc_requirements.minimum || game.pc_requirements.recommended) && (
                   <div className="sm-sys-req">
                     <h3>System Requirements (PC)</h3>
+                    
+                    <CanIRunItChecker appId={appId} gameName={game.name} />
+
                     <div className="sm-req-grid">
                       {game.pc_requirements.minimum && (
                         <div className="sm-req-col" dangerouslySetInnerHTML={{ __html: game.pc_requirements.minimum }}></div>
