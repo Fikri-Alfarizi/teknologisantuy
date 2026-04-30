@@ -14,6 +14,8 @@ export default function GameStoreClient() {
   const [selectedGame, setSelectedGame] = useState(null);
 
   const [requestedGames, setRequestedGames] = useState([]);
+  const [categoryGames, setCategoryGames] = useState([]);
+  const [categoryName, setCategoryName] = useState('');
 
   useEffect(() => {
     // Fetch Steam Data
@@ -47,7 +49,24 @@ export default function GameStoreClient() {
     fetchLeaderboard();
   }, []);
 
+  const handleCategorySearch = async (category) => {
+    setActiveTab('category_search');
+    setCategoryName(category);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/game-search?q=${encodeURIComponent(category)}`);
+      const data = await res.json();
+      setCategoryGames(data.items || []);
+    } catch (err) {
+      console.error(err);
+      setCategoryGames([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getTabItems = () => {
+    if (activeTab === 'category_search') return categoryGames;
     if (activeTab === 'most_requested') return requestedGames;
     if (!featuredData) return [];
     switch (activeTab) {
@@ -65,7 +84,7 @@ export default function GameStoreClient() {
 
   return (
     <div className="steam-store">
-      <SteamStoreNav />
+      <SteamStoreNav onSearch={handleCategorySearch} />
       <section className="steam-hero-section" style={{ paddingTop: '20px' }}>
         <GameHeroCarousel 
           featuredGames={featuredData?.top_sellers?.items} 
@@ -82,7 +101,9 @@ export default function GameStoreClient() {
       </div>
 
       <section className="steam-store-main container">
-        <h2 className="steam-section-title">Browse Full Catalog</h2>
+        <h2 className="steam-section-title">
+          {activeTab === 'category_search' ? `Browsing Category: ${categoryName}` : 'Browse Full Catalog'}
+        </h2>
         
         <div className="steam-tabs">
           <button 
