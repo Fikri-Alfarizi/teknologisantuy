@@ -6,7 +6,6 @@ import GameCard from './GameCard';
 import GameSearchAutocomplete from './GameSearchAutocomplete';
 import GameDetailModal from './GameDetailModal';
 import SteamStoreNav from './SteamStoreNav';
-import MyRequestsModal from './MyRequestsModal';
 import { useAuth } from '@/lib/auth-context';
 
 export default function GameStoreClient({ initialLeaderboard }) {
@@ -19,7 +18,6 @@ export default function GameStoreClient({ initialLeaderboard }) {
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState(null);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-  const [isMyRequestsOpen, setMyRequestsOpen] = useState(false);
   const [categoryName, setCategoryName] = useState('');
 
   const [requestedGames, setRequestedGames] = useState([]);
