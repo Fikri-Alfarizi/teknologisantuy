@@ -159,6 +159,9 @@ export default function Navbar() {
                 </div>
                 <div style={{ fontSize: 11, color: '#B0BEC5' }}>{displayEmail}</div>
               </Link>
+              <a href="#" onClick={(e) => { e.preventDefault(); setMobileNavOpen(false); router.push('/my-requests'); }} style={{ color: 'var(--yellow)', fontWeight: 800, marginTop: 10 }}>
+                <i className="fa-solid fa-list-check"></i> Status Request
+              </a>
               <a href="#" onClick={(e) => { e.preventDefault(); setMobileNavOpen(false); router.push('/dashboard'); }} style={{ color: '#4ade80', fontWeight: 800, marginTop: 10 }}>
                 <i className="fa-solid fa-chart-pie"></i> Dashboard
               </a>

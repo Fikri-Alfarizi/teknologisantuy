@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, increment, collection, addDoc } from 'firebase/firestore';
 
 /**
  * Mendapatkan IP Client secara aman (Kompatibel Vercel)
@@ -111,7 +111,6 @@ export async function POST(req) {
       }, { merge: true });
 
       // Create individual trackable request for Admin Dashboard
-      const { collection, addDoc } = require('firebase/firestore');
       await addDoc(collection(db, 'game_requests'), {
         gameId: game.id,
         gameName: game.name,
