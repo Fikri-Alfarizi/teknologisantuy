@@ -277,22 +277,18 @@ export default async function GamePage({ searchParams }) {
             <SteamFallbackGrid steamGames={steamGames} searchQuery={searchQuery} />
           )}
 
-          <div className="showcase-header-row">
+<div className="showcase-header-row">
             <div>
               <div className="section-eyebrow"><i className="fa-solid fa-cloud-arrow-down"></i> Katalog Unduhan</div>
               <h2 className="section-title">Semua <span className="mark">Koleksi Game</span></h2>
             </div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }} className="game-page-layout">
-            <style dangerouslySetInnerHTML={{__html: `
-              @media(min-width: 1025px) {
-                .game-page-layout { grid-template-columns: 3fr 1fr !important; }
-              }
-            `}} />
-
+          {/* LAYOUT 75% KIRI - 25% KANAN */}
+          <div className="game-layout-container">
+            
             {/* KIRI: GAME UTAMA (75%) */}
-            <div>
+            <div className="game-main-content">
               {displayGames.length === 0 && !searchQuery && (
                 <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
                   <i className="fa-solid fa-folder-open" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
@@ -305,24 +301,58 @@ export default async function GamePage({ searchParams }) {
             </div>
 
             {/* KANAN: TOP TRENDING (25%) */}
-            <div>
+            <div className="game-sidebar">
               {!searchQuery && topGames.length > 0 && (
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.02)', 
-                  border: '1px solid rgba(255,255,255,0.05)', 
-                  borderRadius: '16px', 
-                  padding: '24px',
-                  position: 'sticky',
-                  top: '100px'
-                }}>
+                <div className="sidebar-sticky-wrapper">
                   <h3 style={{ color: '#fff', fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
                     <i className="fa-solid fa-fire" style={{ color: '#ff6b6b' }}></i> Paling Banyak Diunduh 
                   </h3>
+                  {/* Hide filters dan jadikan tampilan list 1 kolom khusus di sidebar */}
                   <GameCatalogGrid games={topGames} hideFilters={true} isSidebar={true} />
                 </div>
               )}
             </div>
           </div>
+
+          {/* STYLE KHUSUS LAYOUT KATA LOG */}
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              .game-layout-container {
+                display: flex;
+                flex-direction: column; /* Ditumpuk di layar kecil (HP) */
+                gap: 32px;
+                align-items: flex-start;
+              }
+              
+              .game-main-content, .game-sidebar {
+                width: 100%;
+              }
+
+              .sidebar-sticky-wrapper {
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255,255,255,0.05);
+                border-radius: 16px;
+                padding: 24px;
+                position: sticky;
+                top: 100px; /* Jarak ketika di-scroll ke bawah */
+              }
+
+              /* Layar Desktop (75% / 25%) */
+              @media(min-width: 1025px) {
+                .game-layout-container {
+                  flex-direction: row; /* Dijejerkan kiri-kanan */
+                }
+                .game-main-content {
+                  flex: 0 0 calc(75% - 16px);
+                  width: calc(75% - 16px);
+                }
+                .game-sidebar {
+                  flex: 0 0 calc(25% - 16px);
+                  width: calc(25% - 16px);
+                }
+              }
+            `
+          }} />
 
           {/* PAGINATION */}
           {!searchQuery && (

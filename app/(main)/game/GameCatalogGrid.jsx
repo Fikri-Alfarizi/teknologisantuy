@@ -6,17 +6,24 @@ import GameDownloadButton from './GameDownloadButton';
 export default function GameCatalogGrid({ games, hideFilters = false, isSidebar = false }) {
   const [sizeFilter, setSizeFilter] = useState('all'); // all, light (<10GB), medium (10-50GB), heavy (>50GB)
 
+  // FILTER YANG DIPERBAIKI (Lebih Akurat dengan Regex)
   const parseSizeGB = (sizeStr) => {
     if (!sizeStr) return 0;
-    const s = sizeStr.toUpperCase().replace(',', '.');
-    if (s.includes('MB')) return parseFloat(s) / 1024;
-    if (s.includes('GB')) return parseFloat(s);
-    if (s.includes('TB')) return parseFloat(s) * 1024;
+    // Ubah koma jadi titik, lalu cari pola angka yang diikuti MB/GB/TB
+    const match = sizeStr.toUpperCase().replace(',', '.').match(/([0-9.]+)\s*(MB|GB|TB)/);
+    if (!match) return 0;
+    
+    const value = parseFloat(match[1]);
+    const unit = match[2];
+    
+    if (unit === 'MB') return value / 1024;
+    if (unit === 'GB') return value;
+    if (unit === 'TB') return value * 1024;
     return 0;
   };
 
   const filteredGames = useMemo(() => {
-    if (hideFilters) return games; // Skip filtering logic if filters are hidden
+    if (hideFilters) return games; // Lewati filter untuk sidebar
     return games.filter(game => {
       if (sizeFilter === 'all') return true;
       const sizeGB = parseSizeGB(game.size);
@@ -68,22 +75,15 @@ export default function GameCatalogGrid({ games, hideFilters = false, isSidebar 
             key={item.id} 
             className="showcase-card game-card" 
             style={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              border: '2px solid rgba(255,255,255,0.08)', 
-              borderRadius: '16px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              padding: '0',
-              position: 'relative',
-              overflow: 'hidden'
+              display: 'flex', flexDirection: 'column', border: '2px solid rgba(255,255,255,0.08)', 
+              borderRadius: '16px', background: 'rgba(255, 255, 255, 0.03)', padding: '0',
+              position: 'relative', overflow: 'hidden'
             }}
           >
             {/* Size Badge */}
             <div style={{
-              position: 'absolute', top: '16px', right: '16px', zIndex: 2,
-              background: 'var(--blue)', color: 'white',
-              border: '2px solid #000', borderRadius: '24px',
-              padding: '4px 12px', fontSize: '12px', fontWeight: '800',
+              position: 'absolute', top: '16px', right: '16px', zIndex: 2, background: 'var(--blue)', color: 'white',
+              border: '2px solid #000', borderRadius: '24px', padding: '4px 12px', fontSize: '12px', fontWeight: '800',
               boxShadow: '2px 2px 0px #000'
             }}>
               <i className="fa-solid fa-hard-drive"></i> {item.size}
@@ -123,8 +123,7 @@ export default function GameCatalogGrid({ games, hideFilters = false, isSidebar 
                 onClick={() => reportLink(item.id, item.title)}
                 style={{ 
                   background: 'transparent', border: 'none', color: '#8f98a0', 
-                  fontSize: '11px', textAlign: 'left', marginBottom: '12px', 
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' 
+                  fontSize: '11px', textAlign: 'left', marginBottom: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' 
                 }}
               >
                 <i className="fa-solid fa-triangle-exclamation"></i> Lapor Link Mati
@@ -132,10 +131,8 @@ export default function GameCatalogGrid({ games, hideFilters = false, isSidebar 
               
                <GameDownloadButton game={item} style={{
                 marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '12px 16px', background: 'var(--yellow)',
-                border: '2px solid #000', borderRadius: '8px',
-                color: 'var(--bg)', textDecoration: 'none',
-                fontWeight: '800', fontSize: '16px', width: '100%',
+                padding: '12px 16px', background: 'var(--yellow)', border: '2px solid #000', borderRadius: '8px',
+                color: 'var(--bg)', textDecoration: 'none', fontWeight: '800', fontSize: '16px', width: '100%',
                 boxShadow: '3px 3px 0px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
               }} className="game-download-btn">
                 <i className="fa-solid fa-download" style={{ marginRight: '8px' }}></i> Download Sekarang
@@ -146,25 +143,9 @@ export default function GameCatalogGrid({ games, hideFilters = false, isSidebar 
       </div>
 
       <style jsx>{`
-        .filter-btn {
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          color: #fff;
-          padding: 6px 16px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: bold;
-          cursor: pointer;
-          transition: 0.2s;
-        }
-        .filter-btn:hover {
-          background: rgba(255,255,255,0.1);
-        }
-        .filter-btn.active {
-          background: var(--yellow);
-          color: #000;
-          border-color: var(--yellow);
-        }
+        .filter-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .filter-btn:hover { background: rgba(255,255,255,0.1); }
+        .filter-btn.active { background: var(--yellow); color: #000; border-color: var(--yellow); }
       `}</style>
     </div>
   );

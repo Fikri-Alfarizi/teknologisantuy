@@ -5,6 +5,7 @@ import GameHeroCarousel from './GameHeroCarousel';
 import GameCard from './GameCard';
 import GameSearchAutocomplete from './GameSearchAutocomplete';
 import GameDetailModal from './GameDetailModal';
+import SteamStoreNav from './SteamStoreNav';
 
 export default function GameStoreClient() {
   const [featuredData, setFeaturedData] = useState(null);
@@ -64,7 +65,8 @@ export default function GameStoreClient() {
 
   return (
     <div className="steam-store">
-      <section className="steam-hero-section">
+      <SteamStoreNav />
+      <section className="steam-hero-section" style={{ paddingTop: '20px' }}>
         <GameHeroCarousel 
           featuredGames={featuredData?.top_sellers?.items} 
           onGameSelect={(id) => {
