@@ -49,7 +49,7 @@ Respond EXACTLY in this JSON format:
 Do not return markdown, just the JSON.
 `;
 
-    const model = ai.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
+    const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
     
