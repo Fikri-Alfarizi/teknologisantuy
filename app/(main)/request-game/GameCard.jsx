@@ -39,12 +39,11 @@ export default function GameCard({ game, onClick }) {
           </div>
           
           <div className="steam-card-pricing">
-            {discountPercent > 0 && (
-              <div className="steam-discount-badge">-{discountPercent}%</div>
-            )}
-            <div className="steam-price-col">
-              {discountPercent > 0 && <span className="steam-original-price">Rp {(game.original_price).toLocaleString('id-ID')}</span>}
-              <span className="steam-final-price">{formattedPrice}</span>
+            <div className="steam-price-col" style={{ display: 'flex', alignItems: 'center' }}>
+              {formattedPrice && formattedPrice !== 'Free to Play' && (
+                <span className="steam-original-price" style={{ textDecoration: 'line-through', color: '#737782', fontSize: '11px', marginRight: '6px' }}>{formattedPrice}</span>
+              )}
+              <span className="steam-final-price" style={{ color: '#a3ff00', fontWeight: 'bold' }}>GRATIS</span>
             </div>
           </div>
         </div>

@@ -81,13 +81,14 @@ export default function GameHeroCarousel({ featuredGames, onGameSelect }) {
                </div>
 
               <div className="steam-hero-price-wrapper">
-                {currentGame.discount_percent > 0 && (
-                  <div className="steam-discount-badge-lg">-{currentGame.discount_percent}%</div>
-                )}
-                <div className="steam-price-col">
-                  {currentGame.discount_percent > 0 && <span className="steam-original-price">Rp {(currentGame.original_price/100).toLocaleString('id-ID')}</span>}
-                  <span className="steam-final-price">
-                    {currentGame.final_price === 0 ? 'Free to Play' : `Rp ${(currentGame.final_price/100).toLocaleString('id-ID')}`}
+                <div className="steam-price-col" style={{ display: 'flex', alignItems: 'center' }}>
+                  {currentGame.final_price > 0 && (
+                    <span className="steam-original-price" style={{ textDecoration: 'line-through', color: '#737782', fontSize: '13px', marginRight: '8px' }}>
+                      Rp {(currentGame.final_price/100).toLocaleString('id-ID')}
+                    </span>
+                  )}
+                  <span className="steam-final-price" style={{ color: '#a3ff00', fontWeight: 'bold' }}>
+                    GRATIS
                   </span>
                 </div>
               </div>

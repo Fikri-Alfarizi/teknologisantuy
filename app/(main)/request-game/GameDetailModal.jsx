@@ -266,7 +266,14 @@ export default function GameDetailModal({ gameData, onClose }) {
                  <div className="sm-sidebar-card">
                    <div className="sm-detail-row">
                       <span>Harga Steam:</span>
-                      <strong>{game.is_free ? 'Free' : (game.price_overview ? `Rp ${(game.price_overview.initial/100).toLocaleString('id-ID')}` : 'TBA')}</strong>
+                      <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {game.price_overview && game.price_overview.initial > 0 && (
+                          <span style={{ textDecoration: 'line-through', color: '#737782', fontSize: '13px', fontWeight: 'normal' }}>
+                            Rp {(game.price_overview.initial/100).toLocaleString('id-ID')}
+                          </span>
+                        )}
+                        <span style={{ color: '#a3ff00' }}>GRATIS</span>
+                      </strong>
                    </div>
                    
                    <div className="sm-detail-row tags-row">

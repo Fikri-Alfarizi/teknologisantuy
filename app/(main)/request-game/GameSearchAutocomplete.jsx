@@ -83,8 +83,13 @@ export default function GameSearchAutocomplete({ onGameSelect }) {
               <div className="ss-item-info">
                 <div className="ss-item-title">{game.name}</div>
                 {game.price !== undefined && (
-                  <div className="ss-item-price">
-                    {game.price === 0 ? 'Free' : `Rp ${(game.price).toLocaleString('id-ID')}`}
+                  <div className="ss-item-price" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {game.price > 0 && (
+                      <span style={{ textDecoration: 'line-through', color: '#737782', fontSize: '11px' }}>
+                        Rp {(game.price).toLocaleString('id-ID')}
+                      </span>
+                    )}
+                    <span style={{ color: '#a3ff00' }}>GRATIS</span>
                   </div>
                 )}
               </div>

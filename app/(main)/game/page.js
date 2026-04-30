@@ -8,6 +8,7 @@ import GameDownloadButton from './GameDownloadButton';
 import ErrorReportClient from './ErrorReportClient';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import SteamFallbackGrid from './SteamFallbackGrid';
 
 async function getDiscordGames(beforeCursor) {
   const token = process.env.DISCORD_BOT_TOKEN;
@@ -208,9 +209,22 @@ export default async function GamePage({ searchParams }) {
   }
 
   // Fallback Dummy Data if Discord fetch fails or channel is empty
-  const displayGames = games.length > 0 ? games : [
+  const displayGames = games.length > 0 ? games : (searchQuery ? [] : [
     { id: '1', title: 'Sea of Thieves (v2.135.8227.0 + Co-op)', size: '117.8 GB', password: '-', link: '#', image: '/logo.png', timestamp: '12 Jan 2026' },
-  ];
+  ]);
+
+  let steamGames = [];
+  if (searchQuery && games.length === 0) {
+    try {
+      const res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(searchQuery)}&l=english&cc=ID`);
+      if (res.ok) {
+        const data = await res.json();
+        steamGames = data.items || [];
+      }
+    } catch (e) {
+      console.error('Failed to fetch Steam fallback games:', e);
+    }
+  }
 
   return (
     <>
@@ -243,11 +257,7 @@ export default async function GamePage({ searchParams }) {
             </div>
           )}
           {searchQuery && games.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
-              <i className="fa-solid fa-ghost" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
-              <h3>Game tidak ditemukan :(</h3>
-              <p>Coba gunakan kata kunci lain (contoh: GTA, Resident, dll).</p>
-            </div>
+            <SteamFallbackGrid steamGames={steamGames} searchQuery={searchQuery} />
           )}
 
           <div className="showcase-header-row">
