@@ -7,8 +7,9 @@ import GameSearchBar from '@/app/components/GameSearchBar';
 import GameDownloadButton from './GameDownloadButton';
 import ErrorReportClient from './ErrorReportClient';
 import { db } from '@/lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit as fbLimit } from 'firebase/firestore';
 import SteamFallbackGrid from './SteamFallbackGrid';
+import GameCatalogGrid from './GameCatalogGrid';
 
 async function getDiscordGames(beforeCursor) {
   const token = process.env.DISCORD_BOT_TOKEN;
@@ -210,13 +211,32 @@ export default async function GamePage({ searchParams }) {
 
   const displayGames = games;
 
+  let topGames = [];
+  if (!searchQuery && displayGames.length > 0) {
+    try {
+      const q = query(collection(db, 'game_stats'), orderBy('clicks', 'desc'), fbLimit(3));
+      const snap = await getDocs(q);
+      const topIds = snap.docs.map(doc => doc.id);
+      
+      // Match with loaded displayGames (since we only show what's currently available in recent fetch, or we could fetch from allGames but we only have 30 per page)
+      // Actually, since we only fetch 30 games per page, some top games might not be in displayGames. 
+      // A better way is to do a Discord search for these topIds! Wait, we don't have a way to fetch specific discord messages by ID easily via channel endpoint without looping.
+      // So let's just filter displayGames to show the top trending from the *current page*.
+      topGames = displayGames.filter(g => topIds.includes(g.id)).sort((a, b) => topIds.indexOf(a.id) - topIds.indexOf(b.id));
+      
+      // If none found in current page, maybe just don't show the section.
+    } catch (err) {
+      console.warn("Failed to fetch top games:", err);
+    }
+  }
+
   let steamGames = [];
   if (searchQuery && games.length === 0) {
     try {
       const res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(searchQuery)}&l=english&cc=ID`);
       if (res.ok) {
         const data = await res.json();
-        steamGames = data.items || [];
+        steamGames = (data.items || []).filter(item => !item.type || item.type === 'game');
       }
     } catch (e) {
       console.error('Failed to fetch Steam fallback games:', e);
@@ -272,85 +292,18 @@ export default async function GamePage({ searchParams }) {
             </div>
           )}
 
-          <div className="showcase-grid" style={{ gap: '24px', border: 'none', background: 'transparent' }}>
-            {displayGames.map((item) => (
-              <div 
-                key={item.id} 
-                className="showcase-card game-card" 
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  border: '2px solid rgba(255,255,255,0.08)', 
-                  borderRadius: '16px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  padding: '0',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Size Badge */}
-                <div style={{
-                  position: 'absolute', top: '16px', right: '16px', zIndex: 2,
-                  background: 'var(--blue)', color: 'white',
-                  border: '2px solid #000', borderRadius: '24px',
-                  padding: '4px 12px', fontSize: '12px', fontWeight: '800',
-                  boxShadow: '2px 2px 0px #000'
-                }}>
-                  <i className="fa-solid fa-hard-drive"></i> {item.size}
-                </div>
+          {/* TOP TRENDING (Fetched from game_stats) */}
+          {!searchQuery && topGames.length > 0 && (
+            <div style={{ marginBottom: '48px' }}>
+              <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fa-solid fa-fire" style={{ color: '#ff6b6b' }}></i> Paling Banyak Diunduh 
+              </h3>
+              <GameCatalogGrid games={topGames} />
+              <hr style={{ border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', margin: '32px 0' }} />
+            </div>
+          )}
 
-                {/* Game Cover */}
-                <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderBottom: '2px solid rgba(255,255,255,0.08)' }}>
-                  {item.image ? (
-                    <img src={item.image} alt={item.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <i className="fa-solid fa-image" style={{ fontSize: '2rem', opacity: 0.5 }}></i>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="sc-body" style={{ padding: '24px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                  <span className="sc-tag" style={{ alignSelf: 'flex-start' }}><i className="fa-regular fa-calendar" style={{ marginRight: 6 }}></i> {item.timestamp}</span>
-                  <h3 style={{ margin: '12px 0 8px', fontSize: '16px', lineHeight: '1.4' }}>{item.title}</h3>
-                  
-                  <div style={{ background: 'rgba(0,0,0,0.3)', padding: '8px 12px', borderRadius: '8px', marginBottom: '24px', fontSize: '11.5px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ marginBottom: '8px' }}>
-                      <span style={{ opacity: 0.6 }}>Password:</span> <strong style={{ color: 'var(--yellow)' }}>{item.password}</strong>
-                    </div>
-                    <div>
-                      <span style={{ opacity: 0.6 }}>Link:</span>{" "}
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#fff", textDecoration: "underline" }}
-                      >
-                        {(() => {
-                          try {
-                            return new URL(item.link).hostname;
-                          } catch {
-                            return "Download Link";
-                          }
-                        })()}
-                      </a>
-                    </div>
-                  </div>
-                  
-                   <GameDownloadButton game={item} style={{
-                    marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    padding: '12px 16px', background: 'var(--yellow)',
-                    border: '2px solid #000', borderRadius: '8px',
-                    color: 'var(--bg)', textDecoration: 'none',
-                    fontWeight: '800', fontSize: '16px', width: '100%',
-                    boxShadow: '3px 3px 0px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
-                  }} className="game-download-btn">
-                    <i className="fa-solid fa-download" style={{ marginRight: '8px' }}></i> Download Sekarang
-                  </GameDownloadButton>
-                </div>
-              </div>
-            ))}
-          </div>
+          <GameCatalogGrid games={displayGames} />
 
           {/* PAGINATION */}
           {!searchQuery && (

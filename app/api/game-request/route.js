@@ -90,7 +90,7 @@ export async function POST(req) {
       }, { status: 403 });
     }
 
-    // 1. Update Firestore (Atomic Increment)
+    // 1. Update Firestore (Atomic Increment for User Log)
     try {
       await setDoc(logRef, {
         totalRequests: increment(1),
@@ -98,6 +98,16 @@ export async function POST(req) {
         lastRequestAt: serverTimestamp(),
         lastGameRequested: game.name,
         ip: ip
+      }, { merge: true });
+
+      // Aggregate Game Request Count
+      const gameDocRef = doc(db, 'requested_games', String(game.id));
+      await setDoc(gameDocRef, {
+        id: game.id,
+        name: game.name,
+        image: game.image,
+        requestCount: increment(1),
+        lastRequestedAt: serverTimestamp()
       }, { merge: true });
     } catch (fsError) {
       console.warn('[WARNING] Failed to write request log to Firestore (continuing anyway):', fsError);

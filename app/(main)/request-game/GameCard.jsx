@@ -49,18 +49,26 @@ export default function GameCard({ game, onClick }) {
           </div>
           
           <div className="steam-card-pricing">
-            <div className="steam-price-col" style={{ display: 'flex', alignItems: 'center' }}>
-              {formattedPrice && formattedPrice !== 'Free to Play' && (
-                <span className="steam-original-price" style={{ textDecoration: 'line-through', color: '#737782', fontSize: '11px', marginRight: '6px' }}>{formattedPrice}</span>
-              )}
-              <span className="steam-final-price" style={{ color: '#a3ff00', fontWeight: 'bold' }}>GRATIS</span>
-            </div>
+            {game.isRequestedLeaderboard ? (
+              <div className="steam-price-col" style={{ display: 'flex', alignItems: 'center' }}>
+                <span className="steam-final-price" style={{ color: '#ff6b6b', fontWeight: 'bold' }}>
+                  <i className="fa-solid fa-fire"></i> {game.requestCount || 1} Request
+                </span>
+              </div>
+            ) : (
+              <div className="steam-price-col" style={{ display: 'flex', alignItems: 'center' }}>
+                {formattedPrice && formattedPrice !== 'Free to Play' && (
+                  <span className="steam-original-price" style={{ textDecoration: 'line-through', color: '#737782', fontSize: '11px', marginRight: '6px' }}>{formattedPrice}</span>
+                )}
+                <span className="steam-final-price" style={{ color: '#a3ff00', fontWeight: 'bold' }}>GRATIS</span>
+              </div>
+            )}
           </div>
         </div>
         
         {/* We place a pseudo-button here as per Steam style hover, or just a clear call to action */}
         <div className="steam-card-action">
-          <span>REQUEST GAME</span>
+          <span>{game.isRequestedLeaderboard ? 'IKUT REQUEST (+1)' : 'REQUEST GAME'}</span>
         </div>
       </div>
     </div>

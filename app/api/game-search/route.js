@@ -33,7 +33,7 @@ export async function GET(req) {
     // 1. Percobaan Pertama: Cari langsung ke Steam
     let res = await fetch(`https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(query)}&l=english&cc=US`);
     let data = await res.json();
-    let items = data.items || [];
+    let items = (data.items || []).filter(item => !item.type || item.type === 'game');
     let isCorrected = false;
     let originalQuery = query;
 
@@ -45,8 +45,9 @@ export async function GET(req) {
         const resRetry = await fetch(`https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(corrected)}&l=english&cc=US`);
         if (resRetry.ok) {
           const dataRetry = await resRetry.json();
-          if (dataRetry.items && dataRetry.items.length > 0) {
-            items = dataRetry.items;
+          const filteredItems = (dataRetry.items || []).filter(item => !item.type || item.type === 'game');
+          if (filteredItems.length > 0) {
+            items = filteredItems;
             isCorrected = true;
           }
         }

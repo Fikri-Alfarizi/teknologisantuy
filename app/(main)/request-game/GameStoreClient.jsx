@@ -12,7 +12,10 @@ export default function GameStoreClient() {
   const [activeTab, setActiveTab] = useState('top_sellers');
   const [selectedGame, setSelectedGame] = useState(null);
 
+  const [requestedGames, setRequestedGames] = useState([]);
+
   useEffect(() => {
+    // Fetch Steam Data
     fetch('/api/steam/featured')
       .then(res => res.json())
       .then(data => {
@@ -23,9 +26,28 @@ export default function GameStoreClient() {
         console.error('Failed to load Steam featured data:', err);
         setLoading(false);
       });
+
+    // Fetch Leaderboard Request Data from Firestore
+    const fetchLeaderboard = async () => {
+      try {
+        const { collection, getDocs, query, orderBy, limit } = await import('firebase/firestore');
+        const { db } = await import('@/lib/firebase');
+        const q = query(collection(db, 'requested_games'), orderBy('requestCount', 'desc'), limit(10));
+        const snap = await getDocs(q);
+        const reqGames = snap.docs.map(doc => ({
+          ...doc.data(),
+          isRequestedLeaderboard: true // Flag to identify these in UI
+        }));
+        setRequestedGames(reqGames);
+      } catch (err) {
+        console.error('Failed to load leaderboard:', err);
+      }
+    };
+    fetchLeaderboard();
   }, []);
 
   const getTabItems = () => {
+    if (activeTab === 'most_requested') return requestedGames;
     if (!featuredData) return [];
     switch (activeTab) {
       case 'top_sellers': return featuredData.top_sellers?.items || [];
@@ -61,6 +83,12 @@ export default function GameStoreClient() {
         <h2 className="steam-section-title">Browse Full Catalog</h2>
         
         <div className="steam-tabs">
+          <button 
+            className={`steam-tab ${activeTab === 'most_requested' ? 'active' : ''}`}
+            onClick={() => setActiveTab('most_requested')}
+          >
+            <i className="fa-solid fa-fire"></i> Paling Banyak Direquest
+          </button>
           <button 
             className={`steam-tab ${activeTab === 'top_sellers' ? 'active' : ''}`}
             onClick={() => setActiveTab('top_sellers')}
