@@ -26,29 +26,48 @@ function useTypingEffect(text, speed = 15, onDone) {
   const [displayed, setDisplayed] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const indexRef = useRef(0);
+  const doneCalledRef = useRef(false);
+
+  // Store the latest onDone in a ref to avoid dependency cycles
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
 
   useEffect(() => {
+    // Reset done tracking when text changes
+    doneCalledRef.current = false;
+    
     if (!text || isMobile) { // Skip animation on mobile for performance
       setDisplayed(text || '');
-      if (onDone) onDone();
+      if (!doneCalledRef.current && onDoneRef.current) {
+        doneCalledRef.current = true;
+        onDoneRef.current();
+      }
       return;
     }
+    
     setDisplayed('');
     indexRef.current = 0;
     setIsTyping(true);
+    
     const interval = setInterval(() => {
       indexRef.current += 3; // Advance by 3 characters to reduce re-renders
       if (indexRef.current >= text.length) {
         setDisplayed(text);
         setIsTyping(false);
         clearInterval(interval);
-        if (onDone) onDone();
+        if (!doneCalledRef.current && onDoneRef.current) {
+          doneCalledRef.current = true;
+          onDoneRef.current();
+        }
       } else {
         setDisplayed(text.slice(0, indexRef.current));
       }
     }, speed);
+    
     return () => clearInterval(interval);
-  }, [text, speed, onDone]);
+  }, [text, speed]);
 
   return { displayed: isMobile ? text : displayed, isTyping: isMobile ? false : isTyping };
 }
