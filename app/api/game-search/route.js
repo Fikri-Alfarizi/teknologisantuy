@@ -24,9 +24,39 @@ async function getCorrectedQuery(query) {
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('q');
+  const type = searchParams.get('type');
 
   if (!query) {
     return NextResponse.json({ items: [] });
+  }
+
+  // Handle Category Search using SteamSpy API
+  if (type === 'category') {
+    try {
+      const spyRes = await fetch(`https://steamspy.com/api.php?request=tag&tag=${encodeURIComponent(query)}`);
+      const spyData = await spyRes.json();
+      
+      let items = Object.values(spyData)
+        .sort((a, b) => {
+          // Sort by CCU (Concurrent Users) or Positive reviews
+          const scoreA = (a.ccu || 0) + (a.positive || 0);
+          const scoreB = (b.ccu || 0) + (b.positive || 0);
+          return scoreB - scoreA;
+        })
+        .slice(0, 24)
+        .map(game => ({
+          id: game.appid,
+          name: game.name,
+          price: parseInt(game.price || "0") * 16000,
+          is_free: game.price === "0",
+          large_capsule_image: `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`
+        }));
+        
+      return NextResponse.json({ items, corrected: false });
+    } catch (err) {
+      console.error('SteamSpy API error:', err);
+      return NextResponse.json({ items: [] });
+    }
   }
 
   try {

@@ -54,7 +54,7 @@ export default function GameStoreClient() {
     setCategoryName(category);
     setLoading(true);
     try {
-      const res = await fetch(`/api/game-search?q=${encodeURIComponent(category)}`);
+      const res = await fetch(`/api/game-search?q=${encodeURIComponent(category)}&type=category`);
       const data = await res.json();
       setCategoryGames(data.items || []);
     } catch (err) {
