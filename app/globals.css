@@ -727,7 +727,7 @@ html{
   margin-bottom:28px;flex-wrap:wrap;gap:16px;
 }
 .showcase-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
+  display:grid;grid-template-columns:repeat(2,1fr);
   gap:28px;
 }
 .showcase-card{
@@ -1028,7 +1028,7 @@ body::after{
   .hero-grid,.about-grid,.docs-grid{grid-template-columns:1fr}
   .hero-title{font-size:36px}
   .section-title{font-size:28px}
-  .showcase-grid{grid-template-columns:repeat(2,1fr)}
+  .showcase-grid{grid-template-columns:1fr; gap:16px;}
   .footer-top{grid-template-columns:1fr;gap:40px}
   .footer-links-grid{gap:15px}
   .cta-block h2{font-size:30px}

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import GameDownloadButton from './GameDownloadButton';
 
-export default function GameCatalogGrid({ games }) {
+export default function GameCatalogGrid({ games, hideFilters = false, isSidebar = false }) {
   const [sizeFilter, setSizeFilter] = useState('all'); // all, light (<10GB), medium (10-50GB), heavy (>50GB)
 
   const parseSizeGB = (sizeStr) => {
@@ -16,6 +16,7 @@ export default function GameCatalogGrid({ games }) {
   };
 
   const filteredGames = useMemo(() => {
+    if (hideFilters) return games; // Skip filtering logic if filters are hidden
     return games.filter(game => {
       if (sizeFilter === 'all') return true;
       const sizeGB = parseSizeGB(game.size);
@@ -24,7 +25,7 @@ export default function GameCatalogGrid({ games }) {
       if (sizeFilter === 'heavy') return sizeGB > 50;
       return true;
     });
-  }, [games, sizeFilter]);
+  }, [games, sizeFilter, hideFilters]);
 
   const reportLink = async (gameId, gameTitle) => {
     if (confirm(`Laporkan link mati untuk game "${gameTitle}"?`)) {
@@ -44,13 +45,15 @@ export default function GameCatalogGrid({ games }) {
   return (
     <div>
       {/* FILTER BAR */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ color: '#8f98a0', fontSize: '14px', fontWeight: 'bold' }}><i className="fa-solid fa-filter"></i> Filter Ukuran:</span>
-        <button onClick={() => setSizeFilter('all')} className={`filter-btn ${sizeFilter === 'all' ? 'active' : ''}`}>Semua</button>
-        <button onClick={() => setSizeFilter('light')} className={`filter-btn ${sizeFilter === 'light' ? 'active' : ''}`}>Ringan (&lt;10 GB)</button>
-        <button onClick={() => setSizeFilter('medium')} className={`filter-btn ${sizeFilter === 'medium' ? 'active' : ''}`}>Sedang (10-50 GB)</button>
-        <button onClick={() => setSizeFilter('heavy')} className={`filter-btn ${sizeFilter === 'heavy' ? 'active' : ''}`}>Berat (&gt;50 GB)</button>
-      </div>
+      {!hideFilters && (
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ color: '#8f98a0', fontSize: '14px', fontWeight: 'bold' }}><i className="fa-solid fa-filter"></i> Filter Ukuran:</span>
+          <button onClick={() => setSizeFilter('all')} className={`filter-btn ${sizeFilter === 'all' ? 'active' : ''}`}>Semua</button>
+          <button onClick={() => setSizeFilter('light')} className={`filter-btn ${sizeFilter === 'light' ? 'active' : ''}`}>Ringan (&lt;10 GB)</button>
+          <button onClick={() => setSizeFilter('medium')} className={`filter-btn ${sizeFilter === 'medium' ? 'active' : ''}`}>Sedang (10-50 GB)</button>
+          <button onClick={() => setSizeFilter('heavy')} className={`filter-btn ${sizeFilter === 'heavy' ? 'active' : ''}`}>Berat (&gt;50 GB)</button>
+        </div>
+      )}
 
       {filteredGames.length === 0 && (
         <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
@@ -59,7 +62,7 @@ export default function GameCatalogGrid({ games }) {
         </div>
       )}
 
-      <div className="showcase-grid" style={{ gap: '24px', border: 'none', background: 'transparent' }}>
+      <div className={isSidebar ? "" : "showcase-grid"} style={isSidebar ? { display: 'grid', gridTemplateColumns: '1fr', gap: '24px' } : { gap: '24px', border: 'none', background: 'transparent' }}>
         {filteredGames.map((item) => (
           <div 
             key={item.id} 

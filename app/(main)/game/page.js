@@ -284,26 +284,45 @@ export default async function GamePage({ searchParams }) {
             </div>
           </div>
           
-          {displayGames.length === 0 && !searchQuery && (
-            <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
-              <i className="fa-solid fa-folder-open" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
-              <h3>Katalog masih kosong</h3>
-              <p>Belum ada game yang di-upload ke server Discord.</p>
-            </div>
-          )}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }} className="game-page-layout">
+            <style dangerouslySetInnerHTML={{__html: `
+              @media(min-width: 1025px) {
+                .game-page-layout { grid-template-columns: 3fr 1fr !important; }
+              }
+            `}} />
 
-          {/* TOP TRENDING (Fetched from game_stats) */}
-          {!searchQuery && topGames.length > 0 && (
-            <div style={{ marginBottom: '48px' }}>
-              <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="fa-solid fa-fire" style={{ color: '#ff6b6b' }}></i> Paling Banyak Diunduh 
-              </h3>
-              <GameCatalogGrid games={topGames} />
-              <hr style={{ border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', margin: '32px 0' }} />
-            </div>
-          )}
+            {/* KIRI: GAME UTAMA (75%) */}
+            <div>
+              {displayGames.length === 0 && !searchQuery && (
+                <div style={{ textAlign: 'center', padding: '48px', opacity: 0.6 }}>
+                  <i className="fa-solid fa-folder-open" style={{ fontSize: '48px', marginBottom: '16px' }}></i>
+                  <h3>Katalog masih kosong</h3>
+                  <p>Belum ada game yang di-upload ke server Discord.</p>
+                </div>
+              )}
 
-          <GameCatalogGrid games={displayGames} />
+              <GameCatalogGrid games={displayGames} />
+            </div>
+
+            {/* KANAN: TOP TRENDING (25%) */}
+            <div>
+              {!searchQuery && topGames.length > 0 && (
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.02)', 
+                  border: '1px solid rgba(255,255,255,0.05)', 
+                  borderRadius: '16px', 
+                  padding: '24px',
+                  position: 'sticky',
+                  top: '100px'
+                }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+                    <i className="fa-solid fa-fire" style={{ color: '#ff6b6b' }}></i> Paling Banyak Diunduh 
+                  </h3>
+                  <GameCatalogGrid games={topGames} hideFilters={true} isSidebar={true} />
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* PAGINATION */}
           {!searchQuery && (
