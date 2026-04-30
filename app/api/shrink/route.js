@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { decodeDownloadUrl } from '../../lib/url-obfuscator';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -9,12 +10,12 @@ export async function GET(request) {
     return new NextResponse('Missing parameters', { status: 400 });
   }
 
-  // Get base URL to construct the absolute destination URL
-  const protocol = request.headers.get('x-forwarded-proto') || 'http';
-  const host = request.headers.get('host');
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`;
+  // Decode the obfuscated URL token to get the actual original download link
+  const targetUrl = decodeDownloadUrl(to);
 
-  const targetUrl = `${baseUrl}/download?to=${encodeURIComponent(to)}&name=${encodeURIComponent(name)}`;
+  if (!targetUrl) {
+    return new NextResponse('Invalid token', { status: 400 });
+  }
   
   // API token must be stored privately in Vercel environment variables
   const apiToken = process.env.SHRINKME_API_TOKEN;
