@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as jotai from 'jotai';
 import { geminiChatAtom } from '@/atoms/geminiChatAtom';
+import { useSession, signIn } from 'next-auth/react';
 
 const { useAtom } = jotai;
 
@@ -53,7 +54,7 @@ function useTypingEffect(text, speed = 15, onDone) {
 }
 
 // --- COMPONENTS ---
-function AiMessage({ text, shouldAnimate, onAnimationDone, image }) {
+function AiMessage({ text, shouldAnimate, onAnimationDone, image, requiresLogin }) {
   const { displayed, isTyping } = useTypingEffect(shouldAnimate ? text : null, 8, onAnimationDone);
   const content = shouldAnimate ? displayed : text;
 
@@ -72,7 +73,7 @@ function AiMessage({ text, shouldAnimate, onAnimationDone, image }) {
           alt="Uploaded" 
           loading="lazy"
           style={{ 
-            width: isMobile ? '200px' : '100%', // Smaller images on mobile
+            width: isMobile ? '200px' : '100%', 
             maxWidth: '100%', 
             borderRadius: '8px', 
             marginBottom: '10px', 
@@ -83,6 +84,17 @@ function AiMessage({ text, shouldAnimate, onAnimationDone, image }) {
       )}
       <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
       {isTyping && !isMobile && <span style={{ display: 'inline-block', width: '6px', height: '14px', background: 'var(--yellow)', marginLeft: '2px', animation: 'blink 0.6s infinite' }} />}
+      
+      {requiresLogin && !isTyping && (
+        <button onClick={() => signIn('discord')} style={{
+          marginTop: '12px', padding: '8px 16px', background: '#5865F2', 
+          color: '#fff', border: 'none', borderRadius: '8px', 
+          cursor: 'pointer', fontWeight: 'bold', fontSize: '12px',
+          display: 'flex', alignItems: 'center', gap: '8px'
+        }}>
+          <i className="fa-brands fa-discord"></i> Login dengan Discord
+        </button>
+      )}
       {!isMobile && <style jsx>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>}
     </div>
   );
@@ -91,105 +103,110 @@ function AiMessage({ text, shouldAnimate, onAnimationDone, image }) {
 export default function GeminiChat() {
   const [chatState, setChatState] = useAtom(geminiChatAtom);
   const { isOpen, stepContext } = chatState;
+  const { data: session } = useSession();
   
-  const [sessions, setSessions] = useState([{ id: 'default', name: 'Chat Baru', messages: [{ role: 'ai', text: 'Halo! 👋 Saya asisten Teknologi Santuy. Ada yang bisa saya bantu hari ini?', animate: false }] }]);
-  const [activeSessionId, setActiveSessionId] = useState('default');
-  const [showHistory, setShowHistory] = useState(false);
-
+  const initialMessage = { role: 'ai', text: 'Halo! 👋 Saya asisten Teknologi Santuy. Ada yang bisa saya bantu hari ini?', animate: !isMobile };
+  const [messages, setMessages] = useState([]);
+  
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isListening, setIsListening] = useState(false);
+  const [guestCount, setGuestCount] = useState(0);
+  
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   const setIsOpen = (val) => setChatState(prev => ({ ...prev, isOpen: val }));
-  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
-  const messages = activeSession.messages;
 
   useEffect(() => {
-    if (isMobile) return; // Skip localStorage on mobile for performance
-    const saved = localStorage.getItem('ts_chat_sessions');
-    if (saved) {
-      try {
-        setSessions(JSON.parse(saved));
-        const lastSessionId = localStorage.getItem('ts_active_session_id');
-        if (lastSessionId) setActiveSessionId(lastSessionId);
-      } catch (e) {
-        console.warn('Failed to load chat sessions from localStorage');
-      }
-    }
+    // Load guest count on mount
+    const count = parseInt(localStorage.getItem('ts_guest_ai_count') || '0', 10);
+    setGuestCount(count);
   }, []);
 
   useEffect(() => {
-    if (isMobile) return; // Skip saving to localStorage on mobile
-    try {
-      localStorage.setItem('ts_chat_sessions', JSON.stringify(sessions));
-      localStorage.setItem('ts_active_session_id', activeSessionId);
-    } catch (e) {
-      console.warn('Failed to save chat sessions to localStorage');
+    if (isOpen) {
+      // Start a new fresh chat every time it opens
+      setMessages([initialMessage]);
+    } else {
+      // If closed, automatically stop any ongoing generation
+      if (loading && abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        setLoading(false);
+        abortControllerRef.current = null;
+      }
+      setInput('');
+      setSelectedImage(null);
     }
-  }, [sessions, activeSessionId]);
+  }, [isOpen]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading, isOpen]);
 
-  const updateActiveSessionMessages = (newMsgs) => {
-    setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: newMsgs } : s));
-  };
-
   const markMessageAnimated = (index) => {
-    updateActiveSessionMessages(messages.map((m, i) => i === index ? { ...m, animate: false } : m));
-  };
-
-  const handleNewChat = () => {
-    const newId = Date.now().toString();
-    const newSess = {
-      id: newId,
-      name: `Sesi ${sessions.length + 1}`,
-      messages: [{ role: 'ai', text: 'Halo! Sesi baru telah dimulai. Ada kendala apa hari ini?', animate: false }]
-    };
-    setSessions([newSess, ...sessions]);
-    setActiveSessionId(newId);
-    setShowHistory(false);
+    setMessages(prev => prev.map((m, i) => i === index ? { ...m, animate: false } : m));
   };
 
   const stopGeneration = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       setLoading(false);
-      updateActiveSessionMessages([...messages, { role: 'ai', text: '_Respon dihentikan._', animate: false }]);
+      abortControllerRef.current = null;
+      setMessages(prev => [...prev, { role: 'ai', text: '_Respon dihentikan._', animate: false }]);
     }
+  };
+
+  const incrementGuestCount = () => {
+    const newCount = guestCount + 1;
+    setGuestCount(newCount);
+    localStorage.setItem('ts_guest_ai_count', newCount);
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if ((!input.trim() && !selectedImage) || loading) return;
+    
+    // Check Limit
+    if (!session && guestCount >= 10) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Oops! Anda telah mencapai batas **10 pesan gratis** sebagai tamu. Silakan login untuk mendapatkan akses AI **tanpa batas** (unlimited) secara gratis.', animate: !isMobile, requiresLogin: true }]);
+      return;
+    }
+
     const userMsg = input.trim();
     const userImg = selectedImage;
     setInput('');
     setSelectedImage(null);
     abortControllerRef.current = new AbortController();
+    
     const newUserMsg = { role: 'user', text: userMsg || '(Gambar dikirim)', image: userImg };
-    const updatedMsgs = [...messages, newUserMsg];
-    updateActiveSessionMessages(updatedMsgs);
+    setMessages(prev => [...prev, newUserMsg]);
     setLoading(true);
+
     try {
       const res = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: abortControllerRef.current.signal,
-        body: JSON.stringify({ message: userMsg, stepContext, image: userImg ? { inlineData: userImg } : null, history: messages.slice(-5).map(m => ({ role: m.role, text: m.text })) }) // Reduce history on mobile
+        body: JSON.stringify({ 
+          message: userMsg, 
+          stepContext, 
+          image: userImg ? { inlineData: userImg } : null, 
+          history: messages.slice(-5).map(m => ({ role: m.role, text: m.text })) // Reduce history
+        })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: data.reply || data.error, animate: !isMobile }]); // Skip animation on mobile
+      
+      // Increment limit on success
+      if (!session) incrementGuestCount();
+      
+      setMessages(prev => [...prev, { role: 'ai', text: data.reply || data.error, animate: !isMobile }]); // Skip animation on mobile
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error('Chat error:', err);
-      updateActiveSessionMessages([...updatedMsgs, { role: 'ai', text: isMobile ? 'Error: Periksa koneksi' : 'Gagal terhubung ke AI. Coba lagi.', animate: false }]);
+      setMessages(prev => [...prev, { role: 'ai', text: isMobile ? 'Error: Periksa koneksi' : 'Gagal terhubung ke AI. Coba lagi.', animate: false }]);
     } finally {
       setLoading(false);
       abortControllerRef.current = null;
@@ -236,16 +253,16 @@ export default function GeminiChat() {
         background: 'var(--blue-dark, rgba(255,255,255,0.03))'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => setShowHistory(!showHistory)} style={{ 
+          <div style={{ 
             background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', 
-            width: '32px', height: '32px', color: '#fff', cursor: 'pointer',
+            width: '32px', height: '32px', color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <i className={`fa-solid ${showHistory ? 'fa-angle-left' : 'fa-bars-staggered'}`}></i>
-          </button>
+            <i className="fa-solid fa-robot"></i>
+          </div>
           <div style={{ overflow: 'hidden' }}>
-            <h4 style={{ margin: 0, fontSize: '13px', color: '#fff', fontWeight: 700, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{activeSession.name}</h4>
-            <span style={{ fontSize: '10px', color: 'var(--yellow)', opacity: 0.8 }}>Online • Gemini 3.1 Flash</span>
+            <h4 style={{ margin: 0, fontSize: '13px', color: '#fff', fontWeight: 700 }}>AI Chat</h4>
+            <span style={{ fontSize: '10px', color: 'var(--yellow)', opacity: 0.8 }}>Online • Super Ringan</span>
           </div>
         </div>
         <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '18px' }}>
@@ -253,42 +270,13 @@ export default function GeminiChat() {
         </button>
       </div>
 
-      {/* History Drawer Overlay */}
-      {showHistory && (
-        <div style={{
-          position: 'absolute', top: '60px', left: 0, bottom: 0, right: 0,
-          background: 'var(--blue-base, rgba(13, 63, 94, 0.98))', zIndex: 10, padding: '20px',
-          display: 'flex', flexDirection: 'column', gap: '12px'
-        }}>
-          <button onClick={handleNewChat} style={{
-            padding: '12px', background: 'var(--yellow)', color: '#000', border: 'none',
-            borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '12px'
-          }}>+ Mulai Chat Baru</button>
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {sessions.map(s => (
-              <div key={s.id} onClick={() => { setActiveSessionId(s.id); setShowHistory(false); }} style={{
-                padding: '12px', borderRadius: '10px', background: activeSessionId === s.id ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
-                color: '#fff', cursor: 'pointer', fontSize: '12px', border: activeSessionId === s.id ? '1px solid var(--yellow)' : '1px solid transparent',
-                display: 'flex', alignItems: 'center', gap: '10px'
-              }}>
-                <i className="fa-regular fa-comment-dots" style={{ opacity: 0.5 }}></i>
-                <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
-              </div>
-            ))}
-          </div>
-          <button onClick={() => { if(confirm('Hapus semua riwayat?')){ setSessions([{id:'default',name:'Chat Baru',messages:[{role:'ai',text:'History dihapus.',animate:false}]}]); setActiveSessionId('default'); localStorage.clear(); setShowHistory(false); } }} style={{ background: 'transparent', border: 'none', color: '#ff6b6b', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}>
-            <i className="fa-solid fa-trash-can" style={{ marginRight: '6px' }}></i> Hapus Semua Riwayat
-          </button>
-        </div>
-      )}
-
       {/* Message List */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {messages.map((msg, i) => (
           msg.role === 'ai' ? (
-            <AiMessage key={`${activeSessionId}-${i}`} text={msg.text} shouldAnimate={msg.animate} onAnimationDone={() => markMessageAnimated(i)} />
+            <AiMessage key={`ai-${i}`} text={msg.text} shouldAnimate={msg.animate} onAnimationDone={() => markMessageAnimated(i)} requiresLogin={msg.requiresLogin} />
           ) : (
-            <div key={i} style={{
+            <div key={`user-${i}`} style={{
               alignSelf: 'flex-end', maxWidth: '85%', padding: '12px 16px',
               background: 'var(--yellow)', color: '#000', borderRadius: '16px 2px 16px 16px',
               fontSize: '13.5px', fontWeight: 700, boxShadow: '0 4px 15px rgba(255, 225, 53, 0.2)'
@@ -300,7 +288,7 @@ export default function GeminiChat() {
         ))}
         {loading && (
           <div style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontStyle: 'italic' }}>AI sedang berpikir...</div>
+            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontStyle: 'italic' }}>AI sedang merespon...</div>
           </div>
         )}
         <div ref={chatEndRef} />
@@ -335,24 +323,6 @@ export default function GeminiChat() {
               }
             }} />
           </button>
-          <button type="button" onClick={() => {
-            if (isMobile) return; // Skip speech recognition on mobile for compatibility
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) return alert("Mic tidak didukung");
-            const recognition = new SR();
-            recognition.lang = 'id-ID';
-            recognition.onstart = () => setIsListening(true);
-            recognition.onresult = e => setInput(e.results[0][0].transcript);
-            recognition.onend = () => setIsListening(false);
-            recognition.start();
-          }} style={{ 
-            width: '36px', height: '36px', background: 'transparent', border: 'none', 
-            color: (isListening && !isMobile) ? 'var(--yellow)' : 'rgba(255,255,255,0.6)', 
-            cursor: isMobile ? 'default' : 'pointer',
-            opacity: isMobile ? 0.3 : 1
-          }}>
-            <i className={`fa-solid ${isListening && !isMobile ? 'fa-microphone-lines fa-beat-fade' : 'fa-microphone'}`}></i>
-          </button>
           
           <input 
             value={input} onChange={e => setInput(e.target.value)} 
@@ -375,9 +345,14 @@ export default function GeminiChat() {
               boxShadow: loading ? '0 4px 12px rgba(255, 71, 87, 0.4)' : '0 4px 12px rgba(255, 225, 53, 0.3)'
             }}
           >
-            <i className={`fa-solid ${loading ? 'fa-square' : 'fa-paper-plane'}`}></i>
+            <i className={`fa-solid ${loading ? 'fa-stop' : 'fa-paper-plane'}`}></i>
           </button>
         </form>
+        {!session && (
+          <div style={{ textAlign: 'center', marginTop: '8px', fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+            Sisa pesan gratis: {Math.max(0, 10 - guestCount)}/10
+          </div>
+        )}
       </div>
     </div>
   );
